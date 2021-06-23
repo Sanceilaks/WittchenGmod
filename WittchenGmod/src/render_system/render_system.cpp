@@ -3,7 +3,7 @@
 IDirect3DDevice9* gameDevice;
 
 IDirect3DDevice9* getDeviceFromGame() {
-	auto* const game_hwnd = FindWindowW(L"Valve001", nullptr);
+	auto* const game_hwnd = FindWindowW(0, L"Garry's Mod (x64)");
 	auto* d3d9 = Direct3DCreate9(D3D_SDK_VERSION);
 	if (!d3d9) return nullptr;
 
@@ -22,12 +22,11 @@ IDirect3DDevice9* getDeviceFromGame() {
 	return device9;
 }
 
-//I`m gay
 void render_system::Init() {
 	gameDevice = getDeviceFromGame();
 	
 }
 
 IDirect3DDevice9* render_system::GetDevice() {
-	
+	return gameDevice;
 }

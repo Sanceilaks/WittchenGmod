@@ -23,28 +23,28 @@ struct WndprocHook
 
 }; //extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-void hooks_manager::Init() {
+void hooks_manager::init() {
 	minpp = std::make_shared<min_hook_pp::c_min_hook>();
 
 
 
-	auto* const game_hwnd = FindWindowW(L"Valve001", nullptr);
+	auto* const game_hwnd = FindWindowW(0, L"Garry's Mod (x64)");
 	WndprocHook::originalWndproc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(
 		game_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WndprocHook::hookedWndproc)));
 	
 	minpp->enable_hook();
 }
 
-void hooks_manager::Shutdown() {
+void hooks_manager::shutdown() {
 	minpp->unhook();
 	minpp.reset();
 
-	auto* const game_hwnd = FindWindowW(L"Valve001", nullptr);
+	auto* const game_hwnd = FindWindowW(0, L"Garry's Mod (x64)");
 	if (game_hwnd)
 		SetWindowLongPtr(game_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WndprocHook::originalWndproc));
 }
 
-void hooks_manager::CreateHook(void* target, void* detour, void** original) {
+void hooks_manager::create_hook(void* target, void* detour, void** original) {
 	const auto result = minpp->create_hook(target, detour, original);
 	if (!result)
 		throw std::exception(fmt::format("Failed to create hook. Target: {}, detour: {}, original: {}",

@@ -2,8 +2,8 @@
 
 namespace hooks_manager
 {
-	void Init();
-	void Shutdown();
+	void init();
+	void shutdown();
 
-	void CreateHook(void* target, void* detour, void** original);
+	void create_hook(void* target, void* detour, void** original);
 }
