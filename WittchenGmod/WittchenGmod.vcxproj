@@ -17,7 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -41,37 +40,35 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared" >
+  <ImportGroup Label="Shared">
   </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -81,11 +78,20 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\binary</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\binary</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
-
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -118,12 +124,17 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)deps\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -132,18 +143,167 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)deps\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-
-  <ItemGroup></ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="deps\include\file_tools.cpp" />
+    <ClCompile Include="deps\include\fmt\format.cc" />
+    <ClCompile Include="deps\include\fmt\os.cc" />
+    <ClCompile Include="deps\include\imgui\imgui.cpp" />
+    <ClCompile Include="deps\include\imgui\imgui_demo.cpp" />
+    <ClCompile Include="deps\include\imgui\imgui_draw.cpp" />
+    <ClCompile Include="deps\include\imgui\imgui_freetype.cpp" />
+    <ClCompile Include="deps\include\imgui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="deps\include\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="deps\include\imgui\imgui_stdlib.cpp" />
+    <ClCompile Include="deps\include\imgui\imgui_tables.cpp" />
+    <ClCompile Include="deps\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="deps\include\imgui\im_tools.cpp" />
+    <ClCompile Include="deps\include\imgui\TextEditor.cpp" />
+    <ClCompile Include="deps\include\include\file_tools.cpp" />
+    <ClCompile Include="deps\include\include\fmt\format.cc" />
+    <ClCompile Include="deps\include\include\fmt\os.cc" />
+    <ClCompile Include="deps\include\include\imgui\imgui.cpp" />
+    <ClCompile Include="deps\include\include\imgui\imgui_demo.cpp" />
+    <ClCompile Include="deps\include\include\imgui\imgui_draw.cpp" />
+    <ClCompile Include="deps\include\include\imgui\imgui_freetype.cpp" />
+    <ClCompile Include="deps\include\include\imgui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="deps\include\include\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="deps\include\include\imgui\imgui_stdlib.cpp" />
+    <ClCompile Include="deps\include\include\imgui\imgui_tables.cpp" />
+    <ClCompile Include="deps\include\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="deps\include\include\imgui\im_tools.cpp" />
+    <ClCompile Include="deps\include\include\imgui\TextEditor.cpp" />
+    <ClCompile Include="deps\include\include\minpp\c_min_hook.cpp" />
+    <ClCompile Include="deps\include\include\minpp\minhook\buffer.c" />
+    <ClCompile Include="deps\include\include\minpp\minhook\hde\hde32.c" />
+    <ClCompile Include="deps\include\include\minpp\minhook\hde\hde64.c" />
+    <ClCompile Include="deps\include\include\minpp\minhook\hook.c" />
+    <ClCompile Include="deps\include\include\minpp\minhook\trampoline.c" />
+    <ClCompile Include="deps\include\include\platform_folders.cpp" />
+    <ClCompile Include="deps\include\minpp\c_min_hook.cpp" />
+    <ClCompile Include="deps\include\minpp\minhook\buffer.c" />
+    <ClCompile Include="deps\include\minpp\minhook\hde\hde32.c" />
+    <ClCompile Include="deps\include\minpp\minhook\hde\hde64.c" />
+    <ClCompile Include="deps\include\minpp\minhook\hook.c" />
+    <ClCompile Include="deps\include\minpp\minhook\trampoline.c" />
+    <ClCompile Include="deps\include\platform_folders.cpp" />
+    <ClCompile Include="src\hooks\hooks_manager.cpp" />
+    <ClCompile Include="src\interfaces.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\math\math.cpp" />
+    <ClCompile Include="src\math\vector.cpp" />
+    <ClCompile Include="src\render_system\render_system.cpp" />
+    <ClCompile Include="src\utils\hackutils.cpp" />
+    <ClCompile Include="src\utils\memoryutils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="deps\include\bind_system.h" />
+    <ClInclude Include="deps\include\color.h" />
+    <ClInclude Include="deps\include\file_tools.h" />
+    <ClInclude Include="deps\include\fmt\chrono.h" />
+    <ClInclude Include="deps\include\fmt\color.h" />
+    <ClInclude Include="deps\include\fmt\compile.h" />
+    <ClInclude Include="deps\include\fmt\core.h" />
+    <ClInclude Include="deps\include\fmt\format-inl.h" />
+    <ClInclude Include="deps\include\fmt\format.h" />
+    <ClInclude Include="deps\include\fmt\locale.h" />
+    <ClInclude Include="deps\include\fmt\os.h" />
+    <ClInclude Include="deps\include\fmt\ostream.h" />
+    <ClInclude Include="deps\include\fmt\posix.h" />
+    <ClInclude Include="deps\include\fmt\printf.h" />
+    <ClInclude Include="deps\include\fmt\ranges.h" />
+    <ClInclude Include="deps\include\fnv.h" />
+    <ClInclude Include="deps\include\imgui\imconfig.h" />
+    <ClInclude Include="deps\include\imgui\imgui.h" />
+    <ClInclude Include="deps\include\imgui\imgui_freetype.h" />
+    <ClInclude Include="deps\include\imgui\imgui_impl_dx9.h" />
+    <ClInclude Include="deps\include\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="deps\include\imgui\imgui_internal.h" />
+    <ClInclude Include="deps\include\imgui\imgui_stdlib.h" />
+    <ClInclude Include="deps\include\imgui\imstb_rectpack.h" />
+    <ClInclude Include="deps\include\imgui\imstb_textedit.h" />
+    <ClInclude Include="deps\include\imgui\imstb_truetype.h" />
+    <ClInclude Include="deps\include\imgui\im_tools.h" />
+    <ClInclude Include="deps\include\imgui\TextEditor.h" />
+    <ClInclude Include="deps\include\include\bind_system.h" />
+    <ClInclude Include="deps\include\include\color.h" />
+    <ClInclude Include="deps\include\include\file_tools.h" />
+    <ClInclude Include="deps\include\include\fmt\chrono.h" />
+    <ClInclude Include="deps\include\include\fmt\color.h" />
+    <ClInclude Include="deps\include\include\fmt\compile.h" />
+    <ClInclude Include="deps\include\include\fmt\core.h" />
+    <ClInclude Include="deps\include\include\fmt\format-inl.h" />
+    <ClInclude Include="deps\include\include\fmt\format.h" />
+    <ClInclude Include="deps\include\include\fmt\locale.h" />
+    <ClInclude Include="deps\include\include\fmt\os.h" />
+    <ClInclude Include="deps\include\include\fmt\ostream.h" />
+    <ClInclude Include="deps\include\include\fmt\posix.h" />
+    <ClInclude Include="deps\include\include\fmt\printf.h" />
+    <ClInclude Include="deps\include\include\fmt\ranges.h" />
+    <ClInclude Include="deps\include\include\fnv.h" />
+    <ClInclude Include="deps\include\include\imgui\imconfig.h" />
+    <ClInclude Include="deps\include\include\imgui\imgui.h" />
+    <ClInclude Include="deps\include\include\imgui\imgui_freetype.h" />
+    <ClInclude Include="deps\include\include\imgui\imgui_impl_dx9.h" />
+    <ClInclude Include="deps\include\include\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="deps\include\include\imgui\imgui_internal.h" />
+    <ClInclude Include="deps\include\include\imgui\imgui_stdlib.h" />
+    <ClInclude Include="deps\include\include\imgui\imstb_rectpack.h" />
+    <ClInclude Include="deps\include\include\imgui\imstb_textedit.h" />
+    <ClInclude Include="deps\include\include\imgui\imstb_truetype.h" />
+    <ClInclude Include="deps\include\include\imgui\im_tools.h" />
+    <ClInclude Include="deps\include\include\imgui\TextEditor.h" />
+    <ClInclude Include="deps\include\include\json.hpp" />
+    <ClInclude Include="deps\include\include\lemi_utils.h" />
+    <ClInclude Include="deps\include\include\minpp\c_min_hook.h" />
+    <ClInclude Include="deps\include\include\minpp\minhook\buffer.h" />
+    <ClInclude Include="deps\include\include\minpp\minhook\hde\hde32.h" />
+    <ClInclude Include="deps\include\include\minpp\minhook\hde\hde64.h" />
+    <ClInclude Include="deps\include\include\minpp\minhook\hde\pstdint.h" />
+    <ClInclude Include="deps\include\include\minpp\minhook\hde\table32.h" />
+    <ClInclude Include="deps\include\include\minpp\minhook\hde\table64.h" />
+    <ClInclude Include="deps\include\include\minpp\minhook\minhook.h" />
+    <ClInclude Include="deps\include\include\minpp\minhook\trampoline.h" />
+    <ClInclude Include="deps\include\include\platform_folders.h" />
+    <ClInclude Include="deps\include\json.hpp" />
+    <ClInclude Include="deps\include\lemi_utils.h" />
+    <ClInclude Include="deps\include\minpp\c_min_hook.h" />
+    <ClInclude Include="deps\include\minpp\minhook\buffer.h" />
+    <ClInclude Include="deps\include\minpp\minhook\hde\hde32.h" />
+    <ClInclude Include="deps\include\minpp\minhook\hde\hde64.h" />
+    <ClInclude Include="deps\include\minpp\minhook\hde\pstdint.h" />
+    <ClInclude Include="deps\include\minpp\minhook\hde\table32.h" />
+    <ClInclude Include="deps\include\minpp\minhook\hde\table64.h" />
+    <ClInclude Include="deps\include\minpp\minhook\minhook.h" />
+    <ClInclude Include="deps\include\minpp\minhook\trampoline.h" />
+    <ClInclude Include="deps\include\platform_folders.h" />
+    <ClInclude Include="src\game_sdk\interfaces\client.h" />
+    <ClInclude Include="src\game_sdk\interfaces\cliententitylist.h" />
+    <ClInclude Include="src\game_sdk\interfaces\engine.h" />
+    <ClInclude Include="src\game_sdk\misc\viewsetup.h" />
+    <ClInclude Include="src\globals.h" />
+    <ClInclude Include="src\hooks\hooks_manager.h" />
+    <ClInclude Include="src\interfaces.h" />
+    <ClInclude Include="src\math\math.h" />
+    <ClInclude Include="src\math\vector.h" />
+    <ClInclude Include="src\render_system\render_system.h" />
+    <ClInclude Include="src\utils\hackutils.h" />
+    <ClInclude Include="src\utils\memoryutils.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
