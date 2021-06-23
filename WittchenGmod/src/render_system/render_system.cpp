@@ -22,6 +22,7 @@ IDirect3DDevice9* getDeviceFromGame() {
 	return device9;
 }
 
+//I`m gay
 void render_system::Init() {
 	gameDevice = getDeviceFromGame();
 	
