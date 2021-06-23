@@ -13,6 +13,10 @@
 #include <fmt/format.h>
 #include "../render_system/render_system.h"
 
+#include "../features/menu/menu.h"
+
+#include "../utils/hackutils.h"
+
 inline unsigned int get_virtual(void* _class, const unsigned int index) { return static_cast<unsigned int>((*static_cast<int**>(_class))[index]); }
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
 
@@ -40,7 +44,7 @@ struct wndproc_hook
 	static LRESULT STDMETHODCALLTYPE hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param);
 	static inline WNDPROC original_wndproc = nullptr;
 
-}; //extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+}; extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
 void hook_dx() {
@@ -98,13 +102,24 @@ long reset_hook::hook(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* present_p
 
 LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param)
 {
+	if (message_type == WM_CLOSE) {
+		hack_utils::unload_hack();
+		return true;
+	}
 
-	//ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param);
-	//if (ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param))
-	//{
-		//interfaces::surface->unlock_cursor();
-		//return true;
-	//}
+	auto mk = VK_INSERT;
+	/*if (settings::binds["other::menu_key"] > 0)
+		mk = settings::binds["other::menu_key"];*/
+
+	if (message_type == WM_KEYDOWN)
+		if (w_param == mk)
+			menu::toggle_menu();
+	
+	ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param);
+	if (ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param) && menu::menu_is_open())
+	{
+		return true;
+	}
 
 	return CallWindowProc(original_wndproc, window, message_type, w_param, l_param);
 }

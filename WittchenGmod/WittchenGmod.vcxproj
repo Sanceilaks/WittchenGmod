@@ -181,6 +181,7 @@
     <ClCompile Include="deps\include\minpp\minhook\hook.c" />
     <ClCompile Include="deps\include\minpp\minhook\trampoline.c" />
     <ClCompile Include="deps\include\platform_folders.cpp" />
+    <ClCompile Include="src\features\menu\menu.cpp" />
     <ClCompile Include="src\hooks\hooks_manager.cpp" />
     <ClCompile Include="src\interfaces.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="deps\include\minpp\minhook\minhook.h" />
     <ClInclude Include="deps\include\minpp\minhook\trampoline.h" />
     <ClInclude Include="deps\include\platform_folders.h" />
+    <ClInclude Include="src\features\menu\menu.h" />
     <ClInclude Include="src\game_sdk\interfaces\client.h" />
     <ClInclude Include="src\game_sdk\interfaces\cliententitylist.h" />
     <ClInclude Include="src\game_sdk\interfaces\engine.h" />

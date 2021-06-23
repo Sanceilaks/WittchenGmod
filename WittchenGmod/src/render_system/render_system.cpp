@@ -1,5 +1,6 @@
 #include "render_system.h"
 
+#include <string>
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <imgui/imgui_impl_win32.h>
@@ -32,11 +33,25 @@ IDirect3DDevice9* render_system::get_device() {
 }
 
 void render_system::on_end_scene(LPDIRECT3DDEVICE9 device, uintptr_t return_address) {
+    static uintptr_t game_overlay_return_address = 0;
+	
 	if (!game_device) game_device = device;
 	if (!initialized) {
 		init();
 	}
 
+    if (!game_overlay_return_address)
+    {
+        MEMORY_BASIC_INFORMATION mi;
+        VirtualQuery((LPVOID)return_address, &mi, sizeof(MEMORY_BASIC_INFORMATION));
+        char mn[MAX_PATH];
+        GetModuleFileName((HMODULE)mi.AllocationBase, mn, MAX_PATH);
+        if (std::string(mn).find("gameoverlay") != std::string::npos)
+            game_overlay_return_address = return_address;
+    }
+   // if (game_overlay_return_address != (uintptr_t)return_address && settings::states["other::anti_obs"])
+       // return;
+	
     IDirect3DStateBlock9* pixel_state = NULL;
     IDirect3DVertexDeclaration9* vertex_declaration;
     IDirect3DVertexShader9* vertex_shader;
@@ -65,10 +80,6 @@ void render_system::on_end_scene(LPDIRECT3DDEVICE9 device, uintptr_t return_addr
 
     //auto* list = ImGui::GetBackgroundDrawList();
     //directx_render::add_temp_to_draw_list(list);
-
-    ImGui::GetBackgroundDrawList()->AddRectFilledMultiColor({0, 0}, {100, 100}, ImColor(255, 0, 0),
-                                                            ImColor(0, 255, 255), ImColor(0, 255, 0),
-                                                            ImColor(255, 255, 255));
 	
     ImGui::EndFrame();
     ImGui::Render();
