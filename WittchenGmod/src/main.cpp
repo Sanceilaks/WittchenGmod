@@ -24,7 +24,7 @@ void entryPoint() {
 		Warning(u8"ß ÃÅÉ\n");
 		interfaces::Engine->ExecuteClientCmd("lua_run_cl table.Empty(_G)");
 	} else {
-		std::cout << "I`m gay" << std::endl;
+		std::cout << "I`m" << std::endl;
 	}
 	
 }
