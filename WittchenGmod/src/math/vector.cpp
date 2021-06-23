@@ -4,54 +4,54 @@
 #include <limits>
 #include <algorithm>
 
-Vector::Vector()
+c_vector::c_vector()
 {
-	makeInf();
+	make_inf();
 }
 
-Vector::Vector(const Vector&& left) noexcept : x(left.x), y(left.y), z(left.z)
-{
-	
-}
-
-Vector::Vector(const Vector& left) : x(left.x), y(left.y), z(left.z)
+c_vector::c_vector(const c_vector&& left) noexcept : x(left.x), y(left.y), z(left.z)
 {
 	
 }
 
-Vector::Vector(Vector& left) : x(left.x), y(left.y), z(left.z)
-{
-}
-
-Vector::Vector(float _x, float _y, float _z) : x(_x), y(_y), z(_z)
-{
-}
-
-Vector::Vector(float* ptr) : x(ptr[0]), y(ptr[1]), z(ptr[2])
-{
-}
-
-Vector::Vector(float val) : x(val), y(val), z(val)
+c_vector::c_vector(const c_vector& left) : x(left.x), y(left.y), z(left.z)
 {
 	
 }
 
-void Vector::init(float _x, float _y, float _z)
+c_vector::c_vector(c_vector& left) : x(left.x), y(left.y), z(left.z)
+{
+}
+
+c_vector::c_vector(float _x, float _y, float _z) : x(_x), y(_y), z(_z)
+{
+}
+
+c_vector::c_vector(float* ptr) : x(ptr[0]), y(ptr[1]), z(ptr[2])
+{
+}
+
+c_vector::c_vector(float val) : x(val), y(val), z(val)
+{
+	
+}
+
+void c_vector::init(float _x, float _y, float _z)
 {
 	x = _x; y = _y; z = _z;
 }
 
-void Vector::makeInf()
+void c_vector::make_inf()
 {
 	x = y = z = std::numeric_limits<float>::infinity();
 }
 
-void Vector::makeZero()
+void c_vector::make_zero()
 {
 	x = y = z = 0.f;
 }
 
-void Vector::normalize()
+void c_vector::normalize()
 {
 	while (x > 89.0f)
 		x -= 180.0f;
@@ -64,7 +64,7 @@ void Vector::normalize()
 	z = 0.f;
 }
 
-void Vector::clamp()
+void c_vector::clamp()
 {
 	while (this->x < -180.0f)
 		this->x += 360.0f;
@@ -82,76 +82,76 @@ void Vector::clamp()
 	this->z = 0.0f;
 }
 
-float Vector::length() const
+float c_vector::length() const
 {
 	return sqrt(x * x + y * y + z * z);
 }
 
-float Vector::length2d() const
+float c_vector::length2d() const
 {
 	return sqrt(x * x + y * y);
 }
 
-float Vector::distance_to(const Vector& to) const
+float c_vector::distance_to(const c_vector& to) const
 {
 	return (*this - to).length();
 }
 
-bool Vector::is_valid() const
+bool c_vector::is_valid() const
 {
 	return std::isfinite(x) && std::isfinite(y) && std::isfinite(z);
 }
 
-float* Vector::base()
+float* c_vector::base()
 {
 	return reinterpret_cast<float*>(this);
 }
 
-float const* Vector::base() const
+float const* c_vector::base() const
 {
 	return reinterpret_cast<float const*>(this);
 }
 
-float Vector::operator[](int idx) const
+float c_vector::operator[](int idx) const
 {
 	return ((float*)this)[idx];
 }
 
-float& Vector::operator[](int idx)
+float& c_vector::operator[](int idx)
 {
 	return ((float*)this)[idx];
 }
 
-Vector& Vector::operator=(const Vector& left)
+c_vector& c_vector::operator=(const c_vector& left)
 = default;
 
-bool Vector::operator==(const Vector& other) const
+bool c_vector::operator==(const c_vector& other) const
 {
 	return x == other.x && y == other.y && z == other.z;
 }
 
-Vector Vector::operator+(const Vector& left) const
+c_vector c_vector::operator+(const c_vector& left) const
 {
 	return { x + left.x, y + left.y, z + left.z };
 }
 
-Vector Vector::operator-(const Vector& left) const
+c_vector c_vector::operator-(const c_vector& left) const
 {
 	return { x - left.x, y - left.y, z - left.z };
 }
 
-Vector Vector::operator*(const Vector& left) const
+c_vector c_vector::operator*(const c_vector& left) const
 {
 	return { x * left.x, y * left.y, z * left.z };
 }
 
-Vector Vector::operator/(const Vector& left) const
+c_vector c_vector::operator/(const c_vector& left) const
 {
 	return { x / left.x, y / left.y, z / left.z };
 }
 
 
-Vector& Vector::operator+=(const Vector& left)
+c_vector& c_vector::operator+=(const c_vector& left)
 {
 	x += left.x;
 	y += left.y;
@@ -159,7 +159,7 @@ Vector& Vector::operator+=(const Vector& left)
 	return *this;
 }
 
-Vector& Vector::operator-=(const Vector& left)
+c_vector& c_vector::operator-=(const c_vector& left)
 {
 	x -= left.x;
 	y -= left.y;
@@ -167,7 +167,7 @@ Vector& Vector::operator-=(const Vector& left)
 	return *this;
 }
 
-Vector& Vector::operator*=(const Vector& left)
+c_vector& c_vector::operator*=(const c_vector& left)
 {
 	x *= left.x;
 	y *= left.y;
@@ -175,7 +175,7 @@ Vector& Vector::operator*=(const Vector& left)
 	return *this;
 }
 
-Vector& Vector::operator/=(const Vector& left)
+c_vector& c_vector::operator/=(const c_vector& left)
 {
 	x /= left.x;
 	y /= left.y;

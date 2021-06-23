@@ -5,10 +5,10 @@
 #include <Windows.h>
 
 
-namespace MemoryUtils
+namespace memory_utils
 {
 	template<typename T>
-	T* CaptureInterface(const std::string& module_name, const std::string& interface_name)
+	T* capture_interface(const std::string& module_name, const std::string& interface_name)
 	{
 		typedef void* (*interface_type)(const char* name, int ret);
 		const auto temp = reinterpret_cast<interface_type>(GetProcAddress(GetModuleHandle(module_name.c_str()), "CreateInterface"));
@@ -16,10 +16,10 @@ namespace MemoryUtils
 	}
 	
 	template <typename T>
-	static constexpr auto RelativeToAbsolute(uintptr_t address) noexcept
+	static constexpr auto relative_to_absolute(uintptr_t address) noexcept
 	{
 		return (T)(address + 4 + *reinterpret_cast<std::int32_t*>(address));
 	}
 	
-	std::uint8_t* PatternScanner(const std::string& module_name, const std::string& signature) noexcept;
+	std::uint8_t* pattern_scanner(const std::string& module_name, const std::string& signature) noexcept;
 }

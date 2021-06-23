@@ -34,12 +34,12 @@ double math::procent(double var, double full)
 	return 100.0 / full * var;
 }
 
-float math::floatNegative(float var)
+float math::float_negative(float var)
 {
 	return -var;
 }
 
-double math::doubleNegative(double var)
+double math::double_negative(double var)
 {
 	return -var;
 }
@@ -59,10 +59,10 @@ double math::lua::rand(double min, double max)
 	glua->call(2, 1); //3
 	auto out = glua->get_number();
 	return out;*/
-	return 0.0;
+	return 0;
 }
 
-void math::lua::randomSeed(double seed)
+void math::lua::random_seed(double seed)
 {
 	/*auto glua = interfaces::lua_shared->get_interface((int)e_special::glob);
 	c_lua_auto_pop ap(glua);

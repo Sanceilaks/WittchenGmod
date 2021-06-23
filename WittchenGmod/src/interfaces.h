@@ -5,9 +5,9 @@
 #include "game_sdk/interfaces/cliententitylist.h"
 
 namespace interfaces {
-	inline CEngineClient* Engine;
-	inline CClientEntityList* EntityList;
-	inline CHLClient* Client;
+	inline c_engine_client* engine;
+	inline c_client_entity_list* entity_list;
+	inline chl_client* client;
 	
-	void InitInterfaces();
+	void init_interfaces();
 }

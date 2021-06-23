@@ -1,6 +1,6 @@
 #pragma once
 
-namespace HackUtils {
-	void UnloadHack();
+namespace hack_utils {
+	void unload_hack();
 	
 }

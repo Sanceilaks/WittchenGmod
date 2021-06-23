@@ -4442,7 +4442,7 @@ void ImGui::EndFrame()
     CallContextHooks(&g, ImGuiContextHookType_EndFramePost);
 }
 
-void ImGui::Render(ImDrawList* custom_draw_list)
+void ImGui::Render()
 {
     ImGuiContext& g = *GImGui;
     IM_ASSERT(g.Initialized);

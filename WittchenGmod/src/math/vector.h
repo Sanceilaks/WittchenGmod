@@ -3,30 +3,30 @@
 #include <cmath>
 
 
-class Vector
+class c_vector
 {
 public:
 	float x, y, z;
 
-	Vector();
-	Vector(const Vector&& left) noexcept;
-	Vector(const Vector& left);
-	Vector(Vector& left);
-	Vector(float _x, float _y, float _z);
-	Vector(float* ptr);
-	Vector(float val);
+	c_vector();
+	c_vector(const c_vector&& left) noexcept;
+	c_vector(const c_vector& left);
+	c_vector(c_vector& left);
+	c_vector(float _x, float _y, float _z);
+	c_vector(float* ptr);
+	c_vector(float val);
 	
 	void init(float _x, float _y, float _z);
 
-	void makeInf();
-	void makeZero();
+	void make_inf();
+	void make_zero();
 
 	void normalize();
 	void clamp();
 	
 	float length() const;
 	float length2d() const;
-	float distance_to(const Vector& to) const;
+	float distance_to(const c_vector& to) const;
 	
 	[[nodiscard]] bool is_valid() const;
 
@@ -36,20 +36,20 @@ public:
 	float operator[] (int idx) const;
 	float& operator[] (int idx);
 
-	Vector& operator=(const Vector& left);
-	bool operator==(const Vector& other) const;
+	c_vector& operator=(const c_vector& left);
+	bool operator==(const c_vector& other) const;
 
-	Vector operator+(const Vector& left) const;
-	Vector operator-(const Vector& left) const;
-	Vector operator*(const Vector& left) const;
-	Vector operator/(const Vector& left) const;
+	c_vector operator+(const c_vector& left) const;
+	c_vector operator-(const c_vector& left) const;
+	c_vector operator*(const c_vector& left) const;
+	c_vector operator/(const c_vector& left) const;
 
-	Vector& operator+=(const Vector& left);
-	Vector& operator-=(const Vector& left);
-	Vector& operator*=(const Vector& left);
-	Vector& operator/=(const Vector& left);
+	c_vector& operator+=(const c_vector& left);
+	c_vector& operator-=(const c_vector& left);
+	c_vector& operator*=(const c_vector& left);
+	c_vector& operator/=(const c_vector& left);
 
-	Vector toStringFriendly() const
+	c_vector to_string_friendly() const
 	{
 		if (!is_valid())
 			return { 0.f };
@@ -71,19 +71,19 @@ public:
 	}
 };
 
-class __declspec(align(16)) CVectorAligned : public Vector {
+class __declspec(align(16)) c_vector_aligned : public c_vector {
 public:
-	inline CVectorAligned(void) {};
-	inline CVectorAligned(float X, float Y, float Z) {
+	inline c_vector_aligned(void) {};
+	inline c_vector_aligned(float X, float Y, float Z) {
 		init(X, Y, Z);
 	}
 
 public:
-	explicit CVectorAligned(const Vector& vOther) {
+	explicit c_vector_aligned(const c_vector& vOther) {
 		init(vOther.x, vOther.y, vOther.z);
 	}
 
-	CVectorAligned& operator=(const Vector& vOther) {
+	c_vector_aligned& operator=(const c_vector& vOther) {
 		init(vOther.x, vOther.y, vOther.z);
 		return *this;
 	}

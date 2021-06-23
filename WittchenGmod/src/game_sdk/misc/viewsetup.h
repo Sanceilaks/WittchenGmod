@@ -26,10 +26,10 @@ enum stereo_eye_t
 //-----------------------------------------------------------------------------
 // Purpose: Renderer setup data.  
 //-----------------------------------------------------------------------------
-class CViewSetup
+class c_view_setup
 {
 public:
-	CViewSetup()
+	c_view_setup()
 	{
 		aspect_ratio = 0.0f;
 		m_b_render_to_subrect_of_larger_screen = false;
@@ -75,10 +75,10 @@ public:
 	float		fov_viewmodel;
 
 	// 3D origin of camera
-	Vector		origin;
+	c_vector		origin;
 
 	// heading of camera (pitch, yaw, roll)
-	Vector		angles;
+	c_vector		angles;
 	// local Z coordinate of near plane of camera
 	float		z_near;
 	// local Z coordinate of far plane of camera
@@ -113,5 +113,5 @@ public:
 	// If using VR, the headset calibration will feed you a projection matrix per-eye.
 	// This does NOT override the Z range - that will be set up as normal (i.e. the values in this matrix will be ignored).
 	bool        m_b_view_to_projection_override;
-	D3DMATRIX     viewToProjection;
+	D3DMATRIX     view_to_projection;
 };

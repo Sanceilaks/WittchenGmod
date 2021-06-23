@@ -4,6 +4,18 @@
 
 #include <d3d9.h>
 
+using button_code_t = int;
+using color32_s = float;
+
+class c_net_chan;
+class i_material;
+class c_audio_source;
+class i_material_system;
+class i_net_channel_info; //TODO: REVERSE THIS
+
+struct model_t;
+struct text_message_t;
+
 typedef struct player_info_s
 {
 	char name[128];
@@ -17,175 +29,110 @@ typedef struct player_info_s
 	unsigned char filesdownloaded; // this counter increases each time the server downloaded a new file
 } player_info_t;
 
-using ButtonCode_t = int;
-using color32_s = float;
-
-class CNetChan;
-class IMaterial;
-
-class CEngineClient
+class c_engine_client
 {
 public:
-	/*0*/	virtual void* GetIntersectingSurfaces(void const*, Vector const&, float, bool, void*, int) = 0;
-	/*1*/	virtual void* GetLightForPoint(Vector const&, bool) = 0;
-	/*2*/	virtual void* TraceLineMaterialAndLighting(Vector const&, Vector const&, Vector&, Vector&) = 0;
-	/*3*/	virtual void* ParseFile(char const*, char*, int) = 0;
-	/*4*/	virtual void* CopyLocalFile(char const*, char const*) = 0;
-	/*5*/	virtual void* GetScreenSize(int&, int&) = 0;
-	/*6*/	virtual void ServerCmd(char const*, bool) = 0;
-	/*7*/	virtual void ClientCmd(char const*) = 0;
-	/*8*/	virtual bool GetPlayerInfo(int, player_info_s*) = 0;
-	/*9*/	virtual int GetPlayerForUserID(int) = 0;
-	/*10*/	virtual void* TextMessageGet(char const*) = 0;
-	/*11*/	virtual bool Con_IsVisible(void) = 0;
-	/*12*/	virtual int GetLocalPlayer(void) = 0;
-	/*13*/	virtual void* LoadModel(char const*, bool) = 0;
-	/*14*/	virtual float Time(void) = 0;
-	/*15*/	virtual float GetLastTimeStamp(void) = 0;
-	/*16*/	virtual void* GetSentence(void*) = 0;
-	/*17*/	virtual float GetSentenceLength(void*) = 0;
-	/*18*/	virtual bool IsStreaming(void*)const = 0;
-	/*19*/	virtual void GetViewAngles(QAngle&) = 0;
-	/*20*/	virtual void SetViewAngles(QAngle&) = 0;
-	/*21*/	virtual int GetMaxClients(void) = 0;
-	/*22*/	virtual void* Key_LookupBinding(char const*) = 0;
-	/*23*/	virtual void* Key_BindingForKey(ButtonCode_t) = 0;
-	/*24*/	virtual void* StartKeyTrapMode(void) = 0;
-	/*25*/	virtual void* CheckDoneKeyTrapping(ButtonCode_t&) = 0;
-	/*26*/	virtual bool IsInGame(void) = 0;
-	/*27*/	virtual bool IsConnected(void) = 0;
-	/*28*/	virtual bool IsDrawingLoadingImage(void) = 0;
-	/*29*/	virtual void* Con_NPrintf(int, char const*, ...) = 0;
-	/*30*/	virtual void* Con_NXPrintf(void const*, char const*, ...) = 0;
-	/*31*/	virtual bool IsBoxVisible(Vector const&, Vector const&) = 0;
-	/*32*/	virtual bool IsBoxInViewCluster(Vector const&, Vector const&) = 0;
-	/*33*/	virtual void* CullBox(Vector const&, Vector const&) = 0;
-	/*34*/	virtual void* Sound_ExtraUpdate(void) = 0;
-	/*35*/	virtual const char* GetGameDirectory(void) = 0;
-	/*36*/	virtual const D3DMATRIX& WorldToScreenMatrix() = 0;
-	/*37*/	virtual const D3DMATRIX& WorldToViewMatrix() = 0;
-	/*38*/	virtual void* GameLumpVersion(int)const = 0;
-	/*39*/	virtual void* GameLumpSize(int)const = 0;
-	/*40*/	virtual void* LoadGameLump(int, void*, int) = 0;
-	/*41*/	virtual void* LevelLeafCount(void)const = 0;
-	/*42*/	virtual void* GetBSPTreeQuery(void) = 0;
-	/*43*/	virtual void* LinearToGamma(float*, float*) = 0;
-	/*44*/	virtual void* LightStyleValue(int) = 0;
-	/*45*/	virtual void* ComputeDynamicLighting(Vector const&, Vector const*, Vector&) = 0;
-	/*46*/	virtual void* GetAmbientLightColor(Vector&) = 0;
-	/*47*/	virtual void* GetDXSupportLevel(void) = 0;
-	/*48*/	virtual void* SupportsHDR(void) = 0;
-	/*49*/	virtual void* Mat_Stub(void*) = 0;
-	/*50*/	virtual void* GetChapterName(char*, int) = 0;
-	/*51*/	virtual void* GetLevelName(void) = 0;
-	/*52*/	virtual void* GetLevelVersion(void) = 0;
-	/*53*/	virtual void* GetVoiceTweakAPI(void) = 0;
-	/*54*/	virtual void* EngineStats_BeginFrame(void) = 0;
-	/*55*/	virtual void* EngineStats_EndFrame(void) = 0;
-	/*56*/	virtual void* FireEvents(void) = 0;
-	/*57*/	virtual void* GetLeavesArea(int*, int) = 0;
-	/*58*/	virtual void* DoesBoxTouchAreaFrustum(Vector const&, Vector const&, int) = 0;
-	/*59*/	virtual void* SetAudioState(void const*) = 0;
-	/*60*/	virtual void* SentenceGroupPick(int, char*, int) = 0;
-	/*61*/	virtual void* SentenceGroupPickSequential(int, char*, int, int, int) = 0;
-	/*62*/	virtual void* SentenceIndexFromName(char const*) = 0;
-	/*63*/	virtual void* SentenceNameFromIndex(int) = 0;
-	/*64*/	virtual void* SentenceGroupIndexFromName(char const*) = 0;
-	/*65*/	virtual void* SentenceGroupNameFromIndex(int) = 0;
-	/*66*/	virtual void* SentenceLength(int) = 0;
-	/*67*/	virtual void* ComputeLighting(Vector const&, Vector const*, bool, Vector&, Vector*) = 0;
-	/*68*/	virtual void* ActivateOccluder(int, bool) = 0;
-	/*69*/	virtual bool IsOccluded(Vector const&, Vector const&) = 0;
-	/*70*/	virtual void* SaveAllocMemory(unsigned long, unsigned long) = 0;
-	/*71*/	virtual void* SaveFreeMemory(void*) = 0;
-	/*72*/	virtual CNetChan* GetNetChannelInfo(void) = 0;
-	/*73*/	virtual void* DebugDrawPhysCollide(void const*, IMaterial*, matrix3x4_t&, color32_s const&) = 0;
-	/*74*/	virtual void* CheckPoint(char const*) = 0;
-	/*75*/	virtual void* DrawPortals(void) = 0;
-	/*76*/	virtual bool IsPlayingDemo(void) = 0;
-	/*77*/	virtual bool IsRecordingDemo(void) = 0;
-	/*78*/	virtual bool IsPlayingTimeDemo(void) = 0;
-	/*79*/	virtual void* GetDemoRecordingTick(void) = 0;
-	/*80*/	virtual void* GetDemoPlaybackTick(void) = 0;
-	/*81*/	virtual void* GetDemoPlaybackStartTick(void) = 0;
-	/*82*/	virtual void* GetDemoPlaybackTimeScale(void) = 0;
-	/*83*/	virtual void* GetDemoPlaybackTotalTicks(void) = 0;
-	/*84*/	virtual bool IsPaused(void) = 0;
-	/*85*/	virtual bool IsTakingScreenshot(void) = 0;
-	/*86*/	virtual bool IsHLTV(void) = 0;
-	/*87*/	virtual bool IsLevelMainMenuBackground(void) = 0;
-	/*88*/	virtual void* GetMainMenuBackgroundName(char*, int) = 0;
-	/*89*/	virtual void* GetVideoModes(int&, void*&) = 0;
-	/*90*/	virtual void* SetOcclusionParameters(void const*) = 0;
-	/*91*/	virtual void* GetUILanguage(char*, int) = 0;
-	/*92*/	virtual bool IsSkyboxVisibleFromPoint(Vector const&) = 0;
-	/*93*/	virtual const char* GetMapEntitiesString(void) = 0;
-	/*94*/	virtual bool IsInEditMode(void) = 0;
-	/*95*/	virtual void* GetScreenAspectRatio(void) = 0;
-	/*96*/	virtual void* REMOVED_SteamRefreshLogin(char const*, bool) = 0;
-	/*97*/	virtual void* REMOVED_SteamProcessCall(bool&) = 0;
-	/*98*/	virtual void* GetEngineBuildNumber(void) = 0;
-	/*99*/	virtual void* GetProductVersionString(void) = 0;
-	/*100*/	virtual void* GrabPreColorCorrectedFrame(int, int, int, int) = 0;
-	/*101*/	virtual bool IsHammerRunning(void)const = 0;
-	/*102*/	virtual void* ExecuteClientCmd(char const*) = 0;
-	/*103*/	virtual void* MapHasHDRLighting(void) = 0;
-	/*104*/	virtual void* GetAppID(void) = 0;
-	/*105*/	virtual void* GetLightForPointFast(Vector const&, bool) = 0;
-	/*106*/	virtual void* ClientCmd_Unrestricted(char const*) = 0;
-	/*107*/	virtual void* SetRestrictServerCommands(bool) = 0;
-	/*108*/	virtual void* SetRestrictClientCommands(bool) = 0;
-	/*109*/	virtual void* SetOverlayBindProxy(int, void*) = 0;
-	/*110*/	virtual void* CopyFrameBufferToMaterial(char const*) = 0;
-	/*111*/	virtual void* ChangeTeam(char const*) = 0;
-	/*112*/	virtual void* ReadConfiguration(bool) = 0;
-	/*113*/	virtual void* SetAchievementMgr(void*) = 0;
-	/*114*/	virtual void* GetAchievementMgr(void) = 0;
-	/*115*/	virtual void* MapLoadFailed(void) = 0;
-	/*116*/	virtual void* SetMapLoadFailed(bool) = 0;
-	/*117*/	virtual bool IsLowViolence(void) = 0;
-	/*118*/	virtual void* GetMostRecentSaveGame(void) = 0;
-	/*119*/	virtual void* SetMostRecentSaveGame(char const*) = 0;
-	/*120*/	virtual void* StartXboxExitingProcess(void) = 0;
-	/*121*/	virtual bool IsSaveInProgress(void) = 0;
-	/*122*/	virtual void* OnStorageDeviceAttached(void) = 0;
-	/*123*/	virtual void* OnStorageDeviceDetached(void) = 0;
-	/*124*/	virtual void* ResetDemoInterpolation(void) = 0;
-	/*125*/	virtual void* SetGamestatsData(void*) = 0;
-	/*126*/	virtual void* GetGamestatsData(void) = 0;
-	/*127*/	virtual void* GetMouseDelta(int&, int&, bool) = 0;
-	/*128*/	virtual void* ServerCmdKeyValues(void*) = 0;
-	/*129*/	virtual bool IsSkippingPlayback(void) = 0;
-	/*130*/	virtual bool IsLoadingDemo(void) = 0;
-	/*131*/	virtual bool IsPlayingDemoALocallyRecordedDemo(void) = 0;
-	/*132*/	virtual void* Key_LookupBindingExact(char const*) = 0;
-	/*133*/	virtual void* GMOD_SetTimeManipulator(float) = 0;
-	/*134*/	virtual void* GMOD_SendToServer(void*, unsigned int, bool) = 0;
-	/*135*/	virtual void* GMOD_PlaceDecalMaterial(IMaterial*, bool, int, void*, Vector const&, Vector const&, color32_s const&, float, float) = 0;
-	/*136*/	virtual void* GMOD_GetSpew(char*, unsigned long) = 0;
-	/*137*/	virtual void* GMOD_SetViewEntity(unsigned int) = 0;
-	/*138*/	virtual void* GMOD_BrushMaterialOverride(IMaterial*) = 0;
-	/*139*/	virtual void* GMOD_R_RedownloadAllLightmaps(bool) = 0;
-	/*140*/	virtual void* GMOD_RawClientCmd_Unrestricted(char const*) = 0;
-	/*141*/	virtual void* GMOD_CreateDataTable(void (*)(void*, int, void const*)) = 0;
-	/*142*/	virtual void* GMOD_DestroyDataTable(void*) = 0;
-	/*143*/	virtual void* GMOD_LoadModel(char const*) = 0;
-	/*144*/	virtual void* GMOD_DecalRemoveEntity(int) = 0;
-	/*145*/	virtual void* GMOD_TranslateAlias(char const*) = 0;
-	/*146*/	virtual void* GMOD_R_StudioInitLightingCache(void) = 0;
-	/*147*/	virtual void* PrecacheSentenceFile(char const*) = 0;
-	/*148*/	virtual void* GetProtocolVersion(void) = 0;
-	/*149*/	virtual bool IsWindowedMode(void) = 0;
-	/*150*/	virtual void* FlashWindow(void) = 0;
-	/*151*/	virtual void* GetClientVersion(void)const = 0;
-	/*152*/	virtual bool IsActiveApp(void) = 0;
-	/*153*/	virtual void* DisconnectInternal(void) = 0;
-	/*154*/	virtual bool IsInCommentaryMode(void) = 0;
-
-	QAngle getViewAngles()
-	{
-		QAngle out;
-		this->GetViewAngles(out);
-		return out;
-	}
+	virtual int get_interesting_surfaces(model_t* model, float* vector_center, const float radius, bool only_visible, void* infos, int max_infos) = 0;
+	virtual c_vector* get_light_for_point(const float* pos, int clamp) = 0;
+	virtual void* trace_line_material_and_lighting(c_vector& start, c_vector& end, c_vector& defuse_light, c_vector& base_color) = 0;
+	virtual const char* parse_file(const char* data, char* token, size_t max_size) = 0;
+	virtual int copy_file(const char* name, char* token) = 0;
+	virtual void get_screen_size(int& x, int& y) = 0;
+	virtual void server_cmd() = 0;
+	virtual void client_cmd() = 0;
+	virtual void get_player_info(int ent_id, player_info_t* storage) = 0;
+	virtual int get_player_for_user_id(int user_id) = 0;
+	virtual text_message_t* get_text_message(const char* name) = 0; //10
+	virtual bool console_is_visible() = 0;
+	virtual int get_local_player() = 0;
+	virtual model_t* load_model(const char* name, bool is_prop = false) = 0;
+	virtual float get_time_stamp_from_start() = 0;
+	virtual float get_last_time_stamp() = 0;
+	virtual void* get_sentence(const char* name) = 0;
+	virtual float get_sentence_len(c_audio_source* source) = 0;
+	virtual bool is_streaming(c_audio_source* source) = 0;
+	virtual void get_view_angles(c_vector& in) = 0;
+	virtual void set_view_angles(c_vector& new_ang) = 0; //20
+	virtual int get_max_clients(void) = 0;
+	virtual void key_lookup_binding() = 0;
+	virtual void key_binding_for_key() = 0;
+	virtual void start_key_trap_mode() = 0;
+	virtual void check_done_key_trapping() = 0;
+	virtual bool is_in_game() = 0;
+	virtual bool is_connected() = 0;
+	virtual bool is_drawing_loading_image() = 0;
+	virtual void con_print_f(int pos, const char* fmt, ...) = 0;
+	virtual void con_print_f(const struct con_nprint_s* info, const char* fmt, ...) = 0; //30
+	virtual bool is_box_visible(c_vector& dst, c_vector& src) = 0;
+	virtual void is_box_in_view_cluster() = 0;
+	virtual void cull_box() = 0;
+	virtual void sound_extra_update() = 0;
+	virtual const char* get_game_directory() = 0;
+	virtual const D3DMATRIX& get_world_to_screen_matrix() = 0;
+	virtual const D3DMATRIX& get_world_to_view_matrix() = 0;
+	virtual int game_lump_version(int idx) = 0;
+	virtual int game_lump_size(int idx) = 0;
+	virtual int load_game_lump(int id, void* buffer, int size) = 0; //40
+	virtual int level_leaf_count() = 0;
+	virtual void* get_bsp_tree_query() = 0;
+	virtual void linear_to_gamma(float* linear, float* gamma) = 0;
+	virtual float light_style_value(int style) = 0;
+	virtual void compute_dynamic_lighting(c_vector&, c_vector&, c_vector&) = 0;
+	virtual void get_ambient_light_color(c_vector& color) = 0;
+	virtual int get_dx_support_level() = 0;
+	virtual bool support_hdr() = 0;
+	virtual void mat_stub(i_material_system& matsys) = 0;
+	virtual void get_chapter_name(char* buf, int max_len) = 0; //50
+	virtual const char* get_level_name() = 0;
+	virtual int get_level_version() = 0;
+	virtual struct i_voice_tweak_s* get_voice_tweak_api() = 0;
+	virtual void engine_stats_begin_frame() = 0;
+	virtual void engine_stats_end_frame() = 0;
+	virtual void fire_events() = 0; //FIXME
+	virtual void get_leaves_area(int* ptr_leaves, int num_leaves) = 0;
+	virtual void does_box_touch_area_frustum(c_vector& mins, c_vector& maxs, int area) = 0;
+	virtual void set_audio_state(void* state) = 0;
+	virtual void sentence_group_pick() = 0; //60
+	virtual void sentence_group_pick_sequential() = 0;
+	virtual void sentence_index_from_name() = 0;
+	virtual void sentence_name_from_index() = 0;
+	virtual void sentence_group_index_from_name() = 0;
+	virtual void sentence_group_name_from_index() = 0;
+	virtual void sentence_length() = 0;
+	virtual void compute_lighting() = 0;
+	virtual void activate_occluder() = 0;
+	virtual bool is_occluded() = 0;
+	virtual void* save_alloc_memory(int num, int size) = 0; //70
+	virtual void* save_free_memory() = 0;
+	virtual i_net_channel_info* get_net_channel_info() = 0;
+	virtual void debug_draw_phys_collide() = 0; //FIXME
+	virtual void check_point(const char* name) = 0;
+	virtual void draw_portals() = 0;
+	virtual bool is_playing_demo() = 0;
+	virtual bool is_recording_demo() = 0;
+	virtual bool is_playing_time_demo() = 0;
+	virtual float get_demo_recording_tick() = 0;
+	virtual float get_demo_playback_tick() = 0; //80
+	virtual float get_demo_playback_start_tick() = 0;
+	virtual float get_demo_playback_time_scale() = 0;
+	virtual float get_demo_playback_total_ticks() = 0;
+	virtual bool is_paused() = 0;
+	virtual float get_time_scale() = 0;
+	virtual bool is_taking_screenshot() = 0;
+	virtual bool is_hltv() = 0;
+	virtual bool is_level_main_menu_background() = 0;
+	virtual void get_video_modes() = 0;
+	virtual void set_occlusion_parameters() = 0; //90
+	virtual void  get_ui_language() = 0;
+	virtual bool is_skybox_visible_from_point() = 0;
+	virtual const char* get_map_entities_string() = 0;
+	virtual bool is_in_edit_mode(void) = 0;
+	virtual float get_screen_aspect_ratio() = 0;
+	virtual bool removed_steam_refresh_login(const char* password, bool isSecure) = 0;
+	virtual bool removed_steam_process_call(bool& finished) = 0;
+	virtual unsigned int get_engine_build_number() = 0;
+	virtual const char* get_product_version_string() = 0;
+	virtual void grab_pre_color_corrected_frame(int x, int y, int width, int height) = 0; //100
+	[[nodiscard]] virtual bool is_hammer_running() const = 0;
+	virtual void execute_client_cmd(const char* cmd) = 0;
 };

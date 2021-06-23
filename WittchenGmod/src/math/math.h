@@ -1,11 +1,35 @@
 #pragma once
 #include "vector.h"
+#include <imgui/im_tools.h>
 
 namespace math
 {
 	constexpr int pitch = 0;
 	constexpr int yaw = 1;
 	constexpr int roll = 2;
+	
+	struct vec2_t
+	{
+		float x, y;
+
+		ImVec2 get_im_vec2() const
+		{
+			return { x, y };
+		}
+	};
+
+	struct box_t
+	{
+		float x, y, w, h;
+
+		vec2_t get_min() const { return { x, y }; }
+		vec2_t get_max() const { return { x + w, y + h }; }
+	};
+
+	__forceinline box_t create_box(vec2_t min, vec2_t max)
+	{
+		return { min.x, min.y, max.x - min.x, max.y - min.y };
+	}
 
 	constexpr float PI_F = 3.14159265358979323846f;
 	constexpr double PI_D = 3.14159265358979323846;
@@ -19,8 +43,8 @@ namespace math
 	float procent(float var, float full);
 	double procent(double var, double full);
 
-	float floatNegative(float var);
-	double doubleNegative(double var);
+	float float_negative(float var);
+	double double_negative(double var);
 
 	__forceinline void sincos(float x, float* s, float* c)
 	{
@@ -31,16 +55,16 @@ namespace math
 	namespace lua
 	{ //TODO: IMPL THIS AND CREATE CW2 NOSPREAD
 		double rand(double min, double max);
-		void randomSeed(double seed);
+		void random_seed(double seed);
 		
 	}
 }
 
-using QAngle = Vector;
+using q_angle = c_vector;
 
 namespace math
 {
-	inline void vectorToAngel(const Vector& forward, QAngle& out)
+	inline void vector_to_angel(const c_vector& forward, q_angle& out)
 	{
 		float tmp, yaw, pitch;
 
@@ -69,7 +93,7 @@ namespace math
 		out[2] = 0;
 	}
 
-	inline float normalizeAngle(float a)
+	inline float normalize_angle(float a)
 	{
 		a = fmodf(a, 360.f);
 		if (a > 180.f)
@@ -79,10 +103,10 @@ namespace math
 		return a;
 	}
 
-	inline QAngle fixAngles(QAngle angels)
+	inline q_angle fix_angles(q_angle angels)
 	{
-		angels.x = normalizeAngle(angels.x);
-		angels.y = normalizeAngle(angels.y);
+		angels.x = normalize_angle(angels.x);
+		angels.y = normalize_angle(angels.y);
 		if (angels.x > 89.f)
 			angels.x = 89.f;
 		else if (angels.x < -89.f)
@@ -90,22 +114,22 @@ namespace math
 		return angels;
 	}
 
-	inline QAngle getAngle(QAngle src, QAngle dst)
+	inline q_angle get_angle(q_angle src, q_angle dst)
 	{
-		QAngle out_angle;
-		vectorToAngel(dst - src, out_angle);
+		q_angle out_angle;
+		vector_to_angel(dst - src, out_angle);
 		return out_angle;
 	}
 
-	inline Vector getForward(QAngle ang)
+	inline c_vector get_forward(q_angle ang)
 	{
-		ang = fixAngles(ang);
+		ang = fix_angles(ang);
 		const auto radx = deg2rad(ang.x);
 		const auto rady = deg2rad(ang.y);
-		return Vector(cos(radx) * cos(rady), cos(radx) * sin(rady), sin(radx));
+		return c_vector(cos(radx) * cos(rady), cos(radx) * sin(rady), sin(radx));
 	}
 
-	inline void angle_to_vector(const QAngle& ang, Vector& vector)
+	inline void angle_to_vector(const q_angle& ang, c_vector& vector)
 	{
 		float sp, sy, cp, cy;
 		sincos(deg2rad(ang[yaw]), &sy, &cy);
@@ -114,7 +138,7 @@ namespace math
 		vector = {cp * cy, cp * sy, -sp};
 	}
 
-	inline void angleToVectors(const QAngle& ang, Vector& forward, Vector& right, Vector& up)
+	inline void angle_to_vectors(const q_angle& ang, c_vector& forward, c_vector& right, c_vector& up)
 	{
 		float sr, sp, sy, cr, cp, cy;
 		float radx = math::deg2rad(ang.x);
@@ -153,14 +177,14 @@ struct matrix3x4_t
 		m_fl_mat_val[2][0] = m20;	m_fl_mat_val[2][1] = m21; m_fl_mat_val[2][2] = m22; m_fl_mat_val[2][3] = m23;
 	}
 
-	void init(const Vector& xAxis, const Vector& yAxis, const Vector& zAxis, const Vector& vecOrigin)
+	void init(const c_vector& xAxis, const c_vector& yAxis, const c_vector& zAxis, const c_vector& vecOrigin)
 	{
 		m_fl_mat_val[0][0] = xAxis.x; m_fl_mat_val[0][1] = yAxis.x; m_fl_mat_val[0][2] = zAxis.x; m_fl_mat_val[0][3] = vecOrigin.x;
 		m_fl_mat_val[1][0] = xAxis.y; m_fl_mat_val[1][1] = yAxis.y; m_fl_mat_val[1][2] = zAxis.y; m_fl_mat_val[1][3] = vecOrigin.y;
 		m_fl_mat_val[2][0] = xAxis.z; m_fl_mat_val[2][1] = yAxis.z; m_fl_mat_val[2][2] = zAxis.z; m_fl_mat_val[2][3] = vecOrigin.z;
 	}
 
-	matrix3x4_t(const Vector& xAxis, const Vector& yAxis, const Vector& zAxis, const Vector& vecOrigin)
+	matrix3x4_t(const c_vector& xAxis, const c_vector& yAxis, const c_vector& zAxis, const c_vector& vecOrigin)
 	{
 		init(xAxis, yAxis, zAxis, vecOrigin);
 	}
@@ -185,3 +209,9 @@ struct matrix3x4_t
 	
 	float m_fl_mat_val[3][4];
 };
+
+inline void set_matrix_pos(matrix3x4_t& mat, c_vector pos) {
+	for (size_t i = 0; i < 3; i++) {
+		mat[i][3] = pos[i];
+	}
+}

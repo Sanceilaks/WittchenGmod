@@ -1,16 +1,16 @@
 #pragma once
 #include <cstdint>
 
-class CClientEntityList
+class c_client_entity_list
 {
 public:
-		virtual void* Constr(void*) = 0;
-		virtual void* Destr1() = 0;
+		virtual void* constr(void*) = 0;
+		virtual void* destr1() = 0;
 		virtual void* destr2() = 0;
-		virtual void* GetClientEntity(int entnum) = 0;
-		virtual void* GetClientEntityFromHandle(uintptr_t hEnt) = 0;
-		virtual int NumberOfEntities(bool bIncludeNonNetworkable = false) = 0;
-		virtual int GetHighestEntityIndex(void) = 0;
-		virtual void SetMaxEntities(int maxents) = 0;
-		virtual int GetMaxEntities(void) = 0;
+		virtual void* get_client_entity(int entnum) = 0;
+		virtual void* get_client_entity_from_handle(uintptr_t hEnt) = 0;
+		virtual int number_of_entities(bool b_include_non_networkable = false) = 0;
+		virtual int get_highest_entity_index(void) = 0;
+		virtual void set_max_entities(int maxents) = 0;
+		virtual int get_max_entities(void) = 0;
 };
