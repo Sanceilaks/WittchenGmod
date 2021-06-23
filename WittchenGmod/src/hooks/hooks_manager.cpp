@@ -23,10 +23,15 @@ struct WndprocHook
 
 }; //extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+
+void hook_dx() {
+	
+}
+
 void hooks_manager::init() {
 	minpp = std::make_shared<min_hook_pp::c_min_hook>();
 
-
+	hook_dx();
 
 	auto* const game_hwnd = FindWindowW(0, L"Garry's Mod (x64)");
 	WndprocHook::originalWndproc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(

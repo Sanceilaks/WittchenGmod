@@ -173,6 +173,7 @@
     <ClCompile Include="deps\include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="deps\include\imgui\im_tools.cpp" />
     <ClCompile Include="deps\include\imgui\TextEditor.cpp" />
+    <ClCompile Include="deps\include\kiero\kiero.cpp" />
     <ClCompile Include="deps\include\minpp\c_min_hook.cpp" />
     <ClCompile Include="deps\include\minpp\minhook\buffer.c" />
     <ClCompile Include="deps\include\minpp\minhook\hde\hde32.c" />
@@ -220,6 +221,7 @@
     <ClInclude Include="deps\include\imgui\im_tools.h" />
     <ClInclude Include="deps\include\imgui\TextEditor.h" />
     <ClInclude Include="deps\include\json.hpp" />
+    <ClInclude Include="deps\include\kiero\kiero.h" />
     <ClInclude Include="deps\include\lemi_utils.h" />
     <ClInclude Include="deps\include\minpp\c_min_hook.h" />
     <ClInclude Include="deps\include\minpp\minhook\buffer.h" />
