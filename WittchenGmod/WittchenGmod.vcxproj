@@ -187,7 +187,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\math\math.cpp" />
     <ClCompile Include="src\math\vector.cpp" />
-    <ClCompile Include="src\protect\utilities.cpp" />
     <ClCompile Include="src\render_system\render_system.cpp" />
     <ClCompile Include="src\utils\hackutils.cpp" />
     <ClCompile Include="src\utils\memoryutils.cpp" />
@@ -247,7 +246,6 @@
     <ClInclude Include="src\protect\lazy_importer.hpp" />
     <ClInclude Include="src\protect\md5.hpp" />
     <ClInclude Include="src\protect\skCrypter.h" />
-    <ClInclude Include="src\protect\utilities.hpp" />
     <ClInclude Include="src\protect\xorstr.hpp" />
     <ClInclude Include="src\render_system\render_system.h" />
     <ClInclude Include="src\utils\hackutils.h" />
