@@ -20,6 +20,42 @@ namespace memory_utils
 	{
 		return (T)(address + 4 + *reinterpret_cast<std::int32_t*>(address));
 	}
+
+	template<typename T>
+	T* get_vmt_from_instruction(uintptr_t address)
+	{
+		uintptr_t step = 3;
+		uintptr_t instructionSize = 7;
+		uintptr_t instruction = address;
+
+		uintptr_t relativeAddress = *(DWORD*)(instruction + step);
+		uintptr_t realAddress = instruction + instructionSize + relativeAddress;
+		return *(T**)(realAddress);
+	}
+
+	template<typename T>
+	T* get_vmt_from_instruction(uintptr_t address, size_t offset)
+	{
+		uintptr_t step = 3;
+		uintptr_t instructionSize = 7;
+		uintptr_t instruction = address + offset;
+
+		uintptr_t relativeAddress = *(DWORD*)(instruction + step);
+		uintptr_t realAddress = instruction + instructionSize + relativeAddress;
+		return *(T**)(realAddress);
+	}
+
+	template<typename T>
+	T* get_vmt(uintptr_t address, int index, uintptr_t offset) // Address must be a VTable pointer, not a VTable !
+	{
+		uintptr_t step = 3;
+		uintptr_t instructionSize = 7;
+		uintptr_t instruction = ((*(uintptr_t**)(address))[index] + offset);
+
+		uintptr_t relativeAddress = *(DWORD*)(instruction + step);
+		uintptr_t realAddress = instruction + instructionSize + relativeAddress;
+		return *(T**)(realAddress);
+	}
 	
 	std::uint8_t* pattern_scanner(const std::string& module_name, const std::string& signature) noexcept;
 }
