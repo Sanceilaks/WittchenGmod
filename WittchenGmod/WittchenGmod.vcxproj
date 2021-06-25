@@ -237,7 +237,9 @@
     <ClInclude Include="src\features\menu\menu.h" />
     <ClInclude Include="src\game_sdk\interfaces\client.h" />
     <ClInclude Include="src\game_sdk\interfaces\cliententitylist.h" />
+    <ClInclude Include="src\game_sdk\interfaces\client_mode.h" />
     <ClInclude Include="src\game_sdk\interfaces\engine.h" />
+    <ClInclude Include="src\game_sdk\misc\usercmd.h" />
     <ClInclude Include="src\game_sdk\misc\viewsetup.h" />
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\hooks\hooks_manager.h" />

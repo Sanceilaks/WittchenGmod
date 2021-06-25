@@ -7,6 +7,7 @@
 #include <imgui/imgui_impl_dx9.h>
 
 #include "imgui/imgui_freetype.h"
+#include "../features/menu/menu.h"
 
 IDirect3DDevice9* game_device;
 bool initialized = false;
@@ -76,7 +77,7 @@ void render_system::on_end_scene(LPDIRECT3DDEVICE9 device, uintptr_t return_addr
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    //menu::draw();
+    menu::draw_menu();
 
     //auto* list = ImGui::GetBackgroundDrawList();
     //directx_render::add_temp_to_draw_list(list);

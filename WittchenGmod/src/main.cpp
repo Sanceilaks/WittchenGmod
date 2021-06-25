@@ -28,6 +28,10 @@ void entry_point() {
 	} else {
 		std::cout << "I`m" << std::endl;
 	}
+
+	/*if (interfaces::client_mode) {
+		warning(interfaces::client_mode->get_server_name());
+	}*/
 	
 }
 

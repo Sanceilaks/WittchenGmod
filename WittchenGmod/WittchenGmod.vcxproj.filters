@@ -290,5 +290,11 @@
     <ClInclude Include="src\features\menu\menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\client_mode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\misc\usercmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

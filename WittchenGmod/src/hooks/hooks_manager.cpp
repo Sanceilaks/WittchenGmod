@@ -17,10 +17,18 @@
 
 #include "../utils/hackutils.h"
 
-inline unsigned int get_virtual(void* _class, const unsigned int index) { return static_cast<unsigned int>((*static_cast<int**>(_class))[index]); }
+#include "../interfaces.h"
+
+#include "../game_sdk/misc/usercmd.h"
+
+
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
 
-#define CREATE_HOOK(_class, index, detour, original) create_hook(reinterpret_cast<void*>(get_virtual(_class, index)), \
+uintptr_t get_virtual(PVOID** c, int idx) {
+	return (uintptr_t)(*c)[idx];
+}
+
+#define CREATE_HOOK(_class, index, detour, original) create_hook((void*)get_virtual((PVOID**)_class, index), \
 	detour, reinterpret_cast<void**>(&original));
 
 struct end_scene_hook {
@@ -37,6 +45,15 @@ struct reset_hook {
 	using fn = long(__stdcall*)(IDirect3DDevice9*, D3DPRESENT_PARAMETERS*);
 	static long __stdcall hook(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* present_parameters);
 	static inline fn original;
+};
+
+struct create_move_hook
+{
+	static inline constexpr uint32_t idx = 21;
+
+	using fn = bool(__fastcall*)(i_client_mode*, float, c_user_cmd*);
+	static inline fn original = nullptr;
+	static bool __fastcall hook(i_client_mode* self, float frame_time, c_user_cmd* cmd);
 };
 
 struct wndproc_hook
@@ -59,6 +76,8 @@ void hooks_manager::init() {
 
 	hook_dx();
 
+	CREATE_HOOK(interfaces::client_mode, create_move_hook::idx, create_move_hook::hook, create_move_hook::original);
+	
 	auto* const game_hwnd = FindWindowW(0, L"Garry's Mod (x64)");
 	wndproc_hook::original_wndproc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(
 		game_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(wndproc_hook::hooked_wndproc)));
@@ -98,6 +117,26 @@ long reset_hook::hook(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* present_p
 		ImGui_ImplDX9_CreateDeviceObjects();
 
 	return ret;
+}
+
+class cply {
+public:
+	int get_flags() {
+		return *(int*)((uintptr_t)this + 0x440);
+	}
+};
+
+bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* cmd) {
+	if (!cmd || !cmd->command_number)
+		return original(self, frame_time, cmd);
+	
+	cply* lp = (cply*)interfaces::entity_list->get_client_entity(interfaces::engine->get_local_player());
+	
+	if (cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
+		cmd->buttons &= ~IN_JUMP;
+	}
+	
+	return original(interfaces::client_mode, frame_time, cmd);
 }
 
 LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param)
