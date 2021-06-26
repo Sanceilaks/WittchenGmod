@@ -4,5 +4,5 @@
 
 namespace globals {
 	inline HINSTANCE dllInstance;
-	
+
 }

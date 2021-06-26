@@ -1,6 +1,7 @@
 #include "menu.h"
 
 #include <imgui/imgui.h>
+#include "../../interfaces.h"
 
 bool is_menu_open;
 
@@ -11,15 +12,10 @@ void menu::initialize_menu() {
 void menu::draw_menu() {
 	if (is_menu_open)
 	{
-		//interfaces::input_system->enable_input(true);
-
-		//if (!interfaces::surface->is_cursor_visible())
+		if (!interfaces::surface->is_cursor_visible())
 			ImGui::GetIO().MouseDrawCursor = true;
 
-		//imgui_overlay::draw();
-
-		//bg_window::draw();
-		//main_window::draw();
+		
 	}
 	else
 	{

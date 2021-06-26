@@ -102,13 +102,13 @@
     <ClCompile Include="src\render_system\render_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\protect\utilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="deps\include\kiero\kiero.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\features\menu\menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\input_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -278,9 +278,6 @@
     <ClInclude Include="src\protect\skCrypter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\protect\utilities.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\protect\xorstr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -294,6 +291,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\game_sdk\misc\usercmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\surface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\input_system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
