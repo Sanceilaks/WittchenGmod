@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../misc/c_client_class.h"
+
 class c_view_setup;
 
 class chl_client {
@@ -12,7 +14,7 @@ public:
 	virtual void level_init_pre_entity() = 0;
 	virtual void level_init_post_entity() = 0;
 	virtual void level_shutdown() = 0;
-	virtual void* get_all_classes() = 0;
+	virtual c_client_class* get_all_classes() = 0;
 
 	bool get_player_view(c_view_setup* setup) {
 		using fn = bool(__fastcall*)(void*, c_view_setup* out);

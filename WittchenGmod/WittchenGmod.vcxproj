@@ -182,6 +182,9 @@
     <ClCompile Include="deps\include\minpp\minhook\trampoline.c" />
     <ClCompile Include="deps\include\platform_folders.cpp" />
     <ClCompile Include="src\features\menu\menu.cpp" />
+    <ClCompile Include="src\features\menu\themes.cpp" />
+    <ClCompile Include="src\features\menu\windows\background_window.cpp" />
+    <ClCompile Include="src\features\menu\windows\main_window.cpp" />
     <ClCompile Include="src\hooks\hooks_manager.cpp" />
     <ClCompile Include="src\interfaces.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -191,6 +194,7 @@
     <ClCompile Include="src\utils\hackutils.cpp" />
     <ClCompile Include="src\utils\input_system.cpp" />
     <ClCompile Include="src\utils\memoryutils.cpp" />
+    <ClCompile Include="src\utils\netvars.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\bind_system.h" />
@@ -235,11 +239,18 @@
     <ClInclude Include="deps\include\minpp\minhook\trampoline.h" />
     <ClInclude Include="deps\include\platform_folders.h" />
     <ClInclude Include="src\features\menu\menu.h" />
+    <ClInclude Include="src\features\menu\themes.h" />
+    <ClInclude Include="src\features\menu\windows\background_window.h" />
+    <ClInclude Include="src\features\menu\windows\main_window.h" />
+    <ClInclude Include="src\game_sdk\entities\c_base_entity.h" />
+    <ClInclude Include="src\game_sdk\entities\i_client_entity.h" />
     <ClInclude Include="src\game_sdk\interfaces\client.h" />
     <ClInclude Include="src\game_sdk\interfaces\cliententitylist.h" />
     <ClInclude Include="src\game_sdk\interfaces\client_mode.h" />
     <ClInclude Include="src\game_sdk\interfaces\engine.h" />
     <ClInclude Include="src\game_sdk\interfaces\surface.h" />
+    <ClInclude Include="src\game_sdk\misc\c_client_class.h" />
+    <ClInclude Include="src\game_sdk\misc\recv_props.h" />
     <ClInclude Include="src\game_sdk\misc\usercmd.h" />
     <ClInclude Include="src\game_sdk\misc\viewsetup.h" />
     <ClInclude Include="src\globals.h" />
@@ -255,6 +266,7 @@
     <ClInclude Include="src\utils\hackutils.h" />
     <ClInclude Include="src\utils\input_system.h" />
     <ClInclude Include="src\utils\memoryutils.h" />
+    <ClInclude Include="src\utils\netvars.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

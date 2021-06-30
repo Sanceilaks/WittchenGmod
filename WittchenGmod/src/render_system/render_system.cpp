@@ -24,7 +24,9 @@ void render_system::init() {
 
         ImGui::GetIO().IniFilename = nullptr;
 
-        //ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
+        ImGui::GetIO().Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Arial.ttf", 14.f, 0, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+    	
+        ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
     }
 
 	initialized = true;
