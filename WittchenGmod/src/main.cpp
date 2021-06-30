@@ -6,12 +6,15 @@
 #include "globals.h"
 #include "interfaces.h"
 #include "hooks/hooks_manager.h"
+#include "utils/input_system.h"
 
 typedef void(__cdecl* warning_fn)(char const*, ...);
 
 void entry_point() {
 	interfaces::init_interfaces();
 	hooks_manager::init();
+
+	//input_system::add_bind(VK_MENU, "test_key", &globals::draw_box);
 	
 #ifdef _DEBUG
 	AllocConsole();
@@ -28,11 +31,6 @@ void entry_point() {
 	} else {
 		std::cout << "I`m" << std::endl;
 	}
-
-	/*if (interfaces::client_mode) {
-		warning(interfaces::client_mode->get_server_name());
-	}*/
-	
 }
 
 BOOL WINAPI DllMain(HINSTANCE dll_instance, DWORD reason, LPVOID reversed)

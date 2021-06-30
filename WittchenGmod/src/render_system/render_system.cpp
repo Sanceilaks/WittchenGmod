@@ -8,6 +8,7 @@
 
 #include "imgui/imgui_freetype.h"
 #include "../features/menu/menu.h"
+#include "../globals.h"
 
 IDirect3DDevice9* game_device;
 bool initialized = false;
@@ -23,7 +24,9 @@ void render_system::init() {
 
         ImGui::GetIO().IniFilename = nullptr;
 
-        //ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
+        ImGui::GetIO().Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Arial.ttf", 14.f, 0, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+    	
+        ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
     }
 
 	initialized = true;
@@ -78,7 +81,7 @@ void render_system::on_end_scene(LPDIRECT3DDEVICE9 device, uintptr_t return_addr
     ImGui::NewFrame();
 
     menu::draw_menu();
-
+	
     //auto* list = ImGui::GetBackgroundDrawList();
     //directx_render::add_temp_to_draw_list(list);
 	

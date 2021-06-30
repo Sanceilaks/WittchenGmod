@@ -20,6 +20,7 @@
 #include "../interfaces.h"
 
 #include "../game_sdk/misc/usercmd.h"
+#include "../utils/input_system.h"
 
 
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
@@ -56,6 +57,14 @@ struct create_move_hook
 	static bool __fastcall hook(i_client_mode* self, float frame_time, c_user_cmd* cmd);
 };
 
+struct lock_cursor_hook {
+	static inline constexpr uint32_t idx = 66;
+
+	using fn = void(__stdcall*)(i_surface*);
+	static inline fn original = nullptr;
+	static void __stdcall hook(i_surface* self);
+};
+
 struct wndproc_hook
 {
 	static LRESULT STDMETHODCALLTYPE hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param);
@@ -77,6 +86,7 @@ void hooks_manager::init() {
 	hook_dx();
 
 	CREATE_HOOK(interfaces::client_mode, create_move_hook::idx, create_move_hook::hook, create_move_hook::original);
+	CREATE_HOOK(interfaces::surface, lock_cursor_hook::idx, lock_cursor_hook::hook, lock_cursor_hook::original);
 	
 	auto* const game_hwnd = FindWindowW(0, L"Garry's Mod (x64)");
 	wndproc_hook::original_wndproc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(
@@ -139,6 +149,13 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	return original(interfaces::client_mode, frame_time, cmd);
 }
 
+void lock_cursor_hook::hook(i_surface* self) {
+	if (menu::menu_is_open()) {
+		return self->unlock_cursor();
+	}
+	original(self);
+}
+
 LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param)
 {
 	if (message_type == WM_CLOSE) {
@@ -157,8 +174,10 @@ LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message
 	ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param);
 	if (ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param) && menu::menu_is_open())
 	{
+		input_system::process_binds();
 		return true;
 	}
 
+	input_system::process_binds();
 	return CallWindowProc(original_wndproc, window, message_type, w_param, l_param);
 }

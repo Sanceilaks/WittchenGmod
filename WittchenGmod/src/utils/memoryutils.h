@@ -21,6 +21,15 @@ namespace memory_utils
 		return (T)(address + 4 + *reinterpret_cast<std::int32_t*>(address));
 	}
 
+	static constexpr auto relative_to_absolute(uintptr_t address, int offset, int instruction_size = 6) noexcept
+	{
+		auto instruction = address + offset;
+
+		int relativeAddress = *(int*)(instruction);
+		auto realAddress = address + instruction_size + relativeAddress;
+		return realAddress;
+	}
+	
 	template<typename T>
 	T* get_vmt_from_instruction(uintptr_t address)
 	{
@@ -40,9 +49,9 @@ namespace memory_utils
 		uintptr_t instructionSize = 7;
 		uintptr_t instruction = address + offset;
 
-		uintptr_t relativeAddress = *(DWORD*)(instruction + step);
-		uintptr_t realAddress = instruction + instructionSize + relativeAddress;
-		return *(T**)(realAddress);
+		/*uintptr_t relativeAddress = *(DWORD*)(instruction + step);
+		uintptr_t realAddress = instruction + instructionSize + relativeAddress;*/
+		return *(T**)(relative_to_absolute(instruction, step, instructionSize));
 	}
 
 	template<typename T>
@@ -52,9 +61,9 @@ namespace memory_utils
 		uintptr_t instructionSize = 7;
 		uintptr_t instruction = ((*(uintptr_t**)(address))[index] + offset);
 
-		uintptr_t relativeAddress = *(DWORD*)(instruction + step);
-		uintptr_t realAddress = instruction + instructionSize + relativeAddress;
-		return *(T**)(realAddress);
+		//uintptr_t relativeAddress = *(DWORD*)(instruction + step);
+		//uintptr_t realAddress = instruction + instructionSize + relativeAddress;
+		return *(T**)(relative_to_absolute(instruction, step, instructionSize));
 	}
 	
 	std::uint8_t* pattern_scanner(const std::string& module_name, const std::string& signature) noexcept;

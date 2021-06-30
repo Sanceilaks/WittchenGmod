@@ -1,25 +1,41 @@
 #include "menu.h"
 
 #include <imgui/imgui.h>
+#include "../../interfaces.h"
+
+#include "windows/main_window.h"
+#include "windows/background_window.h"
 
 bool is_menu_open;
+
+constexpr auto animation_speed = 4.f;
+
+_forceinline auto animation_add() {
+	return ImGui::GetIO().DeltaTime * animation_speed;
+}
 
 void menu::initialize_menu() {
 	
 }
 
 void menu::draw_menu() {
-	if (is_menu_open)
+	if (is_menu_open || menu_alpha > 0.f)
 	{
-		//interfaces::input_system->enable_input(true);
-
-		//if (!interfaces::surface->is_cursor_visible())
+		if (!interfaces::surface->is_cursor_visible())
 			ImGui::GetIO().MouseDrawCursor = true;
 
-		//imgui_overlay::draw();
+		if (is_menu_open)
+			menu_alpha = ImMin(menu_alpha + animation_add(), 1.f);
+		else
+			menu_alpha = ImMax(menu_alpha - animation_add(), 0.f);
+		
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, menu_alpha);
 
-		//bg_window::draw();
-		//main_window::draw();
+		background_window::draw_background_window();
+		
+		main_window::draw_main_window();
+		
+		ImGui::PopStyleVar();
 	}
 	else
 	{
@@ -28,11 +44,12 @@ void menu::draw_menu() {
 }
 
 bool menu::menu_is_open() {
-	return is_menu_open;
+	return is_menu_open || menu_alpha > 0.f;
 }
 
 void menu::set_open_state(bool state) {
 	is_menu_open = state;
+	menu_alpha = state ? 1.f : 0.f;
 }
 
 void menu::toggle_menu() {
