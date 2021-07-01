@@ -10,6 +10,8 @@
 #include "../features/menu/menu.h"
 #include "../globals.h"
 
+#include "../features/menu/themes.h"
+
 IDirect3DDevice9* game_device;
 bool initialized = false;
 
@@ -27,6 +29,8 @@ void render_system::init() {
         ImGui::GetIO().Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Arial.ttf", 14.f, 0, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
     	
         ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
+
+        menu_themes::standard_theme();
     }
 
 	initialized = true;

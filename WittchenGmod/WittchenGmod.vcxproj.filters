@@ -335,5 +335,8 @@
     <ClInclude Include="src\features\menu\themes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\render_system\fonts\nunito_light_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

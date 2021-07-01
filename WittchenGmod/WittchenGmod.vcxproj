@@ -92,6 +92,9 @@
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -262,6 +265,7 @@
     <ClInclude Include="src\protect\md5.hpp" />
     <ClInclude Include="src\protect\skCrypter.h" />
     <ClInclude Include="src\protect\xorstr.hpp" />
+    <ClInclude Include="src\render_system\fonts\nunito_light_font.h" />
     <ClInclude Include="src\render_system\render_system.h" />
     <ClInclude Include="src\utils\hackutils.h" />
     <ClInclude Include="src\utils\input_system.h" />

@@ -5,9 +5,12 @@
 using namespace ImGui;
 
 void background_window::draw_background_window() {
-	BeginMainMenuBar();
+	if (BeginMainMenuBar()) {
 
-	EndMainMenuBar();
+		EndMainMenuBar();
+	}
+
+	
 
 	Begin(u8"Измени мой стайл))))");
 
