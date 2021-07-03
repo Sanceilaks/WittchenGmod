@@ -1,6 +1,8 @@
 #include "hooks_manager.h"
 
 #include <d3d9.h>
+#include <intrin.h>
+#include <iostream>
 #include <memory>
 
 #include <minpp/c_min_hook.h>
@@ -10,7 +12,6 @@
 
 #include <Windows.h>
 
-#include <fmt/format.h>
 #include "../render_system/render_system.h"
 
 #include "../features/menu/menu.h"
@@ -22,8 +23,11 @@
 #include "../game_sdk/misc/usercmd.h"
 #include "../utils/input_system.h"
 
+#include "../utils/memoryutils.h"
+#include "../utils/game_utils.h"
 
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
+uintptr_t cl_move = 0;
 
 uintptr_t get_virtual(PVOID** c, int idx) {
 	return (uintptr_t)(*c)[idx];
@@ -57,6 +61,13 @@ struct create_move_hook
 	static bool __fastcall hook(i_client_mode* self, float frame_time, c_user_cmd* cmd);
 };
 
+struct cl_move_hook
+{
+	using fn = void(__fastcall*)(float, bool);
+	static inline fn original = nullptr;
+	static void __fastcall hook(float aes, bool final_tick);
+};
+
 struct lock_cursor_hook {
 	static inline constexpr uint32_t idx = 66;
 
@@ -82,11 +93,14 @@ void hook_dx() {
 
 void hooks_manager::init() {
 	minpp = std::make_shared<min_hook_pp::c_min_hook>();
-
+	cl_move = memory_utils::relative_to_absolute((uintptr_t)memory_utils::pattern_scanner("engine.dll", "E8 ? ? ? ? FF 15 ? ? ? ? F2 0F 10 0D ? ? ? ? 85 FF"), 0x1, 5);
+	
 	hook_dx();
 
 	CREATE_HOOK(interfaces::client_mode, create_move_hook::idx, create_move_hook::hook, create_move_hook::original);
 	CREATE_HOOK(interfaces::surface, lock_cursor_hook::idx, lock_cursor_hook::hook, lock_cursor_hook::original);
+
+	create_hook((void*)cl_move, cl_move_hook::hook, (void**)(&cl_move_hook::original));
 	
 	auto* const game_hwnd = FindWindowW(0, L"Garry's Mod (x64)");
 	wndproc_hook::original_wndproc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(
@@ -107,9 +121,7 @@ void hooks_manager::shutdown() {
 void hooks_manager::create_hook(void* target, void* detour, void** original) {
 	const auto result = minpp->create_hook(target, detour, original);
 	if (!result)
-		throw std::exception(fmt::format("Failed to create hook. Target: {}, detour: {}, original: {}",
-			reinterpret_cast<uintptr_t>(target), reinterpret_cast<uintptr_t>(detour),
-			reinterpret_cast<uintptr_t>(*original)).c_str());
+		throw std::exception("Failed to create hook");
 }
 
 
@@ -145,8 +157,23 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	if (cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
 		cmd->buttons &= ~IN_JUMP;
 	}
+
+	static bool* send_packets;
+	static DWORD sp_protection;
+	if (!send_packets) {
+		send_packets = reinterpret_cast<bool*>(cl_move + 0x62);
+		VirtualProtect(send_packets, sizeof(bool), PAGE_EXECUTE_READWRITE, &sp_protection);
+	}
 	
-	return original(interfaces::client_mode, frame_time, cmd);
+	original(interfaces::client_mode, frame_time, cmd);
+
+	std::cout << c_local_player::is_voice_recording() << std::endl;
+	
+	return false;
+}
+
+void cl_move_hook::hook(float aes, bool final_tick) {
+	return original(aes, final_tick);
 }
 
 void lock_cursor_hook::hook(i_surface* self) {

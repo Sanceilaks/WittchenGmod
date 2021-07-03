@@ -36,12 +36,6 @@
     <ClCompile Include="src\hooks\hooks_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="deps\include\fmt\format.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\include\fmt\os.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="deps\include\imgui\im_tools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -156,42 +150,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\hooks\hooks_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\chrono.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\compile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\format.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\format-inl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\locale.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\os.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\ostream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\posix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\printf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\ranges.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="deps\include\imgui\im_tools.h">
@@ -335,7 +293,19 @@
     <ClInclude Include="src\features\menu\themes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\render_system\fonts\nunito_light_font.h">
+    <ClInclude Include="src\render_system\fonts\nunito_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\menu\animations\fadeanimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render_system\fonts\wittchen_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\game_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\lua_futures\lua_futures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

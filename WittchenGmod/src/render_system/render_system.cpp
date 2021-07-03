@@ -12,6 +12,8 @@
 
 #include "../features/menu/themes.h"
 
+#include "fonts/nunito_font.h"
+
 IDirect3DDevice9* game_device;
 bool initialized = false;
 
@@ -23,13 +25,19 @@ void render_system::init() {
     {
         ImGui_ImplWin32_Init(game_hwnd);
         ImGui_ImplDX9_Init(game_device);
-
+    	
         ImGui::GetIO().IniFilename = nullptr;
 
-        ImGui::GetIO().Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Arial.ttf", 14.f, 0, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+        ImFontConfig config;
+        //config.FontBuilderFlags = ImGuiFreeTypeBuilderFlags_ForceAutoHint;
+    	
+        fonts::nunito_font[1] = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(nunito_font_compressed_data, nunito_font_compressed_size, 18.5f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+        fonts::arial_font = ImGui::GetIO().Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Arial.ttf", 14.f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+        fonts::nunito_font[2] = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(nunito_font_compressed_data, nunito_font_compressed_size, 34.5f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+        fonts::nunito_font[0] = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(nunito_font_compressed_data, nunito_font_compressed_size, 16.0f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
     	
         ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
-
+    	
         menu_themes::standard_theme();
     }
 
