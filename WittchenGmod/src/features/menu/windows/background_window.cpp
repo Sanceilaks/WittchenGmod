@@ -2,10 +2,7 @@
 
 #include <imgui/im_tools.h>
 
-#include "../animations/fadeanimation.h"
-
-#include <map>
-
+#include "glua_loader_window.h"
 #include "../../../render_system/render_system.h"
 
 using namespace ImGui;
@@ -69,5 +66,9 @@ void background_window::draw_background_window() {
 #ifdef _DEBUG
 	ShowMetricsWindow();
 #endif
+
+	if (draw_glua_loader) {
+		glua_loader_window::draw_glua_loader_window();
+	}
 	
 }

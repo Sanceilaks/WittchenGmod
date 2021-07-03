@@ -25,6 +25,7 @@
 
 #include "../utils/memoryutils.h"
 #include "../utils/game_utils.h"
+#include "../features/lua_futures/lua_futures.h"
 
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
 uintptr_t cl_move = 0;
@@ -52,6 +53,15 @@ struct reset_hook {
 	static inline fn original;
 };
 
+struct present_hook { 
+	static inline constexpr uint32_t idx = 17;
+
+	using fn = long(__stdcall*)(IDirect3DDevice9*, RECT*, RECT*, HWND, RGNDATA*);
+	static inline fn original = nullptr;
+	static long __stdcall hook(IDirect3DDevice9* device, RECT* src_rect, RECT* dest_rect, HWND dest_wnd_override,
+		RGNDATA* dirty_region);
+};
+
 struct create_move_hook
 {
 	static inline constexpr uint32_t idx = 21;
@@ -76,6 +86,25 @@ struct lock_cursor_hook {
 	static void __stdcall hook(i_surface* self);
 };
 
+struct run_string_ex
+{
+	static inline constexpr uint32_t idx = 111;
+
+	using fn = bool(__fastcall*)(void*, const char*, const char*, const char*, bool, bool, bool, bool);
+	static inline fn original = nullptr;
+	static bool __fastcall hook(c_lua_interface* self, const char* filename, const char* path,
+		const char* string_to_run, bool run, bool print_errors, bool dont_push_errors,
+		bool no_returns);
+};
+
+struct paint_traverse_hook {
+	static inline constexpr uint32_t idx = 41;
+
+	using fn = void(__fastcall*)(i_panel*, void*, bool, bool);
+	static inline fn original = nullptr;
+	static auto __fastcall hook(i_panel* self, void* panel, bool force_repaint, bool allow_force) -> void;
+};
+
 struct wndproc_hook
 {
 	static LRESULT STDMETHODCALLTYPE hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param);
@@ -88,6 +117,7 @@ void hook_dx() {
 	if (init(kiero::RenderType::D3D9) == kiero::Status::Success) {
 		kiero::bind(end_scene_hook::idx, (void**)&end_scene_hook::original, end_scene_hook::hook);
 		kiero::bind(reset_hook::idx, (void**)&reset_hook::original, reset_hook::hook);
+		kiero::bind(reset_hook::idx, (void**)&reset_hook::original, reset_hook::hook);
 	}
 }
 
@@ -99,8 +129,13 @@ void hooks_manager::init() {
 
 	CREATE_HOOK(interfaces::client_mode, create_move_hook::idx, create_move_hook::hook, create_move_hook::original);
 	CREATE_HOOK(interfaces::surface, lock_cursor_hook::idx, lock_cursor_hook::hook, lock_cursor_hook::original);
-
+	CREATE_HOOK(interfaces::panel, paint_traverse_hook::idx, paint_traverse_hook::hook, paint_traverse_hook::original);
+	
 	create_hook((void*)cl_move, cl_move_hook::hook, (void**)(&cl_move_hook::original));
+
+	if (const auto run_string_ex_fn_ptr = reinterpret_cast<run_string_ex::fn>(memory_utils::pattern_scanner(
+		"lua_shared.dll", "40 55 53 56 57 41 54 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 49 8B F1")); run_string_ex_fn_ptr)
+		create_hook(run_string_ex_fn_ptr, run_string_ex::hook, reinterpret_cast<void**>(&run_string_ex::original));
 	
 	auto* const game_hwnd = FindWindowW(0, L"Garry's Mod (x64)");
 	wndproc_hook::original_wndproc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(
@@ -127,8 +162,13 @@ void hooks_manager::create_hook(void* target, void* detour, void** original) {
 
 long end_scene_hook::hook(IDirect3DDevice9* device) {
 	auto ret = original(device);
-	render_system::on_end_scene(device, (uintptr_t)_ReturnAddress());
+	render_system::on_present(device, (uintptr_t)_ReturnAddress());
 	return ret;
+}
+
+long present_hook::hook(IDirect3DDevice9* device, RECT* src_rect, RECT* dest_rect, HWND dest_wnd_override,
+	RGNDATA* dirty_region) {
+	return original(device, src_rect, dest_rect, dest_wnd_override, dirty_region);
 }
 
 long reset_hook::hook(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* present_parameters) {
@@ -167,7 +207,7 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	
 	original(interfaces::client_mode, frame_time, cmd);
 
-	std::cout << c_local_player::is_voice_recording() << std::endl;
+	lua_futures::run_all_code();
 	
 	return false;
 }
@@ -181,6 +221,28 @@ void lock_cursor_hook::hook(i_surface* self) {
 		return self->unlock_cursor();
 	}
 	original(self);
+}
+
+bool run_string_ex::hook(c_lua_interface* self, const char* filename, const char* path,
+	const char* string_to_run, bool run, bool print_errors, bool dont_push_errors, bool no_returns) {
+
+	if (std::string(filename) != "RunString(Ex)")
+	lua_futures::last_file_name = filename;
+
+	return original(self, filename, path, string_to_run, run, print_errors, dont_push_errors, no_returns);
+}
+
+auto paint_traverse_hook::hook(i_panel* self, void* panel, bool force_repaint, bool allow_force) -> void {
+	original(self, panel, force_repaint, allow_force);
+
+	if (const std::string panel_name = interfaces::panel->get_name(panel); panel_name == "FocusOverlayPanel") {
+		static auto numm = 0;
+		numm++;
+
+		directx_render::render_surface([&]() {
+			
+		});
+	}
 }
 
 LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param)
@@ -198,7 +260,7 @@ LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message
 		if (w_param == mk)
 			menu::toggle_menu();
 	
-	ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param);
+	//ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param);
 	if (ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param) && menu::menu_is_open())
 	{
 		input_system::process_binds();
