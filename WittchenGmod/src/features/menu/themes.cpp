@@ -8,7 +8,7 @@ void menu_themes::standard_theme() {
 	auto& io = GetIO;
 	auto& style = GetStyle();
 
-	style.WindowPadding = { 0, 0 };
+	style.WindowPadding = { 8, 8 };
 	style.FrameRounding = 8.f;
 	style.GrabMinSize = 10.f;
 	style.ItemSpacing = { 20.f, 3.f };

@@ -26,6 +26,8 @@
 #include "../utils/memoryutils.h"
 #include "../utils/game_utils.h"
 #include "../features/lua_futures/lua_futures.h"
+#include "../features/esp/esp.h"
+#include "../settings/settings.h"
 
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
 uintptr_t cl_move = 0;
@@ -193,8 +195,8 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		return original(self, frame_time, cmd);
 	
 	cply* lp = (cply*)interfaces::entity_list->get_client_entity(interfaces::engine->get_local_player());
-	
-	if (cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
+
+	if (settings::get_bool("bhop") && cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
 		cmd->buttons &= ~IN_JUMP;
 	}
 
@@ -240,7 +242,7 @@ auto paint_traverse_hook::hook(i_panel* self, void* panel, bool force_repaint, b
 		numm++;
 
 		directx_render::render_surface([&]() {
-			
+			esp::draw_esp();
 		});
 	}
 }

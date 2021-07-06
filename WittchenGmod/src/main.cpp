@@ -22,15 +22,6 @@ void entry_point() {
 	freopen("CONOUT$", "wb", stderr);
 	freopen("CONIN$", "rb", stdin);
 #endif
-
-	warning_fn warning = (warning_fn)GetProcAddress(GetModuleHandle("tier0.dll"), "Warning");
-	
-	if (interfaces::engine) {
-		warning(u8"ß ÃÅÉ\n");
-		interfaces::engine->execute_client_cmd("lua_run_cl table.Empty(_G)");
-	} else {
-		std::cout << "I`m" << std::endl;
-	}
 }
 
 BOOL WINAPI DllMain(HINSTANCE dll_instance, DWORD reason, LPVOID reversed)

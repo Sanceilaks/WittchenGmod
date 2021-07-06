@@ -49,8 +49,6 @@ namespace memory_utils
 		uintptr_t instructionSize = 7;
 		uintptr_t instruction = address + offset;
 
-		/*uintptr_t relativeAddress = *(DWORD*)(instruction + step);
-		uintptr_t realAddress = instruction + instructionSize + relativeAddress;*/
 		return *(T**)(relative_to_absolute(instruction, step, instructionSize));
 	}
 
@@ -61,8 +59,6 @@ namespace memory_utils
 		uintptr_t instructionSize = 7;
 		uintptr_t instruction = ((*(uintptr_t**)(address))[index] + offset);
 
-		//uintptr_t relativeAddress = *(DWORD*)(instruction + step);
-		//uintptr_t realAddress = instruction + instructionSize + relativeAddress;
 		return *(T**)(relative_to_absolute(instruction, step, instructionSize));
 	}
 	

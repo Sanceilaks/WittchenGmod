@@ -15,6 +15,7 @@ TextEditor text_editor;
 void initialize() {
 	text_editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
 	text_editor.SetShowWhitespaces(false);
+	text_editor.SetDrawTooltip(false);
 	
 	glua_loader_initialized = true;
 }
@@ -37,7 +38,7 @@ void glua_loader_window::draw_glua_loader_window() {
 		initialize();
 	}
 	
-	Begin(u8"Луа прогружатор 228");
+	Begin(u8"Луа прогружатор 228##LUA_EXECUTOR_WINDOW");
 
 	text_editor.Render("##LUA_EXECUTOR", calc_text_editor_size());
 
