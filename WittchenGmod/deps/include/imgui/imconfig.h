@@ -119,4 +119,6 @@ namespace ImGui
 }
 */
 
+#define ELEMENT_FADE_ANIMATION_SPEED 4.f
+
 #define IMGUI_ENABLE_FREETYPE

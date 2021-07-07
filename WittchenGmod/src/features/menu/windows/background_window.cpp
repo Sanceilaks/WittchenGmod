@@ -39,6 +39,7 @@ void background_window::draw_background_window() {
 	auto& io = GetIO();
 
 	PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.f, 3.f });
+	PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.f, 0.f });
 	
 	if (BeginMainMenuBar()) {
 		menu_tab_selectable("glua loader##WITTCHEN_GLUA_LOADER", &draw_glua_loader);
@@ -54,9 +55,8 @@ void background_window::draw_background_window() {
 		EndMainMenuBar();
 	}
 	
-	PopStyleVar();
+	PopStyleVar(2);
 	
-
 	Begin(u8"Измени мой стайл))))");
 
 	ShowStyleEditor();
@@ -67,8 +67,6 @@ void background_window::draw_background_window() {
 	ShowMetricsWindow();
 #endif
 
-	if (draw_glua_loader) {
-		glua_loader_window::draw_glua_loader_window();
-	}
+	glua_loader_window::draw_glua_loader_window(draw_glua_loader);
 	
 }

@@ -32,6 +32,8 @@ Index of this file:
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include <iostream>
+
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
 
@@ -688,8 +690,39 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags
     bool hovered, held;
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
+    //static float animations[100000000];
+    //static float animations2[100000000];
+	
+    //int _id = GenerateAnimationId();
+	
+    //if (hovered) {
+    //    animations[_id] = ImMin(animations[_id] + GetIO().DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 1.f);
+    //} else {
+    //    animations[_id] = ImMax(animations[_id] - GetIO().DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 0.f);
+    //}
+	
     // Render
-    const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+    ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+
+	//animation
+	/*if (hovered && !held) {
+        auto c = ImColor(GetStyleColorVec4(ImGuiCol_ButtonHovered));
+		auto c1 = ImColor(GetStyleColorVec4(ImGuiCol_ButtonActive));
+        c.Value.w = ImMin(animations[_id] + c.Value.w, c1.Value.w);
+		
+        col = c;
+        animations2[_id] = c.Value.w;
+	} else if (!hovered && !held && animations[_id] > 0.f) {
+        auto c = ImColor(GetStyleColorVec4(ImGuiCol_ButtonHovered));
+        auto c1 = ImColor(GetStyleColorVec4(ImGuiCol_ButtonActive));
+		auto jb = ImColor(GetStyleColorVec4(ImGuiCol_Button));
+		
+        jb.Value.w = ImMax(animations2[_id] - animations[_id], c.Value.w);
+
+        col = jb;
+        animations2[_id] = jb.Value.w;
+	}*/
+	
     RenderNavHighlight(bb, id);
     RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
 

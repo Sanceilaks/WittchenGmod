@@ -7,9 +7,12 @@
 
 #include "../../lua_futures/lua_futures.h"
 
+#include "../widgets/widgets.h"
+
 using namespace ImGui;
 
 bool glua_loader_initialized;
+
 TextEditor text_editor;
 
 void initialize() {
@@ -22,7 +25,7 @@ void initialize() {
 
 ImVec2 calc_text_editor_size() {
 	auto ts = CalcTextSize("AAA").y;
-	ts += GetStyle().ItemSpacing.y * 2 + GetStyle().ItemInnerSpacing.y * 2;
+	ts += GetStyle().ItemSpacing.y * 2 + GetStyle().ItemInnerSpacing.y * 2 + GetStyle().WindowPadding.y;
 	return { GetWindowSize().x, GetWindowSize().y - ts * 2 };
 }
 
@@ -33,18 +36,30 @@ void add_to_run() {
 	}
 }
 
-void glua_loader_window::draw_glua_loader_window() {
+void glua_loader_window::draw_glua_loader_window(bool& draw_glua_loader) {
+	static float alpha;
+	
 	if (!glua_loader_initialized) {
 		initialize();
 	}
-	
-	Begin(u8"Луа прогружатор 228##LUA_EXECUTOR_WINDOW");
 
-	text_editor.Render("##LUA_EXECUTOR", calc_text_editor_size());
-
-	if (CenterButton("Execute", GetContentRegionAvail())) {
-		std::thread(add_to_run).detach();
+	if (draw_glua_loader) {
+		alpha = ImMin(alpha + GetIO().DeltaTime * 4.f, 1.f);
+	} else {
+		alpha = ImMax(alpha - GetIO().DeltaTime * 4.f, 0.f);
 	}
-	
-	End();
+
+	if (draw_glua_loader || alpha > 0.f) {
+		BeginApplyAlpha(alpha);
+		Begin(u8"Луа прогружатор 228##LUA_EXECUTOR_WINDOW");
+
+		text_editor.Render("##LUA_EXECUTOR", calc_text_editor_size());
+
+		if (CenterButton("Execute", GetContentRegionAvail())) {
+			std::thread(add_to_run).detach();
+		}
+
+		End();
+		EndApplyAlpha();
+	}
 }

@@ -227,10 +227,18 @@ void lock_cursor_hook::hook(i_surface* self) {
 
 bool run_string_ex::hook(c_lua_interface* self, const char* filename, const char* path,
 	const char* string_to_run, bool run, bool print_errors, bool dont_push_errors, bool no_returns) {
-
+	static c_lua_interface* last_self;
+	static bool last_first;
+	
 	if (std::string(filename) != "RunString(Ex)")
-	lua_futures::last_file_name = filename;
+		lua_futures::last_file_name = filename;
 
+	auto is_first = false;
+	if (self != last_self && interfaces::engine->is_drawing_loading_image())
+		is_first = true;
+	last_self = self;
+	if (is_first) std::cout << filename << std::endl;
+	
 	return original(self, filename, path, string_to_run, run, print_errors, dont_push_errors, no_returns);
 }
 
