@@ -17,7 +17,7 @@ namespace input_system {
 	void set_bind_state(const std::string& name, bind_type bt, bool can_be_null); // if bt == -1 then current value 
 	void remove_bind(const std::string& name);
 
-	bool is_key_pressed(int key, int delay, bool null_is_true = false);
+	bool is_key_pressed(int key, bool null_is_true = false);
 	bool is_key_just_pressed(int key, int delay, bool null_is_true = false);
 
 	void process_binds();

@@ -198,6 +198,7 @@
     <ClCompile Include="src\math\vector.cpp" />
     <ClCompile Include="src\render_system\render_system.cpp" />
     <ClCompile Include="src\settings\settings.cpp" />
+    <ClCompile Include="src\utils\game_utils.cpp" />
     <ClCompile Include="src\utils\hackutils.cpp" />
     <ClCompile Include="src\utils\input_system.cpp" />
     <ClCompile Include="src\utils\memoryutils.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="src\features\menu\windows\glua_loader_window.h" />
     <ClInclude Include="src\features\menu\windows\main_window.h" />
     <ClInclude Include="src\game_sdk\entities\c_base_entity.h" />
+    <ClInclude Include="src\game_sdk\entities\c_base_player.h" />
     <ClInclude Include="src\game_sdk\entities\i_client_entity.h" />
     <ClInclude Include="src\game_sdk\interfaces\client.h" />
     <ClInclude Include="src\game_sdk\interfaces\cliententitylist.h" />

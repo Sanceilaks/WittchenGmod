@@ -66,7 +66,7 @@ void input_system::remove_bind(const std::string& name) {
 	}
 }
 
-bool input_system::is_key_pressed(int key, int delay, bool null_is_true)
+bool input_system::is_key_pressed(int key, bool null_is_true)
 {
 	std::unique_lock l(input_mutex);
 

@@ -29,6 +29,8 @@
 #include "../features/esp/esp.h"
 #include "../settings/settings.h"
 
+#include "../game_sdk/entities/c_base_player.h"
+
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
 uintptr_t cl_move = 0;
 
@@ -183,28 +185,21 @@ long reset_hook::hook(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* present_p
 	return ret;
 }
 
-class cply {
-public:
-	int get_flags() {
-		return *(int*)((uintptr_t)this + 0x440);
-	}
-};
-
 bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* cmd) {
-	if (!cmd || !cmd->command_number)
-		return original(self, frame_time, cmd);
-	
-	cply* lp = (cply*)interfaces::entity_list->get_client_entity(interfaces::engine->get_local_player());
-
-	if (settings::get_bool("bhop") && cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
-		cmd->buttons &= ~IN_JUMP;
-	}
-
 	static bool* send_packets;
 	static DWORD sp_protection;
 	if (!send_packets) {
 		send_packets = reinterpret_cast<bool*>(cl_move + 0x62);
 		VirtualProtect(send_packets, sizeof(bool), PAGE_EXECUTE_READWRITE, &sp_protection);
+	}
+	
+	if (!cmd || !cmd->command_number)
+		return original(self, frame_time, cmd);
+	
+	auto lp = get_local_player();
+
+	if (settings::get_bool("bhop") && cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
+		cmd->buttons &= ~IN_JUMP;
 	}
 	
 	original(interfaces::client_mode, frame_time, cmd);
@@ -257,6 +252,8 @@ auto paint_traverse_hook::hook(i_panel* self, void* panel, bool force_repaint, b
 
 LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param)
 {
+	input_system::process_binds();
+	input_system::on_windpoc(message_type, w_param, l_param);
 	if (message_type == WM_CLOSE) {
 		hack_utils::unload_hack();
 		return true;
@@ -277,6 +274,6 @@ LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message
 		return true;
 	}
 
-	input_system::process_binds();
+	
 	return CallWindowProc(original_wndproc, window, message_type, w_param, l_param);
 }

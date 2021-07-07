@@ -3,6 +3,8 @@
 #include "../../utils/netvars.h"
 #include "../../interfaces.h"
 
+#include "../../utils/memoryutils.h"
+
 #include "i_client_entity.h"
 
 class c_collidable
@@ -66,25 +68,27 @@ public:
 		return (*(fn**)this)[183](this);
 	}
 
-	/*void set_abs_origin(const c_vector& position)
+	//E8 ? ? ? ? F3 0F 11 BD ? ? ? ?
+	void set_abs_origin(const c_vector& position)
 	{
-		using fn = void(__thiscall*)(void*, const c_vector& origin);
+		using fn = void(__fastcall*)(void*, const c_vector& origin);
 		static fn orig_fn;
 		if (!orig_fn)
-			orig_fn = reinterpret_cast<fn>(memory_utils::pattern_scanner("client.dll",
-			                                                             "55 8B EC 56 57 8B F1 E8 ? ? ? ? 8B 7D 08 F3 0F 10 07"));
+			orig_fn = reinterpret_cast<fn>(memory_utils::relative_to_absolute((uintptr_t)memory_utils::pattern_scanner("client.dll",
+				"E8 ? ? ? ? F3 0F 11 BD ? ? ? ?"), 0x1, 5));
 		orig_fn(this, position);
 	}
 
+
 	void set_abs_angles(const c_vector& ang)
 	{
-		using fn = void(__thiscall*)(void*, const c_vector& origin);
+		using fn = void(__fastcall*)(void*, const c_vector& origin);
 		static fn orig_fn;
 		if (!orig_fn)
-			orig_fn = reinterpret_cast<fn>(memory_utils::pattern_scanner("client.dll",
-				"55 8B EC 81 EC ? ? ? ? 56 57 8B F1 E8 ? ? ? ? 8B 7D 08"));
+			orig_fn = reinterpret_cast<fn>(memory_utils::relative_to_absolute((uintptr_t)memory_utils::pattern_scanner("client.dll",
+				"E8 ?? ?? ?? ?? 48 8D 57 70"), 0x1, 5));
 		orig_fn(this, ang);
-	}*/
+	}
 };
 
 __forceinline c_base_entity* get_entity_by_index(const int i)
