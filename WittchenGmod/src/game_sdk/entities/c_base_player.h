@@ -23,6 +23,50 @@ public:
 	NETVAR("DT_BasePlayer", "m_iObserverMode", get_observer_mode, int);
 	NETVAR("DT_BasePlayer", "m_hObserverTarget", get_observer_target_handle, uintptr_t);
 	NETVAR("DT_PlayerResource", "m_iPing", get_ping, int);
+
+	std::string get_name() const
+	{
+		player_info_s info;
+		interfaces::engine->get_player_info(get_index(), &info);
+		return info.name;
+	}
+
+	/*bool is_admin()
+	{
+		auto str = get_user_group();
+		return str.find("admin") != std::string::npos || str.find("owner") != std::string::npos
+			|| str.find("king") != std::string::npos || str.find("moder") != std::string::npos || str.find("root") != std::string::npos;
+	}*/
+
+	/*std::string get_team_name()
+	{
+		auto glua = interfaces::lua_shared->get_interface((int)e_special::glob);
+		if (!glua)
+			return {};
+		c_lua_auto_pop p(glua);
+
+		glua->push_special((int)e_special::glob);
+		glua->get_field(-1, "team");
+		glua->get_field(-1, "GetName");
+		glua->push_number(this->get_team_num());
+		glua->call(1, 1);
+
+		return glua->get_string();
+	}
+
+	std::string get_user_group()
+	{
+		auto lua = interfaces::lua_shared->get_interface((int)e_special::glob);
+		if (!lua)
+			return {};
+		c_lua_auto_pop p(lua);
+
+		push_entity();
+		lua->get_field(-1, "GetUserGroup");
+		lua->push(-2);
+		lua->call(1, 1);
+		return lua->get_string();
+	}*/
 };
 
 class c_local_player : public c_base_player {
