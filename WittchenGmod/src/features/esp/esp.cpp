@@ -5,6 +5,10 @@
 
 #include <lemi_utils.h>
 
+#include "../../utils/game_utils.h"
+
+#include "../../render_system/render_system.h"
+
 /// Formatter usage
 /// Player:
 ///		%name - player name
@@ -29,6 +33,73 @@ std::string format_text_for_player(const std::string& str, c_base_player* ply) {
 	return s;
 }
 
-void esp::draw_esp() {
+void esp::c_esp_box::get_absolute_position(const ImVec2& r) {
 	
+}
+
+bool esp::c_esp_box::calc_box(c_base_entity* ent, c_esp_box& box) {
+	using namespace game_utils;
+	c_vector flb, brt, blb, frt, frb, brb, blt, flt;
+
+	const auto& origin = ent->get_render_origin();
+	const auto min = ent->get_collidable_ptr()->mins() + origin;
+	const auto max = ent->get_collidable_ptr()->maxs() + origin;
+
+	c_vector points[] = {
+		c_vector(min.x, min.y, min.z),
+		c_vector(min.x, max.y, min.z),
+		c_vector(max.x, max.y, min.z),
+		c_vector(max.x, min.y, min.z),
+		c_vector(max.x, max.y, max.z),
+		c_vector(min.x, max.y, max.z),
+		c_vector(min.x, min.y, max.z),
+		c_vector(max.x, min.y, max.z)
+	};
+
+	if (!world_to_screen(points[3], flb) || !world_to_screen(points[5], brt)
+		|| !world_to_screen(points[0], blb) || !world_to_screen(points[4], frt)
+		|| !world_to_screen(points[2], frb) || !world_to_screen(points[1], brb)
+		|| !world_to_screen(points[6], blt) || !world_to_screen(points[7], flt))
+		return false;
+
+	c_vector arr[] = { flb, brt, blb, frt, frb, brb, blt, flt };
+
+	auto left = flb.x;
+	auto top = flb.y;
+	auto right = flb.x;
+	auto bottom = flb.y;
+
+	if (left < 0 || top < 0 || right < 0 || bottom < 0)
+		return false;
+
+	for (int i = 1; i < 8; i++) {
+		if (left > arr[i].x)
+			left = arr[i].x;
+		if (bottom < arr[i].y)
+			bottom = arr[i].y;
+		if (right < arr[i].x)
+			right = arr[i].x;
+		if (top > arr[i].y)
+			top = arr[i].y;
+	}
+
+	box.min = { left, top };
+	box.max = {right, bottom};
+
+	return true;
+}
+
+void esp::draw_esp() {
+
+	
+	//at this time only players
+	for (auto i : game_utils::get_valid_players()) {
+		auto p = get_player_by_index(i);
+
+		c_esp_box box;
+		if (!c_esp_box::calc_box(p, box))
+			return;
+
+		directx_render::bordered_rect(box.min, box.max, colors::red_color, 10.f);
+	}
 }

@@ -40,31 +40,31 @@ public:
 	
 	bool is_alive()
 	{
-		using original_fn = bool(__thiscall*)(void*);
+		using original_fn = bool(__fastcall*)(void*);
 		return (*(original_fn**)this)[129](this);
 	}
 
 	bool is_player()
 	{
-		using original_fn = bool(__thiscall*)(void*);
+		using original_fn = bool(__fastcall*)(void*);
 		return (*(original_fn**)this)[130](this);
 	}
 
 	void push_entity() //https://imgur.com/bK6cNdu
 	{
-		using original_fn = void(__thiscall*)(void*);
+		using original_fn = void(__fastcall*)(void*);
 		return (*(original_fn**)this)[172](this);
 	}
 
 	bool is_use_lua()
 	{
-		using fn = bool(__thiscall*)(void*);
+		using fn = bool(__fastcall*)(void*);
 		return (*(fn**)this)[170](this);
 	}
 	
 	const char* get_lua_script_name() //B8 AA 2A 4D 00 C3	client.dll
 	{
-		using fn = const char* (__thiscall*)(void*);
+		using fn = const char* (__fastcall*)(void*);
 		return (*(fn**)this)[183](this);
 	}
 
@@ -88,6 +88,10 @@ public:
 			orig_fn = reinterpret_cast<fn>(memory_utils::relative_to_absolute((uintptr_t)memory_utils::pattern_scanner("client.dll",
 				"E8 ?? ?? ?? ?? 48 8D 57 70"), 0x1, 5));
 		orig_fn(this, ang);
+	}
+
+	bool is_equal(c_base_entity* ent) const {
+		return ent->get_index() == get_index();
 	}
 };
 
