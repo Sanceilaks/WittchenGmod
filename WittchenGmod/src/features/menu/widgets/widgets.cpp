@@ -41,3 +41,19 @@ void ImGui::BeginApplyAlpha(float alpha) {
 void ImGui::EndApplyAlpha() {
 	PopStyleVar();
 }
+
+static Wittchen::WitthcenEspStyleEditor* g_style_editor;
+
+Wittchen::WitthcenEspStyleEditor* Wittchen::GetWittchenEspStyleEditor() {
+	return g_style_editor;
+}
+
+void Wittchen::InitializeEspStyleEditor() {
+	g_style_editor = new WitthcenEspStyleEditor();
+}
+
+void Wittchen::ApplyStyleToBox(esp::c_esp_box& box) {
+	box.color = colors::red_color;
+	box.rounding = 0.f;
+	
+}

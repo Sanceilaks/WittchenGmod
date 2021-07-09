@@ -353,5 +353,8 @@
     <ClInclude Include="src\game_sdk\entities\c_base_player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\debugoverlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

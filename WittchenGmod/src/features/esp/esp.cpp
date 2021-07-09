@@ -9,6 +9,8 @@
 
 #include "../../render_system/render_system.h"
 
+#include "../menu/widgets/widgets.h"
+
 /// Formatter usage
 /// Player:
 ///		%name - player name
@@ -90,16 +92,17 @@ bool esp::c_esp_box::calc_box(c_base_entity* ent, c_esp_box& box) {
 }
 
 void esp::draw_esp() {
-
 	
 	//at this time only players
-	for (auto i : game_utils::get_valid_players()) {
+	for (auto i : game_utils::get_valid_players(true)) {
 		auto p = get_player_by_index(i);
-
+		
 		c_esp_box box;
 		if (!c_esp_box::calc_box(p, box))
-			return;
+			continue;
 
-		directx_render::bordered_rect(box.min, box.max, colors::red_color, 10.f);
+		Wittchen::ApplyStyleToBox(box);
+		
+		directx_render::bordered_rect(box.min, box.max, box.color, box.rounding);
 	}
 }

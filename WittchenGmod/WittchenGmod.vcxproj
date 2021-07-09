@@ -249,6 +249,7 @@
     <ClInclude Include="src\game_sdk\interfaces\client.h" />
     <ClInclude Include="src\game_sdk\interfaces\cliententitylist.h" />
     <ClInclude Include="src\game_sdk\interfaces\client_mode.h" />
+    <ClInclude Include="src\game_sdk\interfaces\debugoverlay.h" />
     <ClInclude Include="src\game_sdk\interfaces\engine.h" />
     <ClInclude Include="src\game_sdk\interfaces\i_panel.h" />
     <ClInclude Include="src\game_sdk\interfaces\lua_shared.h" />

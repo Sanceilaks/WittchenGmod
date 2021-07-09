@@ -1,4 +1,7 @@
 #include "game_utils.h"
+
+#include <iostream>
+
 #include "../game_sdk/entities/c_base_player.h"
 
 bool local_player_utils::is_voice_recording() {
@@ -14,6 +17,7 @@ bool local_player_utils::is_voice_recording() {
 bool game_utils::screen_transform(const c_vector& in, c_vector& out) {
 	auto exception_filter = [](int code, PEXCEPTION_POINTERS ex)
 	{
+		std::cout << code << std::endl;
 		return EXCEPTION_EXECUTE_HANDLER;
 	};
 
@@ -50,7 +54,7 @@ bool game_utils::screen_transform(const c_vector& in, c_vector& out) {
 }
 
 bool game_utils::world_to_screen(const c_vector& in, c_vector& out) {
-	if (!screen_transform(in, out))
+	/*if (!screen_transform(in, out))
 		return false;
 
 	int w, h;
@@ -59,7 +63,8 @@ bool game_utils::world_to_screen(const c_vector& in, c_vector& out) {
 	out.x = (w / 2.0f) + (out.x * w) / 2.0f;
 	out.y = (h / 2.0f) - (out.y * h) / 2.0f;
 
-	return true;
+	return true;*/
+	return !interfaces::debug_overlay->screen_position(in, out);
 }
 
 std::vector<int> game_utils::get_valid_players(bool dormant) {
@@ -73,7 +78,7 @@ std::vector<int> game_utils::get_valid_players(bool dormant) {
 	std::vector<int> c;
 	for (auto i = 0; i < interfaces::entity_list->get_highest_entity_index(); ++i) {
 		auto ent = get_entity_by_index(i);
-		if (ent && ent->is_player() && ent->is_alive() && (!dormant ? !ent->is_dormant() : true) && !local_player->is_equal(ent)) c.push_back(i);
+		if (ent && ent->is_player() && ent->is_alive() /*&& (!dormant ? !ent->is_dormant() : true)*/ && !local_player->is_equal(ent)) c.push_back(i);
 	}
 	return c;
 }

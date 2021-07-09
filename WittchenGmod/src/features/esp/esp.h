@@ -8,14 +8,21 @@
 namespace esp {
 	struct esp_text_t {
 		std::string text;
-		ImVec2 position;
 		int flags;
+	};
+	struct esp_text_storage_t {
+		std::pair<ImVec2, std::vector<esp_text_t>> top;
+		std::pair<ImVec2, std::vector<esp_text_t>> down;
+		std::pair<ImVec2, std::vector<esp_text_t>> right;
+		std::pair<ImVec2, std::vector<esp_text_t>> left;
 	};
 	
 	class c_esp_box {
-		//ImVec2
 	public:
+		esp_text_storage_t strings;
 		ImVec2 min, max;
+		float rounding;
+		c_color color;
 		
 		void get_absolute_position(const ImVec2& r);
 

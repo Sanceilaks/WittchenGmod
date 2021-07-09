@@ -9,6 +9,7 @@ void interfaces::init_interfaces() {
 	surface = memory_utils::capture_interface<i_surface>("vguimatsurface.dll", "VGUI_Surface030");
 	lua_shared = memory_utils::capture_interface<c_lua_shared>("lua_shared.dll", "LUASHARED003");
 	panel = memory_utils::capture_interface<i_panel>("vgui2.dll", "VGUI_Panel009");
+	debug_overlay = memory_utils::capture_interface<i_debug_overlay>("engine.dll", "VDebugOverlay003");
 	
 	//client mode pattern: CHLClient__HudProcessInput + offset to mov [reg], g_ClientMode. Sizeof mov instruction - 3. 
 	client_mode = memory_utils::get_vmt<i_client_mode>((uintptr_t)client, 10, 0x0);

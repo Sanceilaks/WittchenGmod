@@ -81,5 +81,5 @@ __forceinline c_local_player* get_local_player()
 
 __forceinline c_base_player* get_player_by_index(const uint32_t i)
 {
-	return static_cast<c_base_player*>(interfaces::entity_list->get_client_entity(i));
+	return reinterpret_cast<c_base_player*>(interfaces::entity_list->get_client_entity(i));
 }
