@@ -31,13 +31,13 @@ public:
 	NETVAR("DT_BaseEntity", "m_iMaxHealth", get_max_health, int);
 
 	c_vector get_eye_pos() { return this->get_origin() + this->get_view_offset(); }
-	
+
 	c_collidable* get_collidable_ptr()
 	{
 		using original_fn = c_collidable * (__thiscall*)(void*);
 		return (*(original_fn**)this)[3](this);
 	}
-	
+
 	bool is_alive()
 	{
 		using original_fn = bool(__fastcall*)(void*);
@@ -61,7 +61,7 @@ public:
 		using fn = bool(__fastcall*)(void*);
 		return (*(fn**)this)[170](this);
 	}
-	
+
 	const char* get_lua_script_name() //B8 AA 2A 4D 00 C3	client.dll
 	{
 		using fn = const char* (__fastcall*)(void*);
@@ -92,6 +92,10 @@ public:
 
 	bool is_equal(c_base_entity* ent) const {
 		return ent->get_index() == get_index();
+	}
+
+	float get_health_procentage() {
+		return get_health() / (get_max_health() / 100.f);
 	}
 };
 

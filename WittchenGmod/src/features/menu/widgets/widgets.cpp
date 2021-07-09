@@ -3,6 +3,8 @@
 #include "../../../settings/settings.h"
 #include "../menu.h"
 
+#include "../../esp/esp.h"
+
 using namespace ImGui;
 
 bool ImGui::WittchenCheckbox(const std::string& name, const std::string& var) {
@@ -42,18 +44,66 @@ void ImGui::EndApplyAlpha() {
 	PopStyleVar();
 }
 
-static Wittchen::WitthcenEspStyleEditor* g_style_editor;
+void MergeTextStorage(std::vector<Wittchen::WitthcenEspStyleEditor::TextStorage>& w, std::vector<esp::esp_text_t>& e) {
+	e.clear();
+	for (auto& i : w) {
+		e.emplace_back(esp::esp_text_t{ i.text, i.flags, i.size, i.color, i.is_auto_color});
+	}
+}
+
+static Wittchen::WitthcenEspStyleEditor g_style_editor;
+
+void Wittchen::WitthcenEspStyleEditor::Strings::Clear() {
+	top.clear();
+	right.clear();
+	left.clear();
+	bottom.clear();
+}
+
+c_color Wittchen::WitthcenEspStyleEditor::GetAutoColor(const std::string& name, c_base_entity* entity) {
+	return colors::white_color;
+}
+
+c_color Wittchen::WitthcenEspStyleEditor::GetAutoColor(const std::string& name, c_base_player* player) {
+	if (name == "%health") {
+		float g = 255 * (player->get_health_procentage() / 100.f);
+		return { 255 - g, g, 0 };
+	}
+	//TODO: IMPL OTHER
+
+	return colors::white_color;
+}
 
 Wittchen::WitthcenEspStyleEditor* Wittchen::GetWittchenEspStyleEditor() {
-	return g_style_editor;
+	return &g_style_editor;
 }
 
 void Wittchen::InitializeEspStyleEditor() {
-	g_style_editor = new WitthcenEspStyleEditor();
 }
 
 void Wittchen::ApplyStyleToBox(esp::c_esp_box& box) {
+	std::unique_lock l(g_style_editor.esp_editor_mutex);
+	
+	//box style
 	box.color = colors::red_color;
 	box.rounding = 0.f;
+
+	g_style_editor.strings.top.emplace_back(WitthcenEspStyleEditor::TextStorage{ "%name", 0, 13.f, colors::white_color});
+	g_style_editor.strings.bottom.emplace_back(WitthcenEspStyleEditor::TextStorage{ "%name", 0, 13.f, colors::white_color});
+	g_style_editor.strings.left.emplace_back(WitthcenEspStyleEditor::TextStorage{ "%name", 0, 13.f, colors::white_color});
+	g_style_editor.strings.right.emplace_back(WitthcenEspStyleEditor::TextStorage{ "%name", 0, 13.f, colors::white_color});
+
+	g_style_editor.strings.top.emplace_back(WitthcenEspStyleEditor::TextStorage{ "%health", 0, 13.f, colors::white_color, true});
+	g_style_editor.strings.bottom.emplace_back(WitthcenEspStyleEditor::TextStorage{ "%health", 0, 13.f, colors::white_color , true });
+	g_style_editor.strings.left.emplace_back(WitthcenEspStyleEditor::TextStorage{ "%health", 0, 13.f, colors::white_color , true });
+	g_style_editor.strings.right.emplace_back(WitthcenEspStyleEditor::TextStorage{ "%health", 0, 13.f, colors::white_color , true });
 	
+	//text applying
+	MergeTextStorage(g_style_editor.strings.right, box.strings.right.second);
+	MergeTextStorage(g_style_editor.strings.left, box.strings.left.second);
+	MergeTextStorage(g_style_editor.strings.top, box.strings.top.second);
+	MergeTextStorage(g_style_editor.strings.bottom, box.strings.down.second);
+
+	//clear text storage for next frame
+	g_style_editor.strings.Clear();
 }
