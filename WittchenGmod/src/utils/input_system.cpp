@@ -16,54 +16,12 @@ uint32_t current_frame;
 
 std::mutex input_mutex;
 
-struct bool_bind_t {
-	uint32_t* key;
-	bool* bind_var;
-	input_system::bind_type bind_type;
-	bool can_be_null;
-};
-
-std::map<std::string, bool_bind_t> key_binds;
-
-auto find_bind(const std::string& name) {
-	return std::find_if(key_binds.begin(), key_binds.end(), [&](const auto& it) {
-		return it.first == name;
-		});
-}
-
-bool bind_exist(const std::string& name) {
-	return find_bind(name) != key_binds.end();
-}
-
 void input_system::initialize_input_system() {
 
 }
 
-void input_system::add_bind(uint32_t* key, const std::string& name, bool* var, bind_type bt, bool can_be_null)
-{
-	if (var && !bind_exist(name))
-		key_binds.emplace(name, bool_bind_t{ key, var, bt, can_be_null });
-	else if (bind_exist(name))
-		set_bind_key(name, key);
-}
-
-/*void input_system::add_bind(int key, const std::string& name, bool* var, bind_type bt) {
-	if (var && !bind_exist(name))
-		key_binds.emplace(name, bool_bind_t{ key, var, bt });
-	else if (bind_exist(name))
-		set_bind_key(name, key);
-}*/
-
-void input_system::set_bind_key(const std::string& name, uint32_t* key) {
-	if (bind_exist(name)) {
-		find_bind(name)->second.key = key;
-	}
-}
-
-void input_system::remove_bind(const std::string& name) {
-	if (bind_exist(name)) {
-		key_binds.erase(find_bind(name));
-	}
+void input_system::add_bind(int64_t id, uint32_t key, bool* var, bind_system::bind_type type) {
+	bind_system::bool_binds[id].push_back({(int)type, key, var, false});
 }
 
 bool input_system::is_key_pressed(int key, bool null_is_true)
@@ -90,22 +48,28 @@ bool input_system::is_key_just_pressed(int key, int delay, bool null_is_true)
 	return keys[key] && frames[key] + delay / 2 >= current_frame;
 }
 
-void input_system::process_binds() {
-	if (key_binds.empty())
-		return;
-
-	for (auto& i : key_binds) {
-		switch (i.second.bind_type) {
-		case bind_type::pressed: {
-			*i.second.bind_var = is_key_pressed(*i.second.key, 0);
-			break;
-		}
-		case bind_type::just_pressed: {
-			*i.second.bind_var = is_key_just_pressed(*i.second.key, 0);
-			break;
-		}
-		}
+bool resolve_type_as_bind(bind_system::bind_type type, uint32_t key) {
+	switch (type) {
+	case bind_system::bind_type::none:
+		return false;
+	case bind_system::bind_type::active:
+		return true;
+	case bind_system::bind_type::pressed:
+		return input_system::is_key_pressed(key);
+	case bind_system::bind_type::toggle:
+		return input_system::is_key_just_pressed(key, 1);
+	default:
+			return false;
 	}
+	
+}
+
+void input_system::process_binds() {
+	//std::unique_lock l(input_mutex);
+	
+	for (auto& i : bind_system::bool_binds)
+		for (auto& j : i.second)
+			*j.value = resolve_type_as_bind((bind_system::bind_type)j.type, j.key);
 }
 
 void input_system::on_windpoc(int msg, int wparam, int lparam)

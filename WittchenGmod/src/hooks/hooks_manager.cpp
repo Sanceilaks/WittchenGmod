@@ -165,6 +165,7 @@ void hooks_manager::create_hook(void* target, void* detour, void** original) {
 
 
 long end_scene_hook::hook(IDirect3DDevice9* device) {
+	input_system::process_binds();
 	auto ret = original(device);
 	render_system::on_present(device, (uintptr_t)_ReturnAddress());
 	return ret;
@@ -252,7 +253,6 @@ auto paint_traverse_hook::hook(i_panel* self, void* panel, bool force_repaint, b
 
 LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param)
 {
-	input_system::process_binds();
 	input_system::on_windpoc(message_type, w_param, l_param);
 	if (message_type == WM_CLOSE) {
 		hack_utils::unload_hack();

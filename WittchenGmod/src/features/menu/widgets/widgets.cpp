@@ -7,44 +7,27 @@
 #include "../../esp/esp.h"
 #include "../../../render_system/render_system.h"
 #include "../../../render_system/render_helpers.h"
+#include "../../../utils/input_system.h"
 
 using namespace ImGui;
 
 bool ImGui::WittchenCheckbox(const std::string& name, const std::string& var) {
-	static float animations[100000000];
-	
-	auto& v = settings::get_bool(var);
-	auto id = GenerateAnimationId();
-	auto io = GetIO();
+	return WittchenCheckbox(name, &settings::get_bool(var));
+}
 
-	auto bc = GetStyleColorVec4(ImGuiCol_Border);
-	auto bcs = GetStyleColorVec4(ImGuiCol_BorderShadow);
-	bc.w = animations[id];
-	bcs.w = 0.f;
-	
-	PushStyleColor(ImGuiCol_Border, bc);
-	PushStyleColor(ImGuiCol_BorderShadow, bcs);
-	PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.f);
-	auto ret = Checkbox(name.c_str(), &v);
-	PopStyleVar();
-	PopStyleColor(2);
-	
-	if (IsItemHovered()) {
-		animations[id] = ImMin(animations[id] + io.DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 1.f);
-	} else {
-		animations[id] = ImMax(animations[id] - io.DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 0.f);
-	}
-
-	return ret;
+ImVec2 CalcBindListPopupChildSize() {
+	auto ts = CalcTextSize("AAA").y;
+	ts += GetStyle().ItemSpacing.y * 2 + GetStyle().ItemInnerSpacing.y * 2 + GetStyle().WindowPadding.y;
+	return { GetWindowSize().x, GetWindowSize().y - ts * 2 };
 }
 
 bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	static float animations[100000000];
-
+	
 	auto& v = *var;
 	auto id = GenerateAnimationId();
 	auto io = GetIO();
-
+	
 	auto bc = GetStyleColorVec4(ImGuiCol_Border);
 	auto bcs = GetStyleColorVec4(ImGuiCol_BorderShadow);
 	bc.w = animations[id];
@@ -57,6 +40,8 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	PopStyleVar();
 	PopStyleColor(2);
 
+	auto check_box_id = GetCurrentWindow()->DC.LastItemId;
+	
 	if (IsItemHovered()) {
 		animations[id] = ImMin(animations[id] + io.DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 1.f);
 	}
@@ -64,6 +49,32 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 		animations[id] = ImMax(animations[id] - io.DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 0.f);
 	}
 
+	if (BeginPopupContextItem()) {
+		auto bind_id = bind_system::generate_bind_id(check_box_id);
+		
+		auto& current_binds = bind_system::bool_binds[bind_id];
+		BeginChild("CHECKBOX_BINDS_CHILD", {300, 100});
+		PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4 });
+		auto n = 0;
+		for (auto& i : current_binds) {
+			Hotkey(("##KEY" + std::to_string(check_box_id) + std::to_string(n * 99)).c_str(), &i.key, {120.f, 0});
+			SameLine();
+			
+			PushItemWidth(120.f);
+			Combo(("##BINDTYPE" + std::to_string(check_box_id) + std::to_string(n * 99)).c_str(), &i.type, bind_system::bind_type_string, 4);
+			PopItemWidth();
+			n++;
+		}
+		PopStyleVar();
+		EndChild();
+		
+		if (CenterButton("Add", { GetContentRegionAvail().x, 20.f })) {
+			input_system::add_bind(bind_id, 0, &v, bind_system::bind_type::none);
+		}
+		
+		EndPopup();
+	}
+	
 	return ret;
 }
 
@@ -105,7 +116,7 @@ Wittchen::WitthcenEspStyleEditor* Wittchen::GetWittchenEspStyleEditor() {
 
 void Wittchen::InitializeEspStyleEditor() {
 	g_style_editor.temp_box.min = { 0, 0 };
-	g_style_editor.temp_box.max = { 100, 300 };
+	g_style_editor.temp_box.max = { 200, 300 };
 
 	g_style_editor.temp_box.text_storage.strings.insert({ esp::c_esp_box::generate_id(), esp::esp_text_t{
 		"%name", 0, -1.f, colors::white_color, true, (int)esp::e_esp_text_position::top
