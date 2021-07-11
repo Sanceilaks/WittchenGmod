@@ -13,6 +13,7 @@
 #include "../globals.h"
 
 #include "../features/menu/themes.h"
+#include "../features/menu/widgets/widgets.h"
 
 #include "fonts/nunito_font.h"
 
@@ -50,6 +51,8 @@ void render_system::init() {
         ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
     	
         menu_themes::standard_theme();
+
+        Wittchen::InitializeEspStyleEditor();
     }
 
     render_system_initialized = true;

@@ -26,7 +26,7 @@ struct bool_bind_t {
 std::map<std::string, bool_bind_t> key_binds;
 
 auto find_bind(const std::string& name) {
-	return std::find_if(key_binds.begin(), key_binds.end(), [name](const auto& it) {
+	return std::find_if(key_binds.begin(), key_binds.end(), [&](const auto& it) {
 		return it.first == name;
 		});
 }

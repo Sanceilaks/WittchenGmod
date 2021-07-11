@@ -356,5 +356,8 @@
     <ClInclude Include="src\game_sdk\interfaces\debugoverlay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\imaterialsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

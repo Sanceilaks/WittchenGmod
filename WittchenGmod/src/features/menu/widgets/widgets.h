@@ -1,6 +1,8 @@
 #pragma once
 
 #include <mutex>
+#include <queue>
+
 #include <imgui/im_tools.h>
 
 #include "../../esp/esp.h"
@@ -8,31 +10,17 @@
 
 namespace ImGui {
 	IMGUI_API bool WittchenCheckbox(const std::string& name, const std::string& var);
+	IMGUI_API bool WittchenCheckbox(const std::string& name, bool* var);
 	IMGUI_API void BeginApplyAlpha(float alpha);
 	IMGUI_API void EndApplyAlpha();
 
+	IMGUI_API bool ColorsEdit4(const std::string& str_id, c_color& color, ImGuiColorEditFlags flags);
 }
 
 namespace Wittchen {
 	struct WitthcenEspStyleEditor {
-		struct TextStorage {
-			std::string text;
-			int flags;
-			float size;
-			c_color color;
-			bool is_auto_color = false;
-		};
-		struct Strings {
-			std::vector<TextStorage> top;
-			std::vector<TextStorage> bottom;
-			std::vector<TextStorage> right;
-			std::vector<TextStorage> left;
-
-			void Clear();
-		};
-
-		Strings strings;
 		std::mutex esp_editor_mutex;
+		esp::c_esp_box temp_box;
 		
 		WitthcenEspStyleEditor() = default;
 
@@ -46,5 +34,5 @@ namespace Wittchen {
 	
 	void ApplyStyleToBox(esp::c_esp_box& box);
 
-	void DrawEspPreview();
+	void DrawEspEditor();
 }

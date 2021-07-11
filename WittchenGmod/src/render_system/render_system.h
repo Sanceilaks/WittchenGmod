@@ -14,6 +14,7 @@ namespace render_system {
 
 		inline ImFont* arial_font;
 	}
+
 	
 	void init();
 	IDirect3DDevice9* get_device();
