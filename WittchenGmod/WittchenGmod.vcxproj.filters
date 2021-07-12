@@ -135,6 +135,9 @@
     <ClCompile Include="src\utils\game_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\features\aimbot\aimbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\interfaces.h">
@@ -357,6 +360,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\game_sdk\interfaces\imaterialsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\aimbot\aimbot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

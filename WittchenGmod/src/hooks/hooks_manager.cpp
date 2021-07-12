@@ -121,7 +121,7 @@ void hook_dx() {
 	if (init(kiero::RenderType::D3D9) == kiero::Status::Success) {
 		kiero::bind(end_scene_hook::idx, (void**)&end_scene_hook::original, end_scene_hook::hook);
 		kiero::bind(reset_hook::idx, (void**)&reset_hook::original, reset_hook::hook);
-		kiero::bind(reset_hook::idx, (void**)&reset_hook::original, reset_hook::hook);
+		kiero::bind(present_hook::idx, (void**)&present_hook::original, present_hook::hook);
 	}
 }
 
@@ -166,8 +166,8 @@ void hooks_manager::create_hook(void* target, void* detour, void** original) {
 
 long end_scene_hook::hook(IDirect3DDevice9* device) {
 	input_system::process_binds();
-	auto ret = original(device);
-	render_system::on_present(device, (uintptr_t)_ReturnAddress());
+	const auto ret = original(device);;
+	render_system::on_end_scene(device, (uintptr_t)_ReturnAddress());
 	return ret;
 }
 
@@ -254,6 +254,8 @@ auto paint_traverse_hook::hook(i_panel* self, void* panel, bool force_repaint, b
 LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param)
 {
 	input_system::on_windpoc(message_type, w_param, l_param);
+	input_system::process_binds();
+	
 	if (message_type == WM_CLOSE) {
 		hack_utils::unload_hack();
 		return true;
@@ -270,7 +272,6 @@ LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message
 	//ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param);
 	if (ImGui_ImplWin32_WndProcHandler(window, message_type, w_param, l_param) && menu::menu_is_open())
 	{
-		input_system::process_binds();
 		return true;
 	}
 

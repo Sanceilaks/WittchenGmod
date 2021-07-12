@@ -17,6 +17,8 @@
 
 #include "fonts/nunito_font.h"
 
+#include <d3d9helper.h>
+
 IDirect3DDevice9* game_device;
 bool render_system_initialized = false;
 std::mutex render_mutex;
@@ -62,7 +64,7 @@ IDirect3DDevice9* render_system::get_device() {
 	return game_device;
 }
 
-void render_system::on_present(LPDIRECT3DDEVICE9 device, uintptr_t return_address) {
+void render_system::on_end_scene(LPDIRECT3DDEVICE9 device, uintptr_t return_address) {
     static uintptr_t game_overlay_return_address = 0;
 	
 	if (!game_device) game_device = device;
@@ -81,6 +83,9 @@ void render_system::on_present(LPDIRECT3DDEVICE9 device, uintptr_t return_addres
     }
    // if (game_overlay_return_address != (uintptr_t)return_address && settings::states["other::anti_obs"])
        // return;
+
+    device->SetRenderTarget(0, 0);
+   // interfaces::mat_render_context->set_render_target(0);
 	
     IDirect3DStateBlock9* pixel_state = NULL;
     IDirect3DVertexDeclaration9* vertex_declaration;
@@ -110,8 +115,7 @@ void render_system::on_present(LPDIRECT3DDEVICE9 device, uintptr_t return_addres
 
     menu::draw_menu();
 	
-    auto* list = ImGui::GetBackgroundDrawList();
-    directx_render::add_temp_to_draw_list(list);
+    directx_render::add_temp_to_draw_list(ImGui::GetBackgroundDrawList());
 	
     ImGui::EndFrame();
     ImGui::Render();
@@ -244,6 +248,52 @@ void directx_render::corner_box(const ImVec2& min, const ImVec2& max, c_color co
 
         line(center, { center.x + add.x, center.y }, color);
         line(center, { center.x, center.y + add.y }, color);
+    };
+
+    auto w = max.x - min.x;
+    auto h = max.y - min.y;
+    const ImVec2 side_sizes = { w / 3.f, h / 3.f };
+
+    for (auto i = 0; i < points.size(); ++i)
+    {
+        auto point = points[i];
+        switch (i)
+        {
+        case 0:
+            draw_corner(point, side_sizes, color);
+            break;
+        case 1:
+            draw_corner(point, { side_sizes.x, -side_sizes.y }, color);
+            break;
+        case 2:
+            draw_corner(point, { -side_sizes.x, -side_sizes.y }, color);
+            break;
+        case 3:
+            draw_corner(point, { -side_sizes.x, side_sizes.y }, color);
+            break;
+        }
+    }
+}
+
+void imgui_render::corner_box(ImDrawList* list, const ImVec2& min, const ImVec2& max, c_color color) {
+    std::array<ImVec2, 4> points = {
+min,  ImVec2{min.x, max.y}, max,  ImVec2{max.x, min.y}
+    };
+
+    auto draw_corner = [&](const ImVec2& center, const ImVec2& add, c_color color)
+    {
+        ImVec2 inline_padding = { add.x < 0.f ? -1.f : 1.f, add.y < 0.f ? -1.f : 1.f };
+
+        list->AddLine({ center.x + inline_padding.x, center.y + inline_padding.y }, { center.x + add.x/* + inline_padding.x*/, center.y + inline_padding.y }, colors::black_color.get_u32());
+        list->AddLine({ center.x + inline_padding.x, center.y + inline_padding.y }, { center.x + inline_padding.x, center.y + add.y/* + inline_padding.y */ }, colors::black_color.get_u32());
+
+        inline_padding = { -inline_padding.x, -inline_padding.y };
+
+        list->AddLine({ center.x + inline_padding.x, center.y + inline_padding.y }, { center.x + add.x/* + inline_padding.x*/, center.y + inline_padding.y }, colors::black_color.get_u32());
+        list->AddLine({ center.x + inline_padding.x, center.y + inline_padding.y }, { center.x + inline_padding.x, center.y + add.y /*+ inline_padding.y */ }, colors::black_color.get_u32());
+        
+        list->AddLine(center, { center.x + add.x, center.y }, color);
+        list->AddLine(center, { center.x, center.y + add.y }, color);
     };
 
     auto w = max.x - min.x;

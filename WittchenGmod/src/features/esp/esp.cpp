@@ -139,7 +139,7 @@ ImVec2 esp::c_esp_box::calc_text_position(const c_esp_box& box, esp_text_t& text
 		auto& last_position = last_positions[(int)esp::e_esp_text_position::left];
 		auto font_size = (text.size == -1 || text.size == 0) ? calc_font_size(box) : text.size;
 		auto text_size = render_system::fonts::nunito_font[2]->CalcTextSizeA(font_size, FLT_MAX, 0.f, text.text.c_str());
-		ImVec2 base_position = { -text_size.x - (text_size.y), 0 };
+		ImVec2 base_position = { -text_size.x - (text_size.y / 2.f), 0 };
 		ImVec2 position = { base_position.x, last_position.y != -1.f ? last_position.y + text_size.y : base_position.y };
 
 		last_position = position;
@@ -181,7 +181,7 @@ void render_strings_for_players(esp::c_esp_box& box, c_base_player* player) {
 	{
 		for (auto& i : box.text_storage.strings) {
 			auto position = esp::c_esp_box::calc_text_position(box, i.second, box.text_storage.last_positions);
-			const auto font_size = i.second.size == -1 ? calc_font_size(box) : i.second.size;
+			const auto font_size = (i.second.size == -1 || i.second.size == 0) ? calc_font_size(box) : i.second.size;
 			directx_render::text(render_system::fonts::nunito_font[2], i.second.text, box.get_screen_position(position), font_size, i.second.color, i.second.flags);
 		}
 	}
@@ -199,7 +199,18 @@ void esp::draw_esp() {
 		Wittchen::ApplyStyleToBox(box);
 
 		render_strings_for_players(box, p);
-		
-		directx_render::bordered_rect(box.min, box.max, box.color, box.rounding);
+
+		switch ((box_type)box.type) {
+		case box_type::filled:
+			directx_render::bordered_rect(box.min, box.max, box.color, box.rounding);
+			break;
+		case box_type::border:
+			directx_render::bordered_rect({ box.min.x - 1.f, box.min.y - 1.f }, { box.max.x + 1.f, box.max.y + 1.f }, box.border_color, box.rounding);
+			directx_render::bordered_rect({ box.min.x + 1.f, box.min.y + 1.f }, { box.max.x - 1.f, box.max.y - 1.f }, box.border_color, box.rounding);
+			directx_render::bordered_rect(box.min, box.max, box.color, box.rounding);
+			break;
+		case box_type::corner:
+			directx_render::corner_box(box.min, box.max, box.color);
+		}
 	}
 }

@@ -33,6 +33,13 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	bc.w = animations[id];
 	bcs.w = 0.f;
 
+	auto check_box_id = GetCurrentWindow()->GetID(name.c_str());
+	auto bind_id = bind_system::generate_bind_id(check_box_id);
+	
+	if (!bind_system::bool_binds[bind_id].empty() && bind_system::bool_binds[bind_id][0].type != (int)bind_system::bind_type::none)
+		bc.x = animations[id];
+	
+	
 	PushStyleColor(ImGuiCol_Border, bc);
 	PushStyleColor(ImGuiCol_BorderShadow, bcs);
 	PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.f);
@@ -40,7 +47,7 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	PopStyleVar();
 	PopStyleColor(2);
 
-	auto check_box_id = GetCurrentWindow()->DC.LastItemId;
+	
 	
 	if (IsItemHovered()) {
 		animations[id] = ImMin(animations[id] + io.DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 1.f);
@@ -50,11 +57,13 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	}
 
 	if (BeginPopupContextItem()) {
-		auto bind_id = bind_system::generate_bind_id(check_box_id);
-		
 		auto& current_binds = bind_system::bool_binds[bind_id];
-		BeginChild("CHECKBOX_BINDS_CHILD", {300, 100});
+		if (current_binds.empty())
+			input_system::add_bind(bind_id, 0, &v, bind_system::bind_type::none);
+		
+		//BeginChild("CHECKBOX_BINDS_CHILD", {300, 100});
 		PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4 });
+		
 		auto n = 0;
 		for (auto& i : current_binds) {
 			Hotkey(("##KEY" + std::to_string(check_box_id) + std::to_string(n * 99)).c_str(), &i.key, {120.f, 0});
@@ -66,11 +75,8 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 			n++;
 		}
 		PopStyleVar();
-		EndChild();
-		
-		if (CenterButton("Add", { GetContentRegionAvail().x, 20.f })) {
-			input_system::add_bind(bind_id, 0, &v, bind_system::bind_type::none);
-		}
+
+		Text("Bind id is %i", bind_id);
 		
 		EndPopup();
 	}
@@ -117,12 +123,14 @@ Wittchen::WitthcenEspStyleEditor* Wittchen::GetWittchenEspStyleEditor() {
 void Wittchen::InitializeEspStyleEditor() {
 	g_style_editor.temp_box.min = { 0, 0 };
 	g_style_editor.temp_box.max = { 200, 300 };
-
+	g_style_editor.temp_box.color = colors::white_color;
+	g_style_editor.temp_box.border_color = colors::black_color;
+	
 	g_style_editor.temp_box.text_storage.strings.insert({ esp::c_esp_box::generate_id(), esp::esp_text_t{
-		"%name", 0, -1.f, colors::white_color, true, (int)esp::e_esp_text_position::top
+		"%name", directx_render::e_font_flags::font_outline, -1.f, colors::white_color, true, (int)esp::e_esp_text_position::top
 	} });
 	g_style_editor.temp_box.text_storage.strings.insert({ esp::c_esp_box::generate_id(), esp::esp_text_t{
-	"%health", 0, -1.f, colors::white_color, true, (int)esp::e_esp_text_position::right
+	"%health", directx_render::e_font_flags::font_outline, -1.f, colors::white_color, true, (int)esp::e_esp_text_position::right
 	} });
 	
 }
@@ -133,6 +141,8 @@ void Wittchen::ApplyStyleToBox(esp::c_esp_box& box) {
 	//box style
 	box.color = g_style_editor.temp_box.color;
 	box.rounding = g_style_editor.temp_box.rounding;
+	box.type = g_style_editor.temp_box.type;
+	box.border_color = g_style_editor.temp_box.border_color;
 	
 	//text applying
 	box.text_storage.strings = g_style_editor.temp_box.text_storage.strings;
@@ -168,6 +178,22 @@ int getDownSize() {
 		}
 	}
 	return n;
+}
+
+float getLeftSize(ImFont* font, float ts) {
+	auto s = 3;
+	for (auto& i : g_style_editor.temp_box.text_storage.strings) {
+		if (i.second.relative_position == (int)esp::e_esp_text_position::left && i.second.text.length() > s) {
+			s = i.second.text.length();
+		}
+	}
+
+	std::string st;
+	for (auto i = 0; i <= s; ++i) {
+		st += "A";
+	}
+	
+	return font->CalcTextSizeA(ts, FLT_MAX, 0, st.c_str()).x;
 }
 
 void renderEspText(const esp::esp_text_t& text, ImFont* font, float size, const ImVec2& pos) {
@@ -251,13 +277,18 @@ void Wittchen::DrawEspEditor() {
 			Dummy({ GetContentRegionAvail().x, text_size.y* getTopSize() }); //top
 			CustomiseEspTextDropTarget(0);
 			
-			Dummy({text_size.x, box_size.y }); SameLine(); //left
+			Dummy({getLeftSize(render_system::fonts::nunito_font[2], 16.f), box_size.y }); SameLine(); //left
 			CustomiseEspTextDropTarget(3);
 			
 			InvisibleButton("BoxDummy", box_size); SameLine(); center_pos = GetItemRectMin(); //center
 			if (BeginPopupContextItem()) {
 				ColorsEdit4("Box color##ESPBOXCOLOR", g_style_editor.temp_box.color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview);
 				SliderFloat("Rounding##ESPBOX_ROUNDING", &g_style_editor.temp_box.rounding, 0.f, 12.f, "%.0f", 1.f);
+				constexpr const char* const types[] = {"filled", "border", "corner"};
+				Combo("Box type##ESPBOXTYPE", &g_style_editor.temp_box.type, types, 3);
+				if (g_style_editor.temp_box.type == (int)esp::box_type::border)
+					ColorsEdit4("Border color##ESPBOXCOLOR", g_style_editor.temp_box.border_color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview);
+					
 				
 				EndPopup();
 			}
@@ -271,12 +302,28 @@ void Wittchen::DrawEspEditor() {
 			
 			PopStyleVar(2);
 
-			GetWindowDrawList()->AddRect(center_pos, { center_pos.x + box_size.x, center_pos.y + box_size.y },
-				g_style_editor.temp_box.color.get_u32(), temp_box.rounding);
-
 			temp_box.min = center_pos;
 			temp_box.max = { center_pos.x + box_size.x, center_pos.y + box_size.y };
 
+
+			{
+
+				switch ((esp::box_type)temp_box.type) {
+				case esp::box_type::filled:
+					GetWindowDrawList()->AddRect(temp_box.min, temp_box.max, temp_box.color.get_u32(), temp_box.rounding);
+					break;
+				case esp::box_type::border:
+					GetWindowDrawList()->AddRect({ temp_box.min.x - 1.f, temp_box.min.y - 1.f }, { temp_box.max.x + 1.f, temp_box.max.y + 1.f }, temp_box.border_color, temp_box.rounding);
+					GetWindowDrawList()->AddRect({ temp_box.min.x + 1.f, temp_box.min.y + 1.f }, { temp_box.max.x - 1.f, temp_box.max.y - 1.f }, temp_box.border_color, temp_box.rounding);
+					GetWindowDrawList()->AddRect(temp_box.min, temp_box.max, temp_box.color.get_u32(), temp_box.rounding);
+					break;
+				case esp::box_type::corner: {
+					imgui_render::corner_box(GetWindowDrawList(), temp_box.min, temp_box.max, temp_box.color);
+					break;
+				}
+				}
+			}
+			
 			//format strings first
 			for (auto& i : temp_box.text_storage.strings) {
 				if (i.second.is_auto_color) {

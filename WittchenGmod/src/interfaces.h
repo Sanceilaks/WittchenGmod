@@ -8,6 +8,7 @@
 #include "game_sdk/interfaces/lua_shared.h"
 #include "game_sdk/interfaces/i_panel.h"
 #include "game_sdk/interfaces/debugoverlay.h"
+#include "game_sdk/interfaces/imaterialsystem.h"
 
 namespace interfaces {
 	inline c_engine_client* engine;
@@ -18,6 +19,8 @@ namespace interfaces {
 	inline c_lua_shared* lua_shared;
 	inline i_panel* panel;
 	inline i_debug_overlay* debug_overlay;
+	inline i_mat_render_context* mat_render_context;
+	inline i_material_system* material_system;
 	
 	void init_interfaces();
 }

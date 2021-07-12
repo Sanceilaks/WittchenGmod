@@ -19,9 +19,12 @@ namespace render_system {
 	void init();
 	IDirect3DDevice9* get_device();
 
-	void on_present(LPDIRECT3DDEVICE9 device, uintptr_t return_address);
+	void on_end_scene(LPDIRECT3DDEVICE9 device, uintptr_t return_address);
 }
 
+namespace imgui_render {
+	void corner_box(ImDrawList* list, const ImVec2& min, const ImVec2& max, c_color color);
+}
 
 namespace directx_render
 {

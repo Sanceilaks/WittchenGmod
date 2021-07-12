@@ -183,6 +183,7 @@
     <ClCompile Include="deps\include\minpp\minhook\hook.c" />
     <ClCompile Include="deps\include\minpp\minhook\trampoline.c" />
     <ClCompile Include="deps\include\platform_folders.cpp" />
+    <ClCompile Include="src\features\aimbot\aimbot.cpp" />
     <ClCompile Include="src\features\esp\esp.cpp" />
     <ClCompile Include="src\features\lua_futures\lua_futures.cpp" />
     <ClCompile Include="src\features\menu\menu.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="deps\include\minpp\minhook\minhook.h" />
     <ClInclude Include="deps\include\minpp\minhook\trampoline.h" />
     <ClInclude Include="deps\include\platform_folders.h" />
+    <ClInclude Include="src\features\aimbot\aimbot.h" />
     <ClInclude Include="src\features\esp\esp.h" />
     <ClInclude Include="src\features\lua_futures\lua_futures.h" />
     <ClInclude Include="src\features\menu\animations\fadeanimation.h" />

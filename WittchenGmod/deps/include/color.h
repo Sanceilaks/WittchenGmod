@@ -28,6 +28,16 @@ public:
 	[[nodiscard]] ImU32 get_u32() const;
 	[[nodiscard]] ImVec4 get_vec4() const;
 	[[nodiscard]] std::array<float, 4> get_clamped() const;
+
+	inline operator ImU32() const {
+        return get_u32();
+	}
+
+	inline operator ImVec4() const {
+        return get_vec4();
+	}
+
+	
 };
 
 inline c_color::c_color() = default;
