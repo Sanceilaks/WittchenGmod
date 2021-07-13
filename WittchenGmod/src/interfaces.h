@@ -9,6 +9,8 @@
 #include "game_sdk/interfaces/i_panel.h"
 #include "game_sdk/interfaces/debugoverlay.h"
 #include "game_sdk/interfaces/imaterialsystem.h"
+#include "game_sdk/interfaces/convar.h"
+#include "game_sdk/interfaces/random_stream.h"
 
 namespace interfaces {
 	inline c_engine_client* engine;
@@ -21,6 +23,8 @@ namespace interfaces {
 	inline i_debug_overlay* debug_overlay;
 	inline i_mat_render_context* mat_render_context;
 	inline i_material_system* material_system;
+	inline c_cvar* cvar;
+	inline c_uniform_random_stream* random_stream;
 	
 	void init_interfaces();
 }

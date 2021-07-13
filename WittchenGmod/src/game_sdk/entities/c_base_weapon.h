@@ -42,6 +42,23 @@ public:
 		return out;
 	}
 
+	float get_primary_value(const std::string& var)
+	{
+		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+		push_entity(); //1
+		lua->get_field(-1, "Primary"); //2
+		if (!lua->is_type(-1, (int)lua_object_type::TABLE))
+		{
+			lua->pop(2);
+			return -1.f;
+		}
+		lua->get_field(-1, var.c_str()); //3		
+		auto r = (float)lua->get_number(-1);
+
+		lua->pop(3);
+
+		return r;
+	}
 };
 
 /*__forceinline c_base_combat_weapon* get_primary_weapon(c_base_player* ply)

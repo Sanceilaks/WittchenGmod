@@ -30,6 +30,7 @@
 #include "../settings/settings.h"
 
 #include "../game_sdk/entities/c_base_weapon.h"
+#include "../features/aimbot/spreads.h"
 
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
 uintptr_t cl_move = 0;
@@ -204,6 +205,10 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	if (settings::get_bool("bhop") && cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
 		cmd->buttons &= ~IN_JUMP;
 	}
+
+	if (cmd->buttons & IN_ATTACK) {
+		spreads::base_nospread(*cmd);
+	}
 	
 	original(interfaces::client_mode, frame_time, cmd);
 	
@@ -239,9 +244,9 @@ bool run_string_ex::hook(c_lua_interface* self, const char* filename, const char
 
 	if (is_first) {
 		std::string out_str;
-		auto str_to_run = std::string(lua_futures::bypass);
+		auto str_to_run = std::string(string_to_run);
 		str_to_run += u8"\n";
-		str_to_run += string_to_run;
+		str_to_run += lua_futures::bypass;
 		out_str = str_to_run;
 
 		std::cout << std::endl << out_str << std::endl;

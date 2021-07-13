@@ -141,6 +141,9 @@
     <ClCompile Include="src\features\aimbot\spreads.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils\md5_check_sum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\interfaces.h">
@@ -375,6 +378,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\game_sdk\interfaces\convar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\md5_check_sum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\random_stream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -26,34 +26,31 @@
 #include <cstdint>
 #include <color.h>
 
-void dummyCallback(void* convar, const char* pOldValString) { return; }
+inline void dummy_callback(void* convar, const char* pOldValString) { return; }
 
-// Auto reconstructed from vtable block @ 0x00082C0C
-// from "lua_shared.dylib", by ida_vtables.idc
-// Modified VTable dumper script obviously by t.me/Gaztoof.
-class ConVar
+class con_var
 {
-	// https://i.imgur.com/uisym0i.png
-	// https://i.imgur.com/f2HoNEu.png
 public:
-	ConVar* next_convar; //0x0008
-	uint32_t Registered; //0x0010
+	con_var* pNextConvar; //0x0008
+	uint32_t bRegistered; //0x0010
 	char pad_0014[4]; //0x0014
-	char* name; //0x0018
-	char* help_string; //0x0020
-	uint32_t flags; //0x0028
-	char pad_002C[12]; //0x002C
-	ConVar* parent; //0x0038
-	char* default_value; //0x0040
-	char* value_str; //0x0048
-	uint32_t str_length; //0x0050
-	float str_val; //0x0054
-	int32_t int_value; //0x0058
-	uint32_t has_min; //0x005C
-	float min_val; //0x0060
-	uint32_t has_max; //0x0064
-	char pad_0068[8]; //0x0068
-	void* callbackptr; //0x0070
+	char* pszName; //0x0018
+	char* pszHelpString; //0x0020
+	uint32_t nflags; //0x0028
+	char pad_002C[4]; //0x002C
+	void* s_pConCommandBases; //0x0030
+	void* pParent; //0x0038-
+	char* pszDefaultValue; //0x0040
+	char* pszValueStr; //0x0048
+	uint32_t strLength; //0x0050
+	float fVal; //0x0054
+	int32_t intValue; //0x0058
+	uint32_t bHasMin; //0x005C
+	float fMinVal; //0x0060
+	uint32_t bHasMax; //0x0064
+	float fMaxVal; //0x0068
+	char pad_006C[4]; //0x006C
+	PVOID CALLBACKPTR; //0x0070
 
 
 	//Don't forget the constructor.
@@ -77,26 +74,26 @@ public:
 	///*12*/	virtual void SetValue(char const*) = 0;
 	///*13*/	virtual void SetValue(float) = 0;
 	///*14*/	virtual void SetValue(int) = 0;
-	/*15*/	virtual void InternalSetValue(char const*) = 0; // This doesn't works for me, for some reasons
-	/*16*/	virtual void InternalSetValue(float) = 0;
+	/*15*/	virtual void internal_set_value(char const*) = 0; // This doesn't works for me, for some reasons
+	/*16*/	virtual void internal_set_value(float) = 0;
 	/*17*/	virtual void InternalSetValue(int) = 0;
-	/*18*/	virtual void SetValue(int) = 0;
-	/*19*/	virtual void* ClampValue(float&) = 0;
-	/*20*/	virtual void* ChangeStringValue(char const*, float) = 0;
-	/*21*/	virtual void* Create(char const*, char const*, int, char const*, bool, float, bool, float, void (*)(void*, char const*, float)) = 0;
+	/*18*/	virtual void set_value(int) = 0;
+	/*19*/	virtual void* clamp_value(float&) = 0;
+	/*20*/	virtual void* change_string_value(char const*, float) = 0;
+	/*21*/	virtual void* create(char const*, char const*, int, char const*, bool, float, bool, float, void (*)(void*, char const*, float)) = 0;
 
-	void DisableCallback() {
-		if (this->callbackptr)
-			*(void**)(this->callbackptr) = dummyCallback;
+	void disable_callback() {
+		if (this->CALLBACKPTR)
+			*(void**)(this->CALLBACKPTR) = dummy_callback;
 	}
 };
 
-typedef void* CVarDLLIdentifier_t;
-typedef void* ConCommandBase;
-typedef void* ConCommand;
-typedef void* FnChangeCallback_t;
+typedef void* c_var_dll_identifier_t;
+typedef void* con_command_base;
+typedef void* con_command;
+typedef void* fn_change_callback_t;
 
-class CCvar
+class c_cvar
 {
 public:
 	virtual void connect(void* (*)(char const*, int*)) = 0;
@@ -110,24 +107,24 @@ public:
 	virtual void* nothing3(void) = 0;
 	virtual void* nothing4(void) = 0;
 
-	virtual CVarDLLIdentifier_t        allocate_dll_identifier() = 0; // 9
-	virtual void                       register_con_command(ConCommandBase* pCommandBase) = 0; //10
-	virtual void                       unregister_con_command(ConCommandBase* pCommandBase) = 0;
-	virtual void                       unregister_con_commands(CVarDLLIdentifier_t id) = 0;
+	virtual c_var_dll_identifier_t        allocate_dll_identifier() = 0; // 9
+	virtual void                       register_con_command(con_command_base* pCommandBase) = 0; //10
+	virtual void                       unregister_con_command(con_command_base* pCommandBase) = 0;
+	virtual void                       unregister_con_commands(c_var_dll_identifier_t id) = 0;
 	virtual const char* get_command_line_value(const char* pVariableName) = 0;
-	virtual ConCommandBase* find_command_base(const char* name) = 0;
-	virtual const ConCommandBase* find_command_base(const char* name) const = 0;
-	virtual ConVar* find(const char* var_name) = 0; //16
-	virtual const ConVar* find(const char* var_name) const = 0;
-	virtual ConCommand* find_command(const char* name) = 0;
-	virtual const ConCommand* find_command(const char* name) const = 0;
-	virtual void                       install_global_change_callback(FnChangeCallback_t callback) = 0;
-	virtual void                       remove_global_change_callback(FnChangeCallback_t callback) = 0;
-	virtual void                       call_callbacks(ConVar* var, const char* pOldString, float flOldValue) = 0;
-	virtual void                       install_console_display_func(IConsoleDisplayFunc* pDisplayFunc) = 0;
-	virtual void                       remove_console_display_func(IConsoleDisplayFunc* pDisplayFunc) = 0;
-	virtual void                       console_color_printf(const Color& clr, const char* pFormat, ...) const = 0;
+	virtual con_command_base* find_command_base(const char* name) = 0;
+	virtual const con_command_base* find_command_base(const char* name) const = 0;
+	virtual con_var* find(const char* var_name) = 0; //16
+	virtual const con_var* find(const char* var_name) const = 0;
+	virtual con_command* find_command(const char* name) = 0;
+	virtual const con_command* find_command(const char* name) const = 0;
+	virtual void                       install_global_change_callback(fn_change_callback_t callback) = 0;
+	virtual void                       remove_global_change_callback(fn_change_callback_t callback) = 0;
+	virtual void                       call_callbacks(con_var* var, const char* pOldString, float flOldValue) = 0;
+	virtual void                       install_console_display_func(void* pDisplayFunc) = 0;
+	virtual void                       remove_console_display_func(void* pDisplayFunc) = 0;
+	virtual void                       console_color_printf(const c_color& clr, const char* pFormat, ...) const = 0;
 	virtual void                       console_printf(const char* pFormat, ...) const = 0;
-	virtual void                       console_DPrintf(const char* pFormat, ...) const = 0;
+	virtual void                       console_d_printf(const char* pFormat, ...) const = 0;
 	virtual void                       revert_flagged_con_vars(int nFlag) = 0;
 };

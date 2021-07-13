@@ -36,6 +36,19 @@ void lua_futures::run_all_code() {
 
 std::string lua_futures::bypass = u8R"(
 
+local old_debug_getinfo = debug.getinfo;
+debug.getinfo = function(function_or_stack_level, fields)
+    local data = old_debug_getinfo(function_or_stack_level, fields);
+
+    if(function_or_stack_level == _G.RunConsoleCommand || function_or_stack_level == _G.debug.getinfo) then
+        data.source = "=[C]";
+        data.what = "C";
+    end
+
+    return data;
+end
+
+local _isfunction = isfunction
 local _string_sub = string.sub
 local _istable = istable
 local _pairs = pairs
@@ -85,5 +98,6 @@ iter(_R.Entity, "_R.Entity")
 iter(_R.Player, "_R.Player")
 iter(_R.File, "_R.File")
 iter(_R.ConVar, "_R.ConVar")
+iter(_R.Weapon, "_R.Weapon")
 
 )";
