@@ -2,6 +2,12 @@
 
 #include "c_base_entity.h"
 
+#include <algorithm>
+
+#include "lemi_utils.h"
+
+class c_base_combat_weapon;
+
 class c_base_player : public c_base_entity {
 public:
 	NETVAR("DT_BasePlayer", "m_fFlags", get_flags, int);
@@ -31,16 +37,17 @@ public:
 		return info.name;
 	}
 
-	/*bool is_admin()
+	bool is_admin()
 	{
 		auto str = get_user_group();
+		lowercase(str);
 		return str.find("admin") != std::string::npos || str.find("owner") != std::string::npos
 			|| str.find("king") != std::string::npos || str.find("moder") != std::string::npos || str.find("root") != std::string::npos;
-	}*/
+	}
 
-	/*std::string get_team_name()
+	std::string get_team_name()
 	{
-		auto glua = interfaces::lua_shared->get_interface((int)e_special::glob);
+		auto glua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
 		if (!glua)
 			return {};
 		c_lua_auto_pop p(glua);
@@ -54,9 +61,45 @@ public:
 		return glua->get_string();
 	}
 
+	c_color get_team_color()
+	{
+		auto glua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+		c_color color;
+
+		if (!glua)
+			return c_color();
+		c_lua_auto_pop p(glua);
+
+		glua->push_special((int)e_special::glob);
+
+		glua->push_special((int)e_special::glob);
+		glua->get_field(-1, "team");
+		glua->get_field(-1, "GetColor");
+		glua->push_number(this->get_team_num());
+		glua->call(1, 1);
+
+		glua->push_string("r");
+		glua->get_table(-2);
+		int r = glua->get_number(-1);
+		glua->pop();
+
+		glua->push_string("g");
+		glua->get_table(-2);
+		int g = glua->get_number(-1);
+		glua->pop();
+
+		glua->push_string("b");
+		glua->get_table(-2);
+		int b = glua->get_number(-1);
+		glua->pop();
+
+		color.init(r, g, b);
+		return color;
+	}
+	
 	std::string get_user_group()
 	{
-		auto lua = interfaces::lua_shared->get_interface((int)e_special::glob);
+		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
 		if (!lua)
 			return {};
 		c_lua_auto_pop p(lua);
@@ -66,7 +109,25 @@ public:
 		lua->push(-2);
 		lua->call(1, 1);
 		return lua->get_string();
-	}*/
+	}
+
+	void client_print(int type, const std::string& msg) {
+		using fn = void(__fastcall*)(void*, int, const char*);
+		static fn f;
+		if (!f) {
+			f = (fn)memory_utils::pattern_scanner("client.dll", "4D 85 C0 0F 84 ? ? ? ? 48 89 5C 24 ? 57");
+		}
+		f(this, type, msg.c_str());
+	}
+
+	c_base_combat_weapon* get_active_weapon() {
+		using fn = c_base_combat_weapon * (__fastcall*)(void*);
+		static fn f;
+		if (!f) {
+			f = (fn)memory_utils::pattern_scanner("client.dll", "40 53 48 83 EC 20 48 3B 0D ? ? ? ?");
+		}
+		return f(this);
+	}
 };
 
 class c_local_player : public c_base_player {

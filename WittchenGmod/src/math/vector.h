@@ -1,6 +1,7 @@
 #pragma once
 #include <cfloat>
 #include <cmath>
+#include <string>
 
 
 class c_vector
@@ -69,6 +70,8 @@ public:
 		
 		return out;
 	}
+
+	operator std::string() const;
 };
 
 class __declspec(align(16)) c_vector_aligned : public c_vector {

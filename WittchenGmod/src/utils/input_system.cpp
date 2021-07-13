@@ -30,7 +30,8 @@ bool input_system::is_key_pressed(int key, bool null_is_true)
 {
 	if (key >= 1024)
 		return false;
-
+	std::unique_lock l(input_mutex);
+	
 	if (null_is_true)
 		return keys[key] || key == 0;
 	return keys[key];
@@ -40,7 +41,8 @@ bool input_system::is_key_just_pressed(int key, bool null_is_true)
 {
 	if (key >= 1024)
 		return false;
-
+	std::unique_lock l(input_mutex);
+	
 	if (null_is_true)
 		return (keys[key] && frames[key] == current_frame) || key == 0;
 	return keys[key] && frames[key] == current_frame;
@@ -84,7 +86,7 @@ void resolve_bind(bind_system::bind_type type, uint32_t key, t& curval, t nextva
 }
 
 void input_system::process_binds() {
-	//std::unique_lock l(input_mutex);
+	//
 	
 	for (auto& i : bind_system::bool_binds)
 		for (auto& j : i.second)
@@ -105,7 +107,7 @@ void input_system::process_binds() {
 
 void input_system::on_windpoc(int msg, int wparam, int lparam)
 {
-	//std::unique_lock l(input_mutex);
+	std::unique_lock l(input_mutex);
 
 	current_frame++;
 

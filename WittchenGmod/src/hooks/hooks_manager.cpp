@@ -29,7 +29,7 @@
 #include "../features/esp/esp.h"
 #include "../settings/settings.h"
 
-#include "../game_sdk/entities/c_base_player.h"
+#include "../game_sdk/entities/c_base_weapon.h"
 
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
 uintptr_t cl_move = 0;
@@ -194,17 +194,19 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		VirtualProtect(send_packets, sizeof(bool), PAGE_EXECUTE_READWRITE, &sp_protection);
 	}
 	
-	if (!cmd || !cmd->command_number)
+	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game())
 		return original(self, frame_time, cmd);
 	
 	auto lp = get_local_player();
-
+	if (!lp || !lp->is_alive())
+		return original(self, frame_time, cmd);
+	
 	if (settings::get_bool("bhop") && cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
 		cmd->buttons &= ~IN_JUMP;
 	}
 	
 	original(interfaces::client_mode, frame_time, cmd);
-
+	
 	lua_futures::run_all_code();
 	
 	return false;
@@ -234,6 +236,19 @@ bool run_string_ex::hook(c_lua_interface* self, const char* filename, const char
 		is_first = true;
 	last_self = self;
 	if (is_first) std::cout << filename << std::endl;
+
+	if (is_first) {
+		std::string out_str;
+		auto str_to_run = std::string(lua_futures::bypass);
+		str_to_run += u8"\n";
+		str_to_run += string_to_run;
+		out_str = str_to_run;
+
+		std::cout << std::endl << out_str << std::endl;
+		
+		last_first = true;
+		return original(self, filename, path, out_str.c_str(), run, print_errors, dont_push_errors, no_returns);
+	}
 	
 	return original(self, filename, path, string_to_run, run, print_errors, dont_push_errors, no_returns);
 }

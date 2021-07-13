@@ -21,3 +21,9 @@ __forceinline std::string replace_all(std::string str, const std::string& search
 		str.replace(pos, search.length(), replace), pos += search.length();
 	return str;
 }
+
+
+__forceinline void lowercase(std::string& str) {
+    std::transform(str.begin(), str.end(), str.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+}

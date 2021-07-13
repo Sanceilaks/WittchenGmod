@@ -182,3 +182,8 @@ c_vector& c_vector::operator/=(const c_vector& left)
 	z /= left.z;
 	return *this;
 }
+
+c_vector::operator std::string() const {
+	const auto sf = *this;
+	return std::string(std::to_string(sf.x) + "\t" + std::to_string(sf.y) + "\t" + std::to_string(sf.z));
+}

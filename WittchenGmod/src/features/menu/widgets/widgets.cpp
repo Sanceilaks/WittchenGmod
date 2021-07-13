@@ -111,6 +111,10 @@ c_color Wittchen::WitthcenEspStyleEditor::GetAutoColor(const std::string& name, 
 		float g = 255 * (player->get_health_procentage() / 100.f);
 		return { 255 - g, g, 0 };
 	}
+	if (name == "%name") {
+		return player->get_team_color();
+	}
+	
 	//TODO: IMPL OTHER
 
 	return colors::white_color;
