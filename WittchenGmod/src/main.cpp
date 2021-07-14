@@ -24,7 +24,7 @@ void entry_point() {
 #endif
 }
 
-BOOL WINAPI DllMain(HINSTANCE dll_instance, DWORD reason, LPVOID reversed)
+BOOL APIENTRY DllMain(HINSTANCE dll_instance, DWORD reason, LPVOID reversed)
 {
 	DisableThreadLibraryCalls(dll_instance);
 	if (reason == DLL_PROCESS_ATTACH) {

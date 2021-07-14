@@ -46,35 +46,22 @@ void file_tools::read_file(std::string& out, const std::string& path)
 
 std::string file_tools::get_hack_directory()
 {
-	auto documents = sago::getDocumentsFolder();
-	filesystem::path path(documents);
-	path.append("LemiProject");
-
-	if (!exist(path.generic_string()))
-		create_directory(path);
-
-	auto data_path = path;
-	data_path.append("LemiGMOD");
-
-	if (!exist(data_path.generic_string()))
-		create_directory(data_path);
-
-	return data_path.generic_string();
+	return get_hack_directory_path().generic_u8string();
 }
 
 std::filesystem::path file_tools::get_hack_directory_path()
 {
-	auto documents = sago::getDocumentsFolder();
+	auto documents = sago::getDataHome();
 	filesystem::path path(documents);
-	path.append("LemiProject");
+	path.append("Wittchen");
 
-	if (!exist(path.generic_string()))
+	if (!exist(path.generic_u8string()))
 		create_directory(path);
 
 	auto data_path = path;
-	data_path.append("LemiGMOD");
+	data_path.append("GMOD");
 
-	if (!exist(data_path.generic_string()))
+	if (!exist(data_path.generic_u8string()))
 		create_directory(data_path);
 
 	return data_path;
