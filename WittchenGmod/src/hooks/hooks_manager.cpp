@@ -206,12 +206,10 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		cmd->buttons &= ~IN_JUMP;
 	}
 
-<<<<<<< Updated upstream
 	if (cmd->buttons & IN_ATTACK) {
 		spreads::base_nospread(*cmd);
 	}
 	
-=======
 	auto wep = lp->get_active_weapon();
 	
 	if (cmd->buttons & IN_ATTACK) {
@@ -219,7 +217,6 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 			spreads::base_nospread(*cmd);
 	}
 	
->>>>>>> Stashed changes
 	original(interfaces::client_mode, frame_time, cmd);
 	
 	lua_futures::run_all_code();
