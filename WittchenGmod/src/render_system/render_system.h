@@ -12,6 +12,8 @@ namespace render_system {
 	namespace fonts {
 		inline std::array<ImFont*, 3> nunito_font;
 
+		inline std::array<ImFont*, 3> menu_font;
+		
 		inline ImFont* arial_font;
 	}
 

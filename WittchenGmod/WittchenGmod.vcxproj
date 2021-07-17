@@ -292,6 +292,7 @@
     <ClInclude Include="deps\include\color.h" />
     <ClInclude Include="deps\include\file_tools.h" />
     <ClInclude Include="deps\include\fnv.h" />
+    <ClInclude Include="deps\include\fontawesomium.h" />
     <ClInclude Include="deps\include\imgui\imconfig.h" />
     <ClInclude Include="deps\include\imgui\imgui.h" />
     <ClInclude Include="deps\include\imgui\imgui_freetype.h" />
@@ -339,6 +340,7 @@
     <ClInclude Include="src\game_sdk\interfaces\debugoverlay.h" />
     <ClInclude Include="src\game_sdk\interfaces\engine.h" />
     <ClInclude Include="src\game_sdk\interfaces\imaterialsystem.h" />
+    <ClInclude Include="src\game_sdk\interfaces\iprediction.h" />
     <ClInclude Include="src\game_sdk\interfaces\i_panel.h" />
     <ClInclude Include="src\game_sdk\interfaces\lua_shared.h" />
     <ClInclude Include="src\game_sdk\interfaces\random_stream.h" />
@@ -356,6 +358,7 @@
     <ClInclude Include="src\protect\md5.hpp" />
     <ClInclude Include="src\protect\skCrypter.h" />
     <ClInclude Include="src\protect\xorstr.hpp" />
+    <ClInclude Include="src\render_system\fonts\fontasw.h" />
     <ClInclude Include="src\render_system\fonts\nunito_font.h" />
     <ClInclude Include="src\render_system\fonts\wittchen_font.h" />
     <ClInclude Include="src\render_system\render_helpers.h" />

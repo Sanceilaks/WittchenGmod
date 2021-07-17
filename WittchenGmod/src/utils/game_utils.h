@@ -10,8 +10,15 @@ namespace local_player_utils {
 }
 
 namespace game_utils {
-	bool screen_transform(const c_vector& in, c_vector& out);
 	bool world_to_screen(const c_vector& in, c_vector& out);
 
+	float get_fov(const c_vector& from , const c_vector& to);
+	c_vector calc_angle(const c_vector& from, const c_vector& to);
+	
 	std::vector<int> get_valid_players(bool dormant = false);
 }
+
+/*class c_wittchen_player {
+public:
+	c_vector find_best_bone_to_shoot(const c_vector& from);
+};*/

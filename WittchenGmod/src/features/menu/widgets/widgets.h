@@ -11,6 +11,11 @@
 namespace ImGui {
 	IMGUI_API bool WittchenCheckbox(const std::string& name, const std::string& var);
 	IMGUI_API bool WittchenCheckbox(const std::string& name, bool* var);
+
+	IMGUI_API void WittchenSlider(const std::string& name, const std::string& var, const ImVec2& minmax);
+	IMGUI_API void WittchenSlider(const std::string& name, float* var, const ImVec2& minmax);
+	IMGUI_API void WittchenSlider(const std::string& name, int* var, const ImVec2& minmax);
+	
 	IMGUI_API void BeginApplyAlpha(float alpha);
 	IMGUI_API void EndApplyAlpha();
 

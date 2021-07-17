@@ -7,12 +7,25 @@
 
 #include "i_client_entity.h"
 
+#include <map>
+
 class c_collidable
 {
 public:
 	virtual void unknown_0() = 0;
 	virtual c_vector& mins() = 0;
 	virtual c_vector& maxs() = 0;
+};
+
+static inline std::map<std::string, std::vector<std::string>> entity_bones_by_class {
+	{"head", {"ValveBiped.Bip01_Head", "ValveBiped.Bip01_Neck1"}},
+	{"pelvis", {"ValveBiped.Bip01_Pelvis"}},
+	{"body", {"ValveBiped.Bip01_Spine", "ValveBiped.Bip01_Spine2",
+			"ValveBiped.Bip01_Spine3", "ValveBiped.Bip01_Spine4"}},
+	{"arm", {"ValveBiped.Bip01_L_UpperArm", "ValveBiped.Bip01_L_Forearm", "ValveBiped.Bip01_L_Hand"
+	         "ValveBiped.Bip01_R_UpperArm", "ValveBiped.Bip01_R_Forearm", "ValveBiped.Bip01_R_Hand"}},
+	{"foot", {"ValveBiped.Bip01_L_Thigh", "ValveBiped.Bip01_L_Calf", "ValveBiped.Bip01_L_Foot", "ValveBiped.Bip01_L_Toe0",
+			  "ValveBiped.Bip01_R_Thigh", "ValveBiped.Bip01_R_Calf", "ValveBiped.Bip01_R_Foot", "ValveBiped.Bip01_R_Toe0"}}
 };
 
 class c_base_entity : public i_client_entity
@@ -90,12 +103,46 @@ public:
 		orig_fn(this, ang);
 	}
 
+	std::string get_classname() {
+		using fn = const char* (__fastcall*)(void*);
+		static fn f;
+		if (!f)
+			f = reinterpret_cast<fn>(memory_utils::relative_to_absolute(
+				(uintptr_t)memory_utils::pattern_scanner("client.dll", "E8 ? ? ? ? 4D 8B 47 10"), 0x1, 5));
+		return f(this);
+	}
+	
 	bool is_equal(c_base_entity* ent) const {
 		return ent->get_index() == get_index();
 	}
 
 	float get_health_procentage() {
 		return get_health() / (get_max_health() / 100.f);
+	}
+
+	uint32_t get_bone_by_name(const std::string& name)
+	{
+		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+		if (!lua)
+			return 0;
+		c_lua_auto_pop p(lua);
+
+		push_entity(); //1
+
+		lua->get_field(-1, "LookupBone"); //2
+		lua->push(-2); //3
+		lua->push_string(name.c_str()); //4
+		lua->call(2, 1); // 3
+		return lua->get_number(-1);;
+	}
+
+	c_vector get_bone(int bone)
+	{
+		matrix3x4_t bone_matrix[128];
+		if (!setup_bones(bone_matrix, 128, 0x00000100, interfaces::engine->get_last_time_stamp()))
+			return {};
+		auto hitbox = bone_matrix[bone];
+		return { hitbox[0][3], hitbox[1][3], hitbox[2][3] };
 	}
 };
 

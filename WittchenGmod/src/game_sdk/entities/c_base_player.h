@@ -61,6 +61,36 @@ public:
 		return glua->get_string();
 	}
 
+	q_angle get_view_punch_angles()
+	{
+		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+		lua->push_special((int)e_special::glob); //1
+		push_entity();
+
+		lua->get_field(-1, "GetViewPunchAngles");
+		lua->push(-2);
+		lua->call(1, 1);
+
+		lua->push_string("x");
+		lua->get_table(-2);
+		float x = lua->get_number(-1);
+		lua->pop();
+
+		lua->push_string("y");
+		lua->get_table(-2);
+		float y = lua->get_number(-1);
+		lua->pop();
+
+		lua->push_string("z");
+		lua->get_table(-2);
+		float z = lua->get_number(-1);
+		lua->pop();
+
+		lua->pop(3);
+
+		return { x, y, z };
+	}
+	
 	c_color get_team_color()
 	{
 		auto glua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);

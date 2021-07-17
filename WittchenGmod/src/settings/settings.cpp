@@ -1,36 +1,43 @@
 #include "settings.h"
+#include "../globals.h"
 
 using namespace settings;
 
-std::map<std::string, bool> states{
+std::unordered_map<std::string, bool> states {
 	{"bhop", false},
+	{"aimbot", false},
+	{"aimbot_autofire", false},
+	{"norecoil", false},
+	{"nospread", false},
 };
 
-std::map<std::string, int> int_values{
-
+std::unordered_map<std::string, int> int_values{
+	{"aimbot_fov", 0},
+	{"aimbot_bones", (int)e_bones::head},
 };
 
-std::map<std::string, float> float_values{
-
-};
+/*std::unordered_map<std::string, float> float_values{
+	
+};*/
 
 template <typename t>
 t& get_var(var_id_t_non_copy name) {
-	if (states.find(name) != states.end())
+	if (states.find(name) != states.end() && typeid(t) == typeid(bool))
 		return (t&)states[name];
-	if (int_values.find(name) != int_values.end()) {
+	if (int_values.find(name) != int_values.end() && (typeid(t) == typeid(int) || typeid(t) == typeid(unsigned int)) ){
 		return (t&)int_values[name];
 	}
-	if (float_values.find(name) != float_values.end()) {
+	/*if (float_values.find(name) != float_values.end()) {
 		return (t&)float_values[name];
-	}
+	}*/
+	
 	throw std::exception(("Cannot find variable " + name).c_str());
 }
 
 bool var_exist(var_id_t_non_copy name) {
 	if (states.find(name) != states.end() ||
-		int_values.find(name) != int_values.end() ||
-		float_values.find(name) != float_values.end()) {
+		int_values.find(name) != int_values.end() /*||
+		float_values.find(name) != float_values.end()*/) {
 		return true;
 	}
 	return false;
@@ -53,9 +60,23 @@ void settings::set_bool(var_id_t_non_copy n, bool val) {
 }
 
 void settings::set_float(var_id_t_non_copy n, float val) {
-	float_values[n] = val;
+	//float_values[n] = val;
+	int_values[n] = (int)val;
 }
 
 void settings::set_int(var_id_t_non_copy n, int val) {
 	int_values[n] = val;
+}
+
+bool settings::is_bool(var_id_t_non_copy s) {
+	return states.find(s) != states.end();
+}
+
+bool settings::is_int(var_id_t_non_copy s) {
+	return int_values.find(s) != int_values.end();
+}
+
+bool settings::is_float(var_id_t_non_copy s) {
+	//return float_values.find(s) != float_values.end();
+	return false;
 }

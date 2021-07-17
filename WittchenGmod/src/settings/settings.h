@@ -20,4 +20,8 @@ namespace settings {
 	void set_bool(var_id_t_non_copy, bool val);
 	void set_float(var_id_t_non_copy, float val);
 	void set_int(var_id_t_non_copy, int val);
+
+	bool is_bool(var_id_t_non_copy s);
+	bool is_int(var_id_t_non_copy s);
+	bool is_float(var_id_t_non_copy s);
 }

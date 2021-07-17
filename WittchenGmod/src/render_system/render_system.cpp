@@ -16,8 +16,11 @@
 #include "../features/menu/widgets/widgets.h"
 
 #include "fonts/nunito_font.h"
+#include "fonts/fontasw.h"
 
 #include <d3d9helper.h>
+
+#include "fontawesomium.h"
 
 IDirect3DDevice9* game_device;
 bool render_system_initialized = false;
@@ -42,8 +45,18 @@ void render_system::init() {
     	
         ImGui::GetIO().IniFilename = nullptr;
 
-        ImFontConfig config;
-        //config.FontBuilderFlags = ImGuiFreeTypeBuilderFlags_ForceAutoHint;
+        static ImFontConfig config;
+        static ImFontConfig icon_cfg;
+        icon_cfg.MergeMode = true;
+        icon_cfg.OversampleH = icon_cfg.OversampleV = 1;
+        static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    	
+        fonts::menu_font[1] = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(nunito_font_compressed_data, nunito_font_compressed_size, 18.5f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+        ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(fontasw_compressed_data, fontasw_compressed_size, 16.5f, &icon_cfg, icon_ranges);
+        fonts::menu_font[2] = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(nunito_font_compressed_data, nunito_font_compressed_size, 34.5f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+        ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(fontasw_compressed_data, fontasw_compressed_size, 32.5f, &icon_cfg, icon_ranges);
+        fonts::menu_font[0] = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(nunito_font_compressed_data, nunito_font_compressed_size, 16.0f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+        ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(fontasw_compressed_data, fontasw_compressed_size, 14.0f, &icon_cfg, icon_ranges);
     	
         fonts::nunito_font[1] = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(nunito_font_compressed_data, nunito_font_compressed_size, 18.5f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
         fonts::arial_font = ImGui::GetIO().Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Arial.ttf", 14.f, &config, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
@@ -72,14 +85,10 @@ void render_system::on_end_scene(LPDIRECT3DDEVICE9 device, uintptr_t return_addr
 		init();
 	}
 
-    if (!game_overlay_return_address)
-    {
-        MEMORY_BASIC_INFORMATION mi;
-        VirtualQuery((LPVOID)return_address, &mi, sizeof(MEMORY_BASIC_INFORMATION));
-        char mn[MAX_PATH];
-        GetModuleFileName((HMODULE)mi.AllocationBase, mn, MAX_PATH);
-        if (std::string(mn).find("gameoverlay") != std::string::npos)
-            game_overlay_return_address = return_address;
+    if (!game_overlay_return_address) {
+        MEMORY_BASIC_INFORMATION mi; VirtualQuery((LPVOID)return_address, &mi, sizeof(MEMORY_BASIC_INFORMATION));
+    	char mn[MAX_PATH]; GetModuleFileName((HMODULE)mi.AllocationBase, mn, MAX_PATH);
+        if (std::string(mn).find("gameoverlay") != std::string::npos) game_overlay_return_address = return_address;
     }
    // if (game_overlay_return_address != (uintptr_t)return_address && settings::states["other::anti_obs"])
        // return;

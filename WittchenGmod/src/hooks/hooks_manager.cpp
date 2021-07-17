@@ -31,6 +31,7 @@
 
 #include "../game_sdk/entities/c_base_weapon.h"
 #include "../features/aimbot/spreads.h"
+#include "../features/aimbot/aimbot.h"
 
 std::shared_ptr<min_hook_pp::c_min_hook> minpp = nullptr;
 uintptr_t cl_move = 0;
@@ -102,6 +103,14 @@ struct run_string_ex
 		bool no_returns);
 };
 
+struct run_command_hook {
+	static inline constexpr uint32_t idx = 17;
+
+	using fn = void(__fastcall*)(i_prediction*, c_base_entity*, c_user_cmd*, i_move_helper*);
+	static inline fn original = nullptr;
+	static void __fastcall hook(i_prediction* pred, c_base_entity* player, c_user_cmd* ucmd,
+		i_move_helper* move_helper);
+};
 struct paint_traverse_hook {
 	static inline constexpr uint32_t idx = 41;
 
@@ -135,6 +144,7 @@ void hooks_manager::init() {
 	CREATE_HOOK(interfaces::client_mode, create_move_hook::idx, create_move_hook::hook, create_move_hook::original);
 	CREATE_HOOK(interfaces::surface, lock_cursor_hook::idx, lock_cursor_hook::hook, lock_cursor_hook::original);
 	CREATE_HOOK(interfaces::panel, paint_traverse_hook::idx, paint_traverse_hook::hook, paint_traverse_hook::original);
+	CREATE_HOOK(interfaces::prediction, run_command_hook::idx, run_command_hook::hook, run_command_hook::original);
 	
 	create_hook((void*)cl_move, cl_move_hook::hook, (void**)(&cl_move_hook::original));
 
@@ -206,16 +216,11 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		cmd->buttons &= ~IN_JUMP;
 	}
 
-	if (cmd->buttons & IN_ATTACK) {
-		spreads::base_nospread(*cmd);
-	}
+	aimbot::run_aimbot(*cmd);
 	
-	auto wep = lp->get_active_weapon();
-	
-	if (cmd->buttons & IN_ATTACK) {
-		if (wep->get_weapon_base().find("bobs_gun") != std::string::npos)
-			spreads::base_nospread(*cmd);
-	}
+	aimbot::norecoil(*cmd);
+	aimbot::nospread(*cmd);
+
 	
 	original(interfaces::client_mode, frame_time, cmd);
 	
@@ -263,6 +268,13 @@ bool run_string_ex::hook(c_lua_interface* self, const char* filename, const char
 	}
 	
 	return original(self, filename, path, string_to_run, run, print_errors, dont_push_errors, no_returns);
+}
+
+void run_command_hook::hook(i_prediction* pred, c_base_entity* player, c_user_cmd* ucmd, i_move_helper* move_helper) {
+	q_angle va;
+	interfaces::engine->get_view_angles(va);
+	original(pred, player, ucmd, move_helper);
+	interfaces::engine->set_view_angles(va);
 }
 
 auto paint_traverse_hook::hook(i_panel* self, void* panel, bool force_repaint, bool allow_force) -> void {

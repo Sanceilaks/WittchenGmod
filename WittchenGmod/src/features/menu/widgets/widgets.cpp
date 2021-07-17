@@ -83,6 +83,46 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	
 	return ret;
 }
+void ImGui::WittchenSlider(const std::string& name, const std::string& var, const ImVec2& minmax) {
+	WittchenSlider(name, &settings::get_int(var), minmax);
+}
+
+void ImGui::WittchenSlider(const std::string& name, float* var, const ImVec2& minmax) {
+	
+}
+
+void ImGui::WittchenSlider(const std::string& name, int* var, const ImVec2& minmax) {
+	SliderInt(name.c_str(), var, minmax.x, minmax.y);
+
+	auto check_box_id = GetCurrentWindow()->GetID(name.c_str());
+	auto bind_id = bind_system::generate_bind_id(check_box_id);
+
+	if (BeginPopupContextItem()) {
+		auto& current_binds = bind_system::int_binds[bind_id];
+		if (current_binds.empty())
+			input_system::add_bind(bind_id, 0, var, bind_system::bind_type::none, *var);
+
+		PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4 });
+
+		auto n = 0;
+		for (auto& i : current_binds) {
+			Hotkey(("##KEY" + std::to_string(check_box_id) + std::to_string(n * 99)).c_str(), &i.key, { 120.f, 0 });
+			SameLine();
+
+			PushItemWidth(120.f);
+			Combo(("##BINDTYPE" + std::to_string(check_box_id) + std::to_string(n * 99)).c_str(), &i.type, bind_system::bind_type_string, 4);
+			SameLine();
+			SliderInt(("##NEWVAL" + std::to_string(check_box_id) + std::to_string(n * 99)).c_str(), &i.bind_value, minmax.x, minmax.y);
+			PopItemWidth();
+			n++;
+		}
+		PopStyleVar();
+
+		Text("Bind id is %i", bind_id);
+
+		EndPopup();
+	}
+}
 
 void ImGui::BeginApplyAlpha(float alpha) {
 	alpha = menu::menu_alpha == 1.f ? alpha : menu::menu_alpha;

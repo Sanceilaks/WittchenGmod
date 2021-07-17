@@ -45,4 +45,13 @@ public:
 	short	mousedx;		// mouse accum in x from create move
 	short	mousedy;		// mouse accum in y from create move
 	bool	hasbeenpredicted;
+
+	bool is_button_set(int btn) const {
+		return buttons & btn;
+	}
+
+	bool is_in_fire() const {
+		return buttons & IN_ATTACK;
+	}
+	
 };

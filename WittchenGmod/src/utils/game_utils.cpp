@@ -14,57 +14,28 @@ bool local_player_utils::is_voice_recording() {
 	return func();
 }
 
-bool game_utils::screen_transform(const c_vector& in, c_vector& out) {
-	auto exception_filter = [](int code, PEXCEPTION_POINTERS ex)
-	{
-		std::cout << code << std::endl;
-		return EXCEPTION_EXECUTE_HANDLER;
-	};
-
-	__try
-	{
-		if (!interfaces::engine->is_in_game())
-			return false;
-
-		const D3DMATRIX& world_matrix = interfaces::engine->get_world_to_screen_matrix();
-
-		const auto w = world_matrix.m[3][0] * in.x + world_matrix.m[3][1] * in.y + world_matrix.m[3][2] * in.z + world_matrix.m[3][3];
-		if (w < 0.001f)
-		{
-			out.x *= 100000;
-			out.y *= 100000;
-			return false;
-		}
-
-		out.x = world_matrix.m[0][0] * in.x + world_matrix.m[0][1] * in.y + world_matrix.m[0][2] * in.z + world_matrix.m[0][3];
-		out.y = world_matrix.m[1][0] * in.x + world_matrix.m[1][1] * in.y + world_matrix.m[1][2] * in.z + world_matrix.m[1][3];
-		out.z = 0.0f;
-
-		out.x /= w;
-		out.y /= w;
-
-		return true;
-	}
-	__except (exception_filter(GetExceptionCode(), GetExceptionInformation()))
-	{
-		out.x *= 100000;
-		out.y *= 100000;
-		return false;
-	}
+bool game_utils::world_to_screen(const c_vector& in, c_vector& out) {
+	return !interfaces::debug_overlay->screen_position(in, out);
 }
 
-bool game_utils::world_to_screen(const c_vector& in, c_vector& out) {
-	/*if (!screen_transform(in, out))
-		return false;
+float game_utils::get_fov(const c_vector& from, const c_vector& to) {
+	auto delta = to - from;
+	delta.normalize();
+	return sqrtf(powf(delta.x, 2) + powf(delta.y, 2));
+}
 
-	int w, h;
-	interfaces::engine->get_screen_size(w, h);
+c_vector game_utils::calc_angle(const c_vector& from, const c_vector& to) {
+	c_vector ang;
+	const auto delta = from - to;
+	const auto hyp = delta.length2d();
 
-	out.x = (w / 2.0f) + (out.x * w) / 2.0f;
-	out.y = (h / 2.0f) - (out.y * h) / 2.0f;
+	ang.y = std::atanf(delta.y / delta.x) * 57.295779513082f;
+	ang.x = std::atanf(-delta.z / hyp) * -57.295779513082f;
 
-	return true;*/
-	return !interfaces::debug_overlay->screen_position(in, out);
+	if (delta.x >= 0.f)
+		ang.y += 180.f;
+
+	return ang;
 }
 
 std::vector<int> game_utils::get_valid_players(bool dormant) {
