@@ -21,11 +21,13 @@ void main_window::draw_main_window() {
 			
 			WittchenCheckbox("Aimbot##AIMBOT", "aimbot");
 			WittchenCheckbox("Autofire##AIMBOT", "aimbot_autofire");
+			WittchenCheckbox("Silent##AIMBOT", "aimbot_silent");
 			WittchenSlider("Fov##AIMBOTFOV", "aimbot_fov", {0.f, 180.f});
+			SameLine();
+			WittchenCheckbox("Draw##AIMBOTDOV", "aimbot_fov_draw");
 			
 			WittchenCheckbox("Nospread##AIMBOT", "nospread");
 			WittchenCheckbox("Norecoil##AIMBOT", "norecoil");
-			auto cbs = GetItemRectSize();
 			
 			Button("Bones##AIMBONES");
 			if (BeginPopupContextItem()) {
@@ -38,9 +40,8 @@ void main_window::draw_main_window() {
 							bones |= i;
 						else
 							bones &= ~i;
-
-						SetItemDefaultFocus();
 					}
+					if (bones & i) SetItemDefaultFocus();
 				}
 				EndPopup();
 			}
@@ -52,7 +53,10 @@ void main_window::draw_main_window() {
 			PushFont(render_system::fonts::menu_font[1]);
 			
 			Wittchen::DrawEspEditor();
-
+			WittchenSlider("Custom viewmodel fov", "custom_viewmodel_fov", {0, 360});
+			WittchenSlider("Custom fov", "custom_fov", { 0, 360 });
+			WittchenSlider("Aspect ratio", "custom_aspect_ratio", { 0, 355 });
+			
 			PopFont();
 			EndTabItem();
 		}

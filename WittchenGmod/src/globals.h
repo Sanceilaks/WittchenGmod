@@ -2,9 +2,15 @@
 
 #include <Windows.h>
 
+#include "game_sdk/misc/viewsetup.h"
+
 namespace globals {
 	inline HINSTANCE dllInstance;
 
+	namespace game_info {
+		inline c_view_setup view_setup;
+		inline c_view_setup proof_view_setup;
+	}
 }
 
 

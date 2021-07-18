@@ -51,7 +51,7 @@ bool can_do_damage(c_base_player* player, const c_vector& position) {
 }
 
 bool on_bone_not_exist(shoot_pos_t& sp, c_base_player* player) {
-	auto position = (player->get_collidable_ptr()->mins() + player->get_collidable_ptr()->maxs()) / 2.f;
+	auto position = player->get_origin() + ((player->get_collidable_ptr()->mins() + player->get_collidable_ptr()->maxs()) / 2.f);
 	if (!position.is_valid())
 		return false;
 	q_angle real_angle;
@@ -60,7 +60,7 @@ bool on_bone_not_exist(shoot_pos_t& sp, c_base_player* player) {
 	sp.position = position;
 	sp.fov = game_utils::get_fov(real_angle, game_utils::calc_angle(get_local_player()->get_eye_pos(), position));
 	auto angle = math::get_angle(get_local_player()->get_eye_pos(), position);
-	if (!angle.is_valid())
+	if (!angle.is_valid() || !can_do_damage(player, position))
 		return false;
 	sp.angle = angle;
 
@@ -68,7 +68,7 @@ bool on_bone_not_exist(shoot_pos_t& sp, c_base_player* player) {
 }
 
 bool get_shoot_pos(shoot_pos_t& sp, c_base_player* player) {
-	uint32_t bone_idx = -1;
+	int32_t bone_idx = -1;
 	float best_fov = FLT_MAX;
 
 	int bones = settings::get_int("aimbot_bones");
@@ -93,7 +93,8 @@ bool get_shoot_pos(shoot_pos_t& sp, c_base_player* player) {
 		}
 	}
 
-	if (!bone_idx) return on_bone_not_exist(sp, player);
+	if (bone_idx == -1) 
+		return on_bone_not_exist(sp, player);
 
 	const auto bone_position = player->get_bone(bone_idx);
 	sp.position = bone_position;
@@ -107,7 +108,7 @@ bool get_target(target_t& target)
 {
 	auto invalidate_target = [](const target_t& t)
 	{
-		return (t.ply != nullptr && t.shoot_pos.angle.x != 0 && t.shoot_pos.angle.y != 0 && t.shoot_pos.fov >= 0.f); //fov maybe FLT_MAX and 0
+		return (t.ply != nullptr && t.shoot_pos.angle.x != 0 && t.shoot_pos.angle.y != 0 && t.shoot_pos.fov >= 0.f && t.shoot_pos.position.is_valid()); //fov maybe FLT_MAX and 0
 	};
 
 	if (!get_local_player())
@@ -144,7 +145,7 @@ void aimbot::run_aimbot(c_user_cmd& cmd) {
 	if (!settings::get_bool("aimbot"))
 		return;
 	
-	if (!cmd.is_in_fire())
+	if (!cmd.is_in_fire() && !settings::get_bool("aimbot_autofire"))
 		return;
 	
 	target_t target;
@@ -157,7 +158,14 @@ void aimbot::run_aimbot(c_user_cmd& cmd) {
 
 	cmd.viewangles = target.shoot_pos.angle;
 
-	interfaces::engine->set_view_angles(cmd.viewangles);
+	if (!settings::get_bool("aimbot_silent"))
+		interfaces::engine->set_view_angles(cmd.viewangles);
+	
+	if (settings::get_bool("aimbot_autofire")) {
+		/*trace_t tr; game_utils::trace_view_angles(tr, cmd.viewangles);
+		if (tr.m_pEnt != nullptr && tr.m_pEnt == target.ply) */
+		cmd.buttons |= IN_ATTACK;
+	}
 }
 
 void aimbot::norecoil(c_user_cmd& cmd) {

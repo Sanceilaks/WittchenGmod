@@ -64,6 +64,8 @@ public:
 	q_angle get_view_punch_angles()
 	{
 		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+		if (!lua)
+			return { 0.f };
 		lua->push_special((int)e_special::glob); //1
 		push_entity();
 

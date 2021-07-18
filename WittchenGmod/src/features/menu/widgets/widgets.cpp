@@ -59,7 +59,7 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	if (BeginPopupContextItem()) {
 		auto& current_binds = bind_system::bool_binds[bind_id];
 		if (current_binds.empty())
-			input_system::add_bind(bind_id, 0, &v, bind_system::bind_type::none);
+			input_system::add_bind(bind_id, 0, &v, bind_system::bind_type::none, !v);
 		
 		//BeginChild("CHECKBOX_BINDS_CHILD", {300, 100});
 		PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4 });

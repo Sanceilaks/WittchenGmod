@@ -9,11 +9,16 @@ std::unordered_map<std::string, bool> states {
 	{"aimbot_autofire", false},
 	{"norecoil", false},
 	{"nospread", false},
+	{"aimbot_fov_draw", false},
+	{"aimbot_silent", false}
 };
 
 std::unordered_map<std::string, int> int_values{
 	{"aimbot_fov", 0},
 	{"aimbot_bones", (int)e_bones::head},
+	{"custom_viewmodel_fov", 0},
+	{"custom_fov", 0},
+	{"custom_aspect_ratio", 0},
 };
 
 /*std::unordered_map<std::string, float> float_values{
