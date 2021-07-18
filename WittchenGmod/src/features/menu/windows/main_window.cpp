@@ -5,6 +5,9 @@
 
 #include <fontawesomium.h>
 
+#include "../../../globals.h"
+#include "../../../settings/settings.h"
+
 using namespace ImGui;
 
 void main_window::draw_main_window() {
@@ -22,6 +25,25 @@ void main_window::draw_main_window() {
 			
 			WittchenCheckbox("Nospread##AIMBOT", "nospread");
 			WittchenCheckbox("Norecoil##AIMBOT", "norecoil");
+			auto cbs = GetItemRectSize();
+			
+			Button("Bones##AIMBONES");
+			if (BeginPopupContextItem()) {
+				auto& bones = settings::get_int("aimbot_bones");
+				for (auto i = 1; i <= (int)e_bones::last; ++i) {
+					std::string str = to_string((e_bones)i);
+					if (str.empty()) continue;
+					if (Selectable(std::string(str + "##AIMBONE").c_str(), (bones & i), ImGuiSelectableFlags_DontClosePopups)) {
+						if (!(bones & i))
+							bones |= i;
+						else
+							bones &= ~i;
+
+						SetItemDefaultFocus();
+					}
+				}
+				EndPopup();
+			}
 			
 			PopFont();
 			EndTabItem();

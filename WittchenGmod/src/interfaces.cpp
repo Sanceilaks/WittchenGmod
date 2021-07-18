@@ -13,6 +13,7 @@ void interfaces::init_interfaces() {
 	material_system = memory_utils::capture_interface<i_material_system>("materialsystem.dll", "VMaterialSystem080");
 	cvar = memory_utils::capture_interface<c_cvar>("vstdlib.dll", "VEngineCvar007");
 	prediction = memory_utils::capture_interface<i_prediction>("client.dll", "VClientPrediction001");
+	engine_trace = memory_utils::capture_interface<i_engine_trace>("engine.dll", "EngineTraceClient003");
 	
 	//client mode pattern: CHLClient__HudProcessInput + offset to mov [reg], g_ClientMode. Sizeof mov instruction - 3. 
 	client_mode = memory_utils::get_vmt<i_client_mode>((uintptr_t)client, 10, 0x0);

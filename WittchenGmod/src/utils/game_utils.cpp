@@ -53,3 +53,51 @@ std::vector<int> game_utils::get_valid_players(bool dormant) {
 	}
 	return c;
 }
+
+void game_utils::trace_view_angles(trace_t& t, const q_angle& viewangles) {
+	if (!get_local_player() || !get_local_player()->is_alive())
+		return;
+
+	c_vector dir;
+	math::angle_to_vector(viewangles, dir);
+
+	ray_t ray;
+	trace_t tr;
+	c_trace_filter filter;
+	filter.pSkip = get_local_player();
+
+	tr.startpos = get_local_player()->get_eye_pos();
+	tr.endpos = tr.startpos + (dir * (4096 * 8));
+
+	ray.init(tr.startpos, tr.endpos);
+	interfaces::engine_trace->trace_ray(ray, MASK_SHOT, &filter, &tr);
+
+	t = tr;
+}
+
+void game_utils::trace_view_angles(trace_t& t, const q_angle& viewangles, i_trace_filter* filter) {
+	if (!get_local_player() || !get_local_player()->is_alive())
+		return;
+
+	c_vector dir;
+	math::angle_to_vector(viewangles, dir);
+
+	ray_t ray;
+	trace_t tr;
+
+	tr.startpos = get_local_player()->get_eye_pos();
+	tr.endpos = tr.startpos + (dir * (4096 * 8));
+
+	ray.init(tr.startpos, tr.endpos);
+	interfaces::engine_trace->trace_ray(ray, MASK_SHOT, filter, &tr);
+
+	t = tr;
+}
+
+void game_utils::trace_ray(trace_t& t, const c_vector& from, const c_vector& to, i_trace_filter* filter) {
+	ray_t ray;
+
+	c_vector start = from; c_vector end = to;
+	ray.init(start, end);
+	interfaces::engine_trace->trace_ray(ray, MASK_SHOT, filter, &t);
+}

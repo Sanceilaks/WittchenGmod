@@ -339,6 +339,7 @@
     <ClInclude Include="src\game_sdk\interfaces\convar.h" />
     <ClInclude Include="src\game_sdk\interfaces\debugoverlay.h" />
     <ClInclude Include="src\game_sdk\interfaces\engine.h" />
+    <ClInclude Include="src\game_sdk\interfaces\ienginetrace.h" />
     <ClInclude Include="src\game_sdk\interfaces\imaterialsystem.h" />
     <ClInclude Include="src\game_sdk\interfaces\iprediction.h" />
     <ClInclude Include="src\game_sdk\interfaces\i_panel.h" />

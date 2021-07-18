@@ -395,5 +395,8 @@
     <ClInclude Include="src\render_system\fonts\fontasw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\ienginetrace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

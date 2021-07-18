@@ -12,6 +12,7 @@
 #include "game_sdk/interfaces/convar.h"
 #include "game_sdk/interfaces/random_stream.h"
 #include "game_sdk/interfaces/iprediction.h"
+#include "game_sdk/interfaces/ienginetrace.h"
 
 namespace interfaces {
 	inline c_engine_client* engine;
@@ -27,6 +28,7 @@ namespace interfaces {
 	inline c_cvar* cvar;
 	inline c_uniform_random_stream* random_stream;
 	inline i_prediction* prediction;
+	inline i_engine_trace* engine_trace;
 	
 	void init_interfaces();
 }
