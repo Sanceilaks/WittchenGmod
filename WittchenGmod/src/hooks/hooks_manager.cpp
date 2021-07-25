@@ -223,6 +223,7 @@ void hooks_manager::create_hook(void* target, void* detour, void** original) {
 
 
 long end_scene_hook::hook(IDirect3DDevice9* device) {
+	//std::cout << interfaces::global_vars->tickcount << std::endl;
 	input_system::process_binds();
 	const auto ret = original(device);;
 	render_system::on_end_scene(device, (uintptr_t)_ReturnAddress());
@@ -245,6 +246,44 @@ long reset_hook::hook(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* present_p
 }
 
 bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* cmd) {
+	auto fix_movement = [&](c_user_cmd& old_cmd) {
+		c_base_player* local_player = get_local_player();
+
+		if (!local_player || !local_player->is_alive())
+			return;
+
+		if (local_player->get_move_type() == (int)e_move_type::ladder)
+			return;
+
+		float f1, f2, yaw_delta = cmd->viewangles.y - old_cmd.viewangles.y;
+		if (old_cmd.viewangles.y < 0.f)
+			f1 = 360.0f + old_cmd.viewangles.y;
+		else
+			f1 = old_cmd.viewangles.y;
+
+		if (cmd->viewangles.y < 0.0f)
+			f2 = 360.0f + cmd->viewangles.y;
+		else
+			f2 = cmd->viewangles.y;
+
+		if (f2 < f1)
+			yaw_delta = abs(f2 - f1);
+		else
+			yaw_delta = 360.0f - abs(f1 - f2);
+
+		yaw_delta = 360.0f - yaw_delta;
+
+		cmd->forwardmove = cos(math::deg2rad(yaw_delta)) * old_cmd.forwardmove + cos(math::deg2rad(yaw_delta + 90.f)) *
+			old_cmd.sidemove;
+		cmd->sidemove = sin(math::deg2rad(yaw_delta)) * old_cmd.forwardmove + sin(math::deg2rad(yaw_delta + 90.f)) *
+			old_cmd.sidemove;
+
+		cmd->buttons &= ~IN_MOVERIGHT;
+		cmd->buttons &= ~IN_MOVELEFT;
+		cmd->buttons &= ~IN_FORWARD;
+		cmd->buttons &= ~IN_BACK;
+	};
+
 	static bool* send_packets;
 	static DWORD sp_protection;
 	if (!send_packets) {
@@ -254,6 +293,8 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	
 	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game())
 		return original(self, frame_time, cmd);
+
+	auto a = interfaces::global_vars;
 	
 	auto lp = get_local_player();
 	if (!lp || !lp->is_alive())
@@ -263,12 +304,18 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		cmd->buttons &= ~IN_JUMP;
 	}
 
-	aimbot::run_aimbot(*cmd);
-	
-	aimbot::norecoil(*cmd);
-	aimbot::nospread(*cmd);
+	if (aimbot::start_prediction(*cmd)) {
+		aimbot::run_aimbot(*cmd);
 
-	
+		aimbot::norecoil(*cmd);
+		aimbot::nospread(*cmd);
+
+		aimbot::end_prediction();
+	}
+
+	if (settings::get_bool("fixmovement"))
+	fix_movement(*cmd);
+
 	original(interfaces::client_mode, frame_time, cmd);
 	
 	lua_futures::run_all_code();
@@ -341,6 +388,16 @@ auto paint_traverse_hook::hook(i_panel* self, void* panel, bool force_repaint, b
 				const auto radius = tanf(math::deg2rad((float)settings::get_int("aimbot_fov"))) / tanf(screen_fov) * (w * 0.5f);
 				directx_render::outlined_circle(ImVec2(w / 2, h / 2), radius, c_color(0, 0, 0));
 			}
+
+			if (settings::get_bool("aimbot_draw_target")) {
+				auto target = aimbot::get_aimbot_target();
+				if (target.is_valid()) {
+					c_vector origin;
+					if (game_utils::world_to_screen(target, origin)) {
+						directx_render::line({ ImGui::GetIO().DisplaySize.x / 2.f, ImGui::GetIO().DisplaySize.y }, (ImVec2)origin, colors::white_color);
+					}
+				}
+			}
 		});
 	}
 }
@@ -359,6 +416,30 @@ void override_view_hook::hook(i_client_mode* self, c_view_setup& view) {
 
 	if (settings::get_bool("norecoil")) {
 		view.angles -= get_local_player()->get_view_punch_angles();
+	}
+
+	static bool should_reset_input_state;
+	if (settings::get_bool("third_person")) {
+		c_vector view_vec; math::angle_to_vector(view.angles, view_vec);
+		view_vec.invert();
+
+		trace_t tr; ray_t ray;
+		c_trace_filter f; f.pSkip = get_local_player();
+
+		auto end_pos = view.origin + (view_vec * settings::get_int("third_person_distance"));
+		ray.init(view.origin, end_pos);
+
+		interfaces::engine_trace->trace_ray(ray, MASK_SHOT, &f, &tr);
+		
+		if (abs((tr.endpos - tr.startpos).length()) >= 50.f) {
+			should_reset_input_state = true;
+			interfaces::input->m_fCameraInThirdPerson = true;
+
+			view.origin = tr.endpos;
+		}
+	} else if (should_reset_input_state) {
+		interfaces::input->m_fCameraInThirdPerson = false;
+		should_reset_input_state = false;
 	}
 	
 	globals::game_info::view_setup = view;

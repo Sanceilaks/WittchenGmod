@@ -9,6 +9,8 @@
 
 #include <map>
 
+#define CHECK_THIS if (!this) return
+
 class c_collidable
 {
 public:
@@ -122,9 +124,9 @@ public:
 
 	uint32_t get_bone_by_name(const std::string& name)
 	{
+		CHECK_THIS 0;
 		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
-		if (!lua)
-			return 0;
+		if (!lua) return 0;
 		c_lua_auto_pop p(lua);
 
 		push_entity(); //1
@@ -138,6 +140,7 @@ public:
 
 	c_vector get_bone(int bone)
 	{
+		CHECK_THIS{};
 		matrix3x4_t bone_matrix[128];
 		if (!setup_bones(bone_matrix, 128, 0x00000100, interfaces::engine->get_last_time_stamp()))
 			return {};

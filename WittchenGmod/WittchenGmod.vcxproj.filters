@@ -398,5 +398,20 @@
     <ClInclude Include="src\game_sdk\interfaces\ienginetrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\game_sdk\misc\movedata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\globalvars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\gamemovement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\movehelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\cinput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

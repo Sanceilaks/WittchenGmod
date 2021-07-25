@@ -82,6 +82,10 @@ void c_vector::clamp()
 	this->z = 0.0f;
 }
 
+void c_vector::invert() {
+	*this *= -1;
+}
+
 float c_vector::length() const
 {
 	return sqrt(x * x + y * y + z * z);

@@ -1,12 +1,8 @@
 #pragma once
 
 #include "bind_system.h"
-#include <vector>
 #include <string>
-#include <map>
-#include <any>
 
-//TODO: IMPL BIND`S
 namespace settings {
 	using namespace bind_system;
 

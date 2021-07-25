@@ -20,6 +20,8 @@ namespace ImGui {
 	IMGUI_API void EndApplyAlpha();
 
 	IMGUI_API bool ColorsEdit4(const std::string& str_id, c_color& color, ImGuiColorEditFlags flags);
+
+	IMGUI_API ImVec2 Translate(const ImVec2& from, const ImVec2& to, float speed = 1.f);
 }
 
 namespace Wittchen {

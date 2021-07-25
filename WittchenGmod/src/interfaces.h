@@ -13,6 +13,10 @@
 #include "game_sdk/interfaces/random_stream.h"
 #include "game_sdk/interfaces/iprediction.h"
 #include "game_sdk/interfaces/ienginetrace.h"
+#include "game_sdk/interfaces/globalvars.h"
+#include "game_sdk/interfaces/gamemovement.h"
+#include "game_sdk/interfaces/movehelper.h"
+#include "game_sdk/interfaces/cinput.h"
 
 namespace interfaces {
 	inline c_engine_client* engine;
@@ -29,6 +33,10 @@ namespace interfaces {
 	inline c_uniform_random_stream* random_stream;
 	inline i_prediction* prediction;
 	inline i_engine_trace* engine_trace;
+	inline c_global_vars* global_vars;
+	inline i_game_movement* game_movement;
+	inline i_move_helper* move_helper;
+	inline CInput* input;
 	
 	void init_interfaces();
 }

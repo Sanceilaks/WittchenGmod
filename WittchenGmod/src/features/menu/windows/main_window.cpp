@@ -10,6 +10,30 @@
 
 using namespace ImGui;
 
+class c_wittchen_tab_bar {
+	int current_idx;
+	ImVec2 overlay_pos;
+	ImRect tabsrect;
+
+public:
+	bool begin();
+	void end();
+
+	bool tab(const std::string& name);
+};
+
+bool c_wittchen_tab_bar::begin() {
+	return false;
+}
+
+void c_wittchen_tab_bar::end() {
+	
+}
+
+bool TabButton(const std::string& name, int& cur_idx) {
+	return false;
+}
+
 void main_window::draw_main_window() {
 	SetNextWindowSize({ 600, 400 }, ImGuiCond_Once);
 	Begin(u8"Тута типа меню будет окда (мне лень идите нахуй)##MAINWINDOW", 0);
@@ -57,6 +81,11 @@ void main_window::draw_main_window() {
 			WittchenSlider("Custom fov", "custom_fov", { 0, 360 });
 			WittchenSlider("Aspect ratio", "custom_aspect_ratio", { 0, 355 });
 			
+			WittchenCheckbox("Draw aimbot target", "aimbot_draw_target");
+
+			WittchenCheckbox("Third person", "third_person");
+			WittchenSlider("Third person distance", "third_person_distance", {50, 1000});
+			
 			PopFont();
 			EndTabItem();
 		}
@@ -64,6 +93,7 @@ void main_window::draw_main_window() {
 			PushFont(render_system::fonts::menu_font[1]);
 			
 			WittchenCheckbox("Bunny Hop", "bhop");
+			WittchenCheckbox("Fix movement", "fixmovement");
 			
 			PopFont();
 			EndTabItem();

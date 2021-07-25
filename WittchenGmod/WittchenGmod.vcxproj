@@ -124,6 +124,8 @@
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgInstalledDir>
+    </VcpkgInstalledDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
@@ -137,6 +139,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Beta|Win32'" Label="Vcpkg">
     <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -333,20 +338,25 @@
     <ClInclude Include="src\game_sdk\entities\c_base_player.h" />
     <ClInclude Include="src\game_sdk\entities\c_base_weapon.h" />
     <ClInclude Include="src\game_sdk\entities\i_client_entity.h" />
+    <ClInclude Include="src\game_sdk\interfaces\cinput.h" />
     <ClInclude Include="src\game_sdk\interfaces\client.h" />
     <ClInclude Include="src\game_sdk\interfaces\cliententitylist.h" />
     <ClInclude Include="src\game_sdk\interfaces\client_mode.h" />
     <ClInclude Include="src\game_sdk\interfaces\convar.h" />
     <ClInclude Include="src\game_sdk\interfaces\debugoverlay.h" />
     <ClInclude Include="src\game_sdk\interfaces\engine.h" />
+    <ClInclude Include="src\game_sdk\interfaces\gamemovement.h" />
+    <ClInclude Include="src\game_sdk\interfaces\globalvars.h" />
     <ClInclude Include="src\game_sdk\interfaces\ienginetrace.h" />
     <ClInclude Include="src\game_sdk\interfaces\imaterialsystem.h" />
     <ClInclude Include="src\game_sdk\interfaces\iprediction.h" />
     <ClInclude Include="src\game_sdk\interfaces\i_panel.h" />
     <ClInclude Include="src\game_sdk\interfaces\lua_shared.h" />
+    <ClInclude Include="src\game_sdk\interfaces\movehelper.h" />
     <ClInclude Include="src\game_sdk\interfaces\random_stream.h" />
     <ClInclude Include="src\game_sdk\interfaces\surface.h" />
     <ClInclude Include="src\game_sdk\misc\c_client_class.h" />
+    <ClInclude Include="src\game_sdk\misc\movedata.h" />
     <ClInclude Include="src\game_sdk\misc\recv_props.h" />
     <ClInclude Include="src\game_sdk\misc\usercmd.h" />
     <ClInclude Include="src\game_sdk\misc\viewsetup.h" />

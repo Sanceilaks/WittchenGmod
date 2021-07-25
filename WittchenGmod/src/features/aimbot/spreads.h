@@ -4,5 +4,5 @@
 
 namespace spreads {
 	void base_nospread(c_user_cmd& cmd);
-	
+	void swb_nospread(c_user_cmd& cmd);
 }

@@ -1,9 +1,5 @@
 #pragma once
 
-
-#pragma once
-#include <map>
-
 #include "c_base_player.h"
 
 class c_base_combat_weapon : public c_base_entity
@@ -29,7 +25,9 @@ public:
 
 	std::string get_weapon_base()
 	{
+		CHECK_THIS{};
 		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+		if (!lua) return 0;
 		push_entity();
 		lua->get_field(-1, "Base");
 		if (!lua->is_type(-1, (int)lua_object_type::STRING))
@@ -44,7 +42,9 @@ public:
 
 	float get_primary_value(const std::string& var)
 	{
+		CHECK_THIS{};
 		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+		if (!lua) return 0;
 		push_entity(); //1
 		lua->get_field(-1, "Primary"); //2
 		if (!lua->is_type(-1, (int)lua_object_type::TABLE))

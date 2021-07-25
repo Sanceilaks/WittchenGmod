@@ -9,6 +9,8 @@
 #include "../../../render_system/render_helpers.h"
 #include "../../../utils/input_system.h"
 
+#include <imgui/imgui_internal.h>
+
 using namespace ImGui;
 
 bool ImGui::WittchenCheckbox(const std::string& name, const std::string& var) {
@@ -138,6 +140,11 @@ bool ImGui::ColorsEdit4(const std::string& str_id, c_color& color, ImGuiColorEdi
 	const auto ret = ColorEdit4(str_id.c_str(), tmp.data(), flags);
 	color = c_color(tmp);
 	return ret;
+}
+
+ImVec2 ImGui::Translate(const ImVec2& from, const ImVec2& to, float speed) {
+	if (from.x == to.x && from.y == to.y) return from;
+	return { ImLinearSweep(from.x, to.x, ImGui::GetIO().DeltaTime * speed), ImLinearSweep(from.y, to.y, ImGui::GetIO().DeltaTime * speed) };
 }
 
 static Wittchen::WitthcenEspStyleEditor g_style_editor;

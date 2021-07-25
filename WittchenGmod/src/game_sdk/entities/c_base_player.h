@@ -8,6 +8,25 @@
 
 class c_base_combat_weapon;
 
+enum class e_move_type
+{
+	none = 0,
+	isometric,
+	walk,
+	step,
+	fly,
+	flygravity,
+	vphysics,
+	push,
+	noclip,
+	ladder,
+	observer,
+	custom,
+	last = custom,
+	max_bits = 4,
+	movetype
+};
+
 class c_base_player : public c_base_entity {
 public:
 	NETVAR("DT_BasePlayer", "m_fFlags", get_flags, int);
@@ -30,6 +49,23 @@ public:
 	NETVAR("DT_BasePlayer", "m_hObserverTarget", get_observer_target_handle, uintptr_t);
 	NETVAR("DT_PlayerResource", "m_iPing", get_ping, int);
 
+	int get_move_type()
+	{
+		CHECK_THIS{};
+		auto glua = interfaces::lua_shared->get_lua_interface((int)e_interface_type::client);
+		if (!glua)
+			return {};
+		c_lua_auto_pop p(glua);
+
+		push_entity();
+
+		glua->get_field(-1, "GetMoveType");
+		glua->push(-2);
+		glua->call(1, 1);
+
+		return static_cast<int>(glua->get_number(-1));;
+	}
+
 	std::string get_name() const
 	{
 		player_info_s info;
@@ -47,9 +83,9 @@ public:
 
 	std::string get_team_name()
 	{
+		CHECK_THIS{};
 		auto glua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
-		if (!glua)
-			return {};
+		if (!glua) return {};
 		c_lua_auto_pop p(glua);
 
 		glua->push_special((int)e_special::glob);
@@ -63,9 +99,9 @@ public:
 
 	q_angle get_view_punch_angles()
 	{
+		CHECK_THIS{};
 		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
-		if (!lua)
-			return { 0.f };
+		if (!lua) return { 0.f };
 		lua->push_special((int)e_special::glob); //1
 		push_entity();
 
@@ -95,11 +131,10 @@ public:
 	
 	c_color get_team_color()
 	{
+		CHECK_THIS{};
 		auto glua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
 		c_color color;
-
-		if (!glua)
-			return c_color();
+		if (!glua) return c_color();
 		c_lua_auto_pop p(glua);
 
 		glua->push_special((int)e_special::glob);
@@ -131,9 +166,9 @@ public:
 	
 	std::string get_user_group()
 	{
+		CHECK_THIS{};
 		auto lua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
-		if (!lua)
-			return {};
+		if (!lua) return {};
 		c_lua_auto_pop p(lua);
 
 		push_entity();

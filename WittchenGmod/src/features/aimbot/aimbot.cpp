@@ -3,12 +3,13 @@
 #include "spreads.h"
 
 #include "../../game_sdk/entities/c_base_weapon.h"
-
 #include "../../settings/settings.h"
-
 #include "../../utils/game_utils.h"
-
 #include "../../globals.h"
+#include "../../game_sdk/misc/movedata.h"
+
+#include"../../render_system/render_system.h"
+#include "../../utils/md5_check_sum.h"
 
 struct shoot_pos_t {
 	c_vector position;
@@ -114,7 +115,7 @@ bool get_target(target_t& target)
 	if (!get_local_player())
 		return false;
 
-	target_t tmp{ nullptr, {}};
+	target_t tmp{ nullptr,{}};
 	tmp.shoot_pos.fov = FLT_MAX;
 	
 	for (auto i : game_utils::get_valid_players(false)) {
@@ -141,6 +142,14 @@ bool get_target(target_t& target)
 	return true;
 }
 
+c_vector aimbot::get_aimbot_target()
+{
+	target_t target;
+	if (!get_target(target))
+		return {};
+	return target.shoot_pos.position;
+}
+
 void aimbot::run_aimbot(c_user_cmd& cmd) {
 	if (!settings::get_bool("aimbot"))
 		return;
@@ -162,8 +171,6 @@ void aimbot::run_aimbot(c_user_cmd& cmd) {
 		interfaces::engine->set_view_angles(cmd.viewangles);
 	
 	if (settings::get_bool("aimbot_autofire")) {
-		/*trace_t tr; game_utils::trace_view_angles(tr, cmd.viewangles);
-		if (tr.m_pEnt != nullptr && tr.m_pEnt == target.ply) */
 		cmd.buttons |= IN_ATTACK;
 	}
 }
@@ -185,5 +192,49 @@ void aimbot::nospread(c_user_cmd& cmd) {
 	if (cmd.buttons & IN_ATTACK) {
 		if (wep->get_weapon_base().find("bobs_gun") != std::string::npos)
 			spreads::base_nospread(cmd);
+		if (wep->get_weapon_base().find("swb") != std::string::npos)
+			spreads::swb_nospread(cmd);
 	}
+}
+
+//TODO: IMPL THIS
+struct prediton_data_t {
+	float old_curtime, old_frametime;
+	c_base_player* player;
+	c_move_data move_data = {};
+	c_user_cmd* current_cmd;
+	int* prediction_random_seed;
+} pred_data;
+
+bool aimbot::start_prediction(c_user_cmd& cmd)
+{
+	if (!pred_data.prediction_random_seed) {
+		static DWORD oldp;
+		auto fn = memory_utils::relative_to_absolute((uintptr_t)memory_utils::pattern_scanner("client.dll", "E8 ? ? ? ? 48 8B 06 48 8D 55 D7"), 1, 5);
+		pred_data.prediction_random_seed = (int*)(fn + 15);
+		VirtualProtect(pred_data.prediction_random_seed, sizeof(int), PAGE_EXECUTE_READWRITE, &oldp);
+	}
+
+	pred_data.player = get_local_player();
+	*pred_data.prediction_random_seed = md5::md5_pseudo_random(cmd.command_number) & 0x7FFFFFFF;
+
+	pred_data.old_curtime = interfaces::global_vars->curtime;
+	pred_data.old_frametime = interfaces::global_vars->interval_per_tick;
+
+	interfaces::game_movement->start_track_prediction_errors(pred_data.player);
+	pred_data.move_data.zero();
+	interfaces::prediction->setup_move(pred_data.player, &cmd, interfaces::move_helper, &pred_data.move_data);
+	interfaces::game_movement->process_movement(pred_data.player, &pred_data.move_data);
+	interfaces::prediction->finish_move(pred_data.player, &cmd, &pred_data.move_data);
+	
+	return true;
+}
+
+void aimbot::end_prediction()
+{
+	interfaces::game_movement->finish_track_prediction_errors(pred_data.player);
+	*pred_data.prediction_random_seed = -1;
+	pred_data.current_cmd = nullptr;
+	interfaces::global_vars->curtime = pred_data.old_curtime;
+	interfaces::global_vars->frametime = pred_data.old_frametime;
 }
