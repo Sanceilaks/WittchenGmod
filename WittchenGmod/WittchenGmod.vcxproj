@@ -237,6 +237,12 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(ProjectDir)deps\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <Optimization>MaxSpeed</Optimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -289,7 +295,6 @@
     <ClCompile Include="src\utils\hackutils.cpp" />
     <ClCompile Include="src\utils\input_system.cpp" />
     <ClCompile Include="src\utils\md5_check_sum.cpp" />
-    <ClCompile Include="src\utils\memoryutils.cpp" />
     <ClCompile Include="src\utils\netvars.cpp" />
   </ItemGroup>
   <ItemGroup>

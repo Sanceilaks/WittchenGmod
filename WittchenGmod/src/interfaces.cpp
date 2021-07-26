@@ -25,7 +25,7 @@ void interfaces::init_interfaces() {
 
 	mat_render_context = material_system->get_render_context();
 
-	global_vars = (c_global_vars*)memory_utils::relative_to_absolute((uintptr_t)(memory_utils::pattern_scanner("client.dll", "48 8B 05 ? ? ? ? 48 8B D7")), 0x3, 7);
+	//global_vars = (c_global_vars*)memory_utils::relative_to_absolute((uintptr_t)(memory_utils::pattern_scanner("client.dll", "48 8B 05 ? ? ? ? 48 8B D7")), 0x3, 7);
 
 	random_stream = memory_utils::get_vmt_from_instruction<c_uniform_random_stream>((uintptr_t)GetProcAddress(GetModuleHandleA("vstdlib.dll"), "RandomSeed"), 0x2);
 }

@@ -126,8 +126,10 @@ float& c_vector::operator[](int idx)
 	return ((float*)this)[idx];
 }
 
-c_vector& c_vector::operator=(const c_vector& left)
-= default;
+c_vector& c_vector::operator=(const c_vector& left) {
+	x = left.x; y = left.y; z = left.z;
+	return *this;
+}
 
 bool c_vector::operator==(const c_vector& other) const
 {

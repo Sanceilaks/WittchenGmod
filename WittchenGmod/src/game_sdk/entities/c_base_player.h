@@ -203,7 +203,7 @@ public:
 
 __forceinline c_local_player* get_local_player()
 {
-	return static_cast<c_local_player*>(interfaces::entity_list->get_client_entity(interfaces::engine->get_local_player()));
+	return reinterpret_cast<c_local_player*>(interfaces::entity_list->get_client_entity(interfaces::engine->get_local_player()));
 }
 
 

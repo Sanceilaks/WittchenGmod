@@ -27,9 +27,6 @@
     <ClCompile Include="src\interfaces.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\memoryutils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\utils\hackutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

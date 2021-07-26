@@ -52,6 +52,7 @@ void main_window::draw_main_window() {
 			
 			WittchenCheckbox("Nospread##AIMBOT", "nospread");
 			WittchenCheckbox("Norecoil##AIMBOT", "norecoil");
+			WittchenCheckbox("Force accuracy fire##AIMBOT", "faf");
 			
 			Button("Bones##AIMBONES");
 			if (BeginPopupContextItem()) {

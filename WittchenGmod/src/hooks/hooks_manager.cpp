@@ -293,8 +293,6 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	
 	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game())
 		return original(self, frame_time, cmd);
-
-	auto a = interfaces::global_vars;
 	
 	auto lp = get_local_player();
 	if (!lp || !lp->is_alive())
@@ -313,10 +311,10 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		aimbot::end_prediction();
 	}
 
-	if (settings::get_bool("fixmovement"))
-	fix_movement(*cmd);
-
 	original(interfaces::client_mode, frame_time, cmd);
+
+	if (settings::get_bool("fixmovement"))
+		fix_movement(*cmd);
 	
 	lua_futures::run_all_code();
 	
@@ -414,7 +412,7 @@ void override_view_hook::hook(i_client_mode* self, c_view_setup& view) {
 		view.fov = static_cast<float>(fov);
 	}
 
-	if (settings::get_bool("norecoil")) {
+	if (settings::get_bool("norecoil") || settings::get_bool("third_person")) {
 		view.angles -= get_local_player()->get_view_punch_angles();
 	}
 
@@ -468,9 +466,7 @@ void view_render_hook::hook(chl_client* self, vrect_t* rect) {
 void read_pixels_hook::hook(i_mat_render_context* self, int x, int y, int width, int height, unsigned char* data,
 	image_format dstFormat) {
 	static uintptr_t render_capture = 0;
-	if (!render_capture) render_capture = (uintptr_t)memory_utils::pattern_scanner("client.dll", RENDER_CAPTURE_PATTERN);
-
-	std::cout << "read_pixels_hook just called" << std::endl;
+	if (!render_capture) render_capture = (uintptr_t)memory_utils::pattern_scanner("client.dll", "40 55 41 57 48 8D 6C 24 ?");
 	
 	c_view_setup setup;
 	if ((uintptr_t)_ReturnAddress() == render_capture) {

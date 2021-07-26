@@ -20,6 +20,7 @@ std::unordered_map<std::string, std::any> settings_storage {
 	{"aimbot_draw_target", false},
 	{"fixmovement", false},
 	{"third_person", false},
+	{"faf", false},
 	
 	{"aimbot_fov", 0},
 	{"aimbot_bones", (int)e_bones::head},

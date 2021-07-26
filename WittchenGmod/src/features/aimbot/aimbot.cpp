@@ -1,5 +1,7 @@
 #include "aimbot.h"
 
+#include <iostream>
+
 #include "spreads.h"
 
 #include "../../game_sdk/entities/c_base_weapon.h"
@@ -26,29 +28,20 @@ struct target_t {
 int last_target_id = -1;
 float last_target_time = -1.f;
 
-class c_aimbot_trace_filter : public i_trace_filter{
-public:
-	bool should_hit_entity(void* pEntityHandle, int contentsMask)
-	{
-		return pEntityHandle != lp && pEntityHandle != ent;
-	}
-	virtual trace_type_t get_trace_type() const
-	{
-		return trace_everything;
-	}
-	void* lp;
-	void* ent;
-};
-
 bool can_do_damage(c_base_player* player, const c_vector& position) {
+	ray_t ray;
 	trace_t tr;
-	c_aimbot_trace_filter filter;
-	filter.lp = get_local_player();
-	filter.ent = player;
-	
-	game_utils::trace_ray(tr, get_local_player()->get_eye_pos(), position, &filter);
+	c_trace_filter filter;
+	filter.pSkip = get_local_player();
 
-	return tr.fraction == 1.f;
+	ray.init(get_local_player()->get_eye_pos(), position);
+	/*std::cout << (std::string)get_local_player()->get_eye_pos() << "\t" << (std::string)position << "\t" << (std::string)ray.m_start
+	<< (std::string)ray.m_delta << std::endl;*/
+	
+	interfaces::engine_trace->trace_ray(ray, MASK_SHOT, &filter, &tr);
+
+	//return tr.fraction == 1.f;
+	return tr.m_pEnt == player || tr.fraction >= 0.98f;
 }
 
 bool on_bone_not_exist(shoot_pos_t& sp, c_base_player* player) {
@@ -58,14 +51,15 @@ bool on_bone_not_exist(shoot_pos_t& sp, c_base_player* player) {
 	q_angle real_angle;
 	interfaces::engine->get_view_angles(real_angle);
 	
-	sp.position = position;
 	sp.fov = game_utils::get_fov(real_angle, game_utils::calc_angle(get_local_player()->get_eye_pos(), position));
 	auto angle = math::get_angle(get_local_player()->get_eye_pos(), position);
 	if (!angle.is_valid() || !can_do_damage(player, position))
 		return false;
 	sp.angle = angle;
-
+	sp.position = position;
+	
 	return true;
+	//return false;
 }
 
 bool get_shoot_pos(shoot_pos_t& sp, c_base_player* player) {
@@ -94,7 +88,7 @@ bool get_shoot_pos(shoot_pos_t& sp, c_base_player* player) {
 		}
 	}
 
-	if (bone_idx == -1) 
+	if (bone_idx == -1)
 		return on_bone_not_exist(sp, player);
 
 	const auto bone_position = player->get_bone(bone_idx);
@@ -125,8 +119,6 @@ bool get_target(target_t& target)
 		
 		if (!get_shoot_pos(tmp_shoot_pos, player))
 			continue;
-
-		auto name = player->get_name();
 		
 		if (tmp_shoot_pos.fov < tmp.shoot_pos.fov && tmp_shoot_pos.fov <= (float)settings::get_int("aimbot_fov")) {
 			tmp.ply = player;
@@ -208,7 +200,7 @@ struct prediton_data_t {
 
 bool aimbot::start_prediction(c_user_cmd& cmd)
 {
-	if (!pred_data.prediction_random_seed) {
+	/*if (!pred_data.prediction_random_seed) {
 		static DWORD oldp;
 		auto fn = memory_utils::relative_to_absolute((uintptr_t)memory_utils::pattern_scanner("client.dll", "E8 ? ? ? ? 48 8B 06 48 8D 55 D7"), 1, 5);
 		pred_data.prediction_random_seed = (int*)(fn + 15);
@@ -225,16 +217,16 @@ bool aimbot::start_prediction(c_user_cmd& cmd)
 	pred_data.move_data.zero();
 	interfaces::prediction->setup_move(pred_data.player, &cmd, interfaces::move_helper, &pred_data.move_data);
 	interfaces::game_movement->process_movement(pred_data.player, &pred_data.move_data);
-	interfaces::prediction->finish_move(pred_data.player, &cmd, &pred_data.move_data);
+	interfaces::prediction->finish_move(pred_data.player, &cmd, &pred_data.move_data);*/
 	
 	return true;
 }
 
 void aimbot::end_prediction()
 {
-	interfaces::game_movement->finish_track_prediction_errors(pred_data.player);
+	/*interfaces::game_movement->finish_track_prediction_errors(pred_data.player);
 	*pred_data.prediction_random_seed = -1;
 	pred_data.current_cmd = nullptr;
 	interfaces::global_vars->curtime = pred_data.old_curtime;
-	interfaces::global_vars->frametime = pred_data.old_frametime;
+	interfaces::global_vars->frametime = pred_data.old_frametime;*/
 }

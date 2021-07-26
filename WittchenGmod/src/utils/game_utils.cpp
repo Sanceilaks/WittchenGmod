@@ -97,7 +97,9 @@ void game_utils::trace_view_angles(trace_t& t, const q_angle& viewangles, i_trac
 void game_utils::trace_ray(trace_t& t, const c_vector& from, const c_vector& to, i_trace_filter* filter) {
 	ray_t ray;
 
-	c_vector start = from; c_vector end = to;
+	c_vector start = from;
+	c_vector end = to;
+	
 	ray.init(start, end);
 	interfaces::engine_trace->trace_ray(ray, MASK_SHOT, filter, &t);
 }

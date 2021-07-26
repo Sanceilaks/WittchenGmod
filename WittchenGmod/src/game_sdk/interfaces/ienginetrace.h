@@ -105,21 +105,27 @@
 
 struct ray_t
 {
-	ray_t() {}
+	ray_t() : privet_ot_detey_voida_nahui_idi_pointer_ebaniy(nullptr), m_is_ray(false), m_is_swept(false) {}
 	c_vector_aligned  m_start;    // starting point, centered within the extents
 	c_vector_aligned  m_delta;    // direction + length of the ray
 	c_vector_aligned  m_start_offset;    // Add this to m_Start to get the actual ray start
 	c_vector_aligned  m_extents;    // Describes an axis aligned box extruded along a ray
+	const void* privet_ot_detey_voida_nahui_idi_pointer_ebaniy;
 	bool    m_is_ray;    // are the extents zero?
 	bool    m_is_swept;    // is delta != 0?
 
-	void init(c_vector& vecStart, c_vector& vecEnd)
+	ray_t(c_vector const& start, c_vector const& end) {
+		init(start, end);
+	}
+	
+	void init(const c_vector& vecStart, const c_vector& vecEnd)
 	{
 		m_delta = vecEnd - vecStart;
 		m_is_swept = (m_delta.length() != 0);
-		m_extents[0] = m_extents[1] = m_extents[2] = 0.0f;
+		m_extents.init(0, 0, 0);
+		privet_ot_detey_voida_nahui_idi_pointer_ebaniy = nullptr;
 		m_is_ray = true;
-		m_start_offset[0] = m_start_offset[1] = m_start_offset[2] = 0.0f;
+		m_start_offset.init(0, 0, 0);
 		m_start = vecStart;
 	}
 private:

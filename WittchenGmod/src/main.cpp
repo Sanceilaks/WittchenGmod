@@ -16,7 +16,7 @@ void entry_point() {
 
 	//input_system::add_bind(VK_MENU, "test_key", &globals::draw_box);
 	
-#ifdef _DEBUG
+#if defined(_DEBUG) or defined(WITTCHEN_BETA)
 	AllocConsole();
 	freopen("CONOUT$", "wb", stdout);
 	freopen("CONOUT$", "wb", stderr);

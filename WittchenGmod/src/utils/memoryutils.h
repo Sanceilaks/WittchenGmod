@@ -17,11 +17,23 @@
 
 /* DEFINES */
 #define PAGE_EXECUTE_FLAGS (PAGE_EXECUTE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY)
+#if defined(_WIN64)
+#define IF64_ELSE_32(a, b) a
+#define POINTER_SIZE 8
+#else
+#define IF64_ELSE_32(a, b) b
+#define POINTER_SIZE 4
+#endif
+
 
 namespace MEMORYUTILS_NAMESPACE_NAME
 {
+	/* typedefs */
 	using address_t = uintptr_t;
+	typedef MEMORY_BASIC_INFORMATION memory_basic_information_t;
+
 	
+	/* main section */
 #if defined(VALVE_GAME)
 	template<typename T>
 	T* capture_interface(const std::string& module_name, const std::string& interface_name)
@@ -46,30 +58,23 @@ namespace MEMORYUTILS_NAMESPACE_NAME
 	}
 	
 	template<typename T>
-	T* get_vmt_from_instruction(address_t address) noexcept {
-		size_t step = 3;
-		size_t instructionSize = 7;
+	T* get_vmt_from_instruction(address_t address, size_t step = 3, size_t instructionSize = 7) noexcept {
 		address_t instruction = address;
-
 		address_t relativeAddress = *(DWORD*)(instruction + step);
 		address_t realAddress = instruction + instructionSize + relativeAddress;
 		return *(T**)(realAddress);
 	}
 
 	template<typename T>
-	T* get_vmt_from_instruction(address_t address, size_t offset) noexcept {
-		size_t step = 3;
-		size_t instructionSize = 7;
-		uintptr_t instruction = address + offset;
-
-		return *(T**)(relative_to_absolute(instruction, step, instructionSize));
+	T* get_vmt_from_instruction(address_t address, size_t offset, size_t step = 3, size_t instructionSize = 7) noexcept {
+		return *(T**)(relative_to_absolute(address + offset, step, instructionSize));
 	}
 
 	template<typename T>
 	T* get_vmt_from_vtable_function(address_t from_vtble, int index, address_t offset_from_funcrion_start, uint32_t instruction_offset = 3, uint32_t
 	                                instruction_size = 7) noexcept
 	{
-		uintptr_t instruction = ((*(uintptr_t**)(from_vtble))[index] + offset_from_funcrion_start);
+		uintptr_t instruction = ((*(address_t**)(from_vtble))[index] + offset_from_funcrion_start);
 		return *(T**)(relative_to_absolute(instruction, instruction_offset, instruction_size));
 	}
 #endif
@@ -127,8 +132,6 @@ namespace MEMORYUTILS_NAMESPACE_NAME
 
 		return nullptr;
 	}
-
-	typedef MEMORY_BASIC_INFORMATION memory_basic_information_t;
 	
 	inline memory_basic_information_t get_memory_basic_information(address_t address) {
 		memory_basic_information_t i; VirtualQuery((LPVOID)address, &i, sizeof(i));
