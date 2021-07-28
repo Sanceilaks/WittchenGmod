@@ -70,6 +70,9 @@ void main_window::draw_main_window() {
 				}
 				EndPopup();
 			}
+
+			WittchenCheckbox("Fake lags##HVH", "fake_lags");
+			WittchenSlider("Amount##HVH_FL", "fake_lags_amount", { 0, 21 });
 			
 			PopFont();
 			EndTabItem();

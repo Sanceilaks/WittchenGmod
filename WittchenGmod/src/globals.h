@@ -10,6 +10,7 @@ namespace globals {
 	namespace game_info {
 		inline c_view_setup view_setup;
 		inline c_view_setup proof_view_setup;
+		inline int chocked_packets;
 	}
 }
 

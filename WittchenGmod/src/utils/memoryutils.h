@@ -66,7 +66,7 @@ namespace MEMORYUTILS_NAMESPACE_NAME
 	}
 
 	template<typename T>
-	T* get_vmt_from_instruction(address_t address, size_t offset, size_t step = 3, size_t instructionSize = 7) noexcept {
+	T* get_vmt_from_function_instruction(address_t address, size_t offset, size_t step = 3, size_t instructionSize = 7) noexcept {
 		return *(T**)(relative_to_absolute(address + offset, step, instructionSize));
 	}
 

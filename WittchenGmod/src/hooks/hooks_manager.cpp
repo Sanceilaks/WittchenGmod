@@ -283,23 +283,45 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		cmd->buttons &= ~IN_FORWARD;
 		cmd->buttons &= ~IN_BACK;
 	};
-
-	static bool* send_packets;
+	auto bhop = [&]() {
+		auto local_player = get_local_player();
+		static bool should_fake = false;
+		if (static bool last_jumped = false; !last_jumped && should_fake) {
+			should_fake = false;
+			cmd->buttons |= IN_JUMP;
+		}
+		else if (cmd->buttons & IN_JUMP) {
+			if (local_player->get_flags() & (1 << 0)) {
+				last_jumped = true;
+				should_fake = true;
+			}
+			else {
+				cmd->buttons &= ~IN_JUMP;
+				last_jumped = false;
+			}
+		}
+		else {
+			last_jumped = false;
+			should_fake = false;
+		}
+	};
+	
+	static bool* send_packets_ptr;
 	static DWORD sp_protection;
-	if (!send_packets) {
-		send_packets = reinterpret_cast<bool*>(cl_move + 0x62);
-		VirtualProtect(send_packets, sizeof(bool), PAGE_EXECUTE_READWRITE, &sp_protection);
+	if (!send_packets_ptr) {
+		send_packets_ptr = reinterpret_cast<bool*>(cl_move + 0x62);
+		VirtualProtect(send_packets_ptr, sizeof(bool), PAGE_EXECUTE_READWRITE, &sp_protection);
 	}
 	
-	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game())
-		return original(self, frame_time, cmd);
+	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game()) return original(self, frame_time, cmd);
 	
 	auto lp = get_local_player();
-	if (!lp || !lp->is_alive())
-		return original(self, frame_time, cmd);
+	if (!lp || !lp->is_alive()) return original(self, frame_time, cmd);
+
+	bool& send_packets = *send_packets_ptr;
 	
-	if (settings::get_bool("bhop") && cmd->buttons & IN_JUMP && lp && !(lp->get_flags() & (1 << 0))) {
-		cmd->buttons &= ~IN_JUMP;
+	if (settings::get_bool("bhop") && !(lp->get_flags() & (1 << 0))) {
+		bhop();
 	}
 
 	if (aimbot::start_prediction(*cmd)) {
@@ -311,12 +333,16 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		aimbot::end_prediction();
 	}
 
+	if (settings::get_bool("fixmovement")) fix_movement(*cmd);
+	
 	original(interfaces::client_mode, frame_time, cmd);
-
-	if (settings::get_bool("fixmovement"))
-		fix_movement(*cmd);
+	
+	if (settings::get_bool("fake_lags")) send_packets = !(globals::game_info::chocked_packets < settings::get_int("fake_lags_amount"));
 	
 	lua_futures::run_all_code();
+
+	send_packets = cmd->buttons & IN_ATTACK || globals::game_info::chocked_packets > 21 ? true : send_packets;
+	globals::game_info::chocked_packets = !send_packets ? globals::game_info::chocked_packets + 1 : 0;
 	
 	return false;
 }

@@ -21,13 +21,16 @@ std::unordered_map<std::string, std::any> settings_storage {
 	{"fixmovement", false},
 	{"third_person", false},
 	{"faf", false},
+	{"fake_lags", false},
+
 	
 	{"aimbot_fov", 0},
 	{"aimbot_bones", (int)e_bones::head},
 	{"custom_viewmodel_fov", 0},
 	{"custom_fov", 0},
 	{"custom_aspect_ratio", 0},
-	{"third_person_distance", 50}
+	{"third_person_distance", 50},
+	{"fake_lags_amount", 0}
 };
 
 bool var_exist(var_id_t_non_copy name) {
