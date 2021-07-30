@@ -197,7 +197,7 @@ struct prediton_data_t {
 
 bool aimbot::start_prediction(c_user_cmd& cmd)
 {
-	if (!pred_data.prediction_random_seed) {
+	/*if (!pred_data.prediction_random_seed) {
 		static DWORD oldp;
 		auto fn = memory_utils::relative_to_absolute((uintptr_t)memory_utils::pattern_scanner("client.dll", "E8 ? ? ? ? 48 8B 06 48 8D 55 D7"), 1, 5);
 		pred_data.prediction_random_seed = (int*)(fn + 15);
@@ -214,16 +214,16 @@ bool aimbot::start_prediction(c_user_cmd& cmd)
 	pred_data.move_data.zero();
 	interfaces::prediction->setup_move(pred_data.player, &cmd, interfaces::move_helper, &pred_data.move_data);
 	interfaces::game_movement->process_movement(pred_data.player, &pred_data.move_data);
-	interfaces::prediction->finish_move(pred_data.player, &cmd, &pred_data.move_data);
+	interfaces::prediction->finish_move(pred_data.player, &cmd, &pred_data.move_data);*/
 	
 	return true;
 }
 
 void aimbot::end_prediction()
 {
-	interfaces::game_movement->finish_track_prediction_errors(pred_data.player);
+	/*interfaces::game_movement->finish_track_prediction_errors(pred_data.player);
 	*pred_data.prediction_random_seed = -1;
 	pred_data.current_cmd = nullptr;
 	interfaces::global_vars->curtime = pred_data.old_curtime;
-	interfaces::global_vars->frametime = pred_data.old_frametime;
+	interfaces::global_vars->frametime = pred_data.old_frametime;*/
 }

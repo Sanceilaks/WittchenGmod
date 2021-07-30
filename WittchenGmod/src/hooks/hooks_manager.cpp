@@ -334,15 +334,19 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	}
 
 	if (settings::get_bool("fixmovement")) fix_movement(*cmd);
-	
+
+	cmd->viewangles.normalize();
 	original(interfaces::client_mode, frame_time, cmd);
 	
 	if (settings::get_bool("fake_lags")) send_packets = !(globals::game_info::chocked_packets < settings::get_int("fake_lags_amount"));
-	//if (settings::get_float("fake_duck")) send_packets = 
+	if (settings::get_bool("fake_duck")) {
+		send_packets = globals::game_info::chocked_packets >= 9 ? true : false;
+		if (send_packets) cmd->buttons |= IN_DUCK;  else cmd->buttons &= ~IN_DUCK;
+	}
 	
 	lua_futures::run_all_code();
 
-	send_packets = cmd->buttons & IN_ATTACK || globals::game_info::chocked_packets > 21 ? true : send_packets;
+	send_packets = (cmd->buttons & IN_ATTACK) || (globals::game_info::chocked_packets > 21) ? true : send_packets;
 	globals::game_info::chocked_packets = !send_packets ? globals::game_info::chocked_packets + 1 : 0;
 	
 	return false;

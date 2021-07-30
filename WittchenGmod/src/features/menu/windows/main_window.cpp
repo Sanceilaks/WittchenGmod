@@ -98,6 +98,7 @@ void main_window::draw_main_window() {
 			
 			WittchenCheckbox("Bunny Hop", "bhop");
 			WittchenCheckbox("Fix movement", "fixmovement");
+			WittchenCheckbox("Fake Duck", "fake_duck");
 			
 			PopFont();
 			EndTabItem();

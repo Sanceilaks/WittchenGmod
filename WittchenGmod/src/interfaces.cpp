@@ -16,16 +16,16 @@ void interfaces::init_interfaces() {
 	engine_trace = memory_utils::capture_interface<i_engine_trace>("engine.dll", "EngineTraceClient003");
 	game_movement = memory_utils::capture_interface<i_game_movement>("client.dll", "GameMovement001");
 
-	input = memory_utils::get_vmt_from_vtable_function<CInput>((uintptr_t)client, 20, 0x0);
+	input = memory_utils::get_vmt<CInput>((uintptr_t)client, 20, 0x0);
 	
 	move_helper = memory_utils::get_vmt_from_instruction<i_move_helper>((uintptr_t)memory_utils::pattern_scanner("client.dll", "48 8B 0D ? ? ? ? 48 8B 53 10"));
 	
 	//client mode pattern: CHLClient__HudProcessInput + offset to mov [reg], g_ClientMode. Sizeof mov instruction - 3. 
-	client_mode = memory_utils::get_vmt_from_vtable_function<i_client_mode>((uintptr_t)client, 10, 0x0);
+	client_mode = memory_utils::get_vmt<i_client_mode>((uintptr_t)client, 10, 0x0);
 
 	mat_render_context = material_system->get_render_context();
 
 	//global_vars = (c_global_vars*)memory_utils::relative_to_absolute((uintptr_t)(memory_utils::pattern_scanner("client.dll", "48 8B 05 ? ? ? ? 48 8B D7")), 0x3, 7);
 
-	random_stream = memory_utils::get_vmt_from_function_instruction<c_uniform_random_stream>((uintptr_t)(GetProcAddress(GetModuleHandleA("vstdlib.dll"), "RandomSeed")), 0x2);
+	random_stream = memory_utils::get_vmt_from_instruction<c_uniform_random_stream>((uintptr_t)GetProcAddress(GetModuleHandleA("vstdlib.dll"), "RandomSeed"), 0x2);
 }

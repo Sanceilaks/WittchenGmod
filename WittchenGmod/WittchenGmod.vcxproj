@@ -295,6 +295,7 @@
     <ClCompile Include="src\utils\hackutils.cpp" />
     <ClCompile Include="src\utils\input_system.cpp" />
     <ClCompile Include="src\utils\md5_check_sum.cpp" />
+    <ClCompile Include="src\utils\memory_utils.cpp" />
     <ClCompile Include="src\utils\netvars.cpp" />
   </ItemGroup>
   <ItemGroup>

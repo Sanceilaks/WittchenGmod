@@ -84,7 +84,7 @@ void spreads::swb_nospread(c_user_cmd& cmd) {
 }
 
 void spreads::fas2_nospread(c_user_cmd& cmd) {
-	auto wep = get_local_player()->get_active_weapon();
+	/*auto wep = get_local_player()->get_active_weapon();
 	if (!wep)
 		return;
 	
@@ -105,11 +105,11 @@ void spreads::fas2_nospread(c_user_cmd& cmd) {
 	if (cone == 0.f)
 		return;
 
-	math::lua::random_seed(get_local_player()->get_tick_base() * interfaces::global_vars->interval_per_tick);
+	//math::lua::random_seed(get_local_player()->get_tick_base() * interfaces::global_vars->interval_per_tick);
 	float x = math::lua::rand(-cone, cone);
 	float y = math::lua::rand(-cone, cone);
 
 	auto ang = q_angle(-x, -y, 0) * 25.f;
 
-	if (ang.is_valid()) cmd.viewangles += ang;
+	if (ang.is_valid()) cmd.viewangles += ang;*/
 }
