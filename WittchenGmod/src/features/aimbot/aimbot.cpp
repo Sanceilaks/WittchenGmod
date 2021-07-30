@@ -181,10 +181,12 @@ void aimbot::nospread(c_user_cmd& cmd) {
 			spreads::base_nospread(cmd);
 		if (wep->get_weapon_base().find("swb") != std::string::npos)
 			spreads::swb_nospread(cmd);
+		if (wep->get_classname().find("fas2") != std::string::npos)
+			spreads::fas2_nospread(cmd);
 	}
 }
 
-//TODO: IMPL THIS
+
 struct prediton_data_t {
 	float old_curtime, old_frametime;
 	c_base_player* player;

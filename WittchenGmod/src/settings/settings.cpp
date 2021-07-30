@@ -22,7 +22,7 @@ std::unordered_map<std::string, std::any> settings_storage {
 	{"third_person", false},
 	{"faf", false},
 	{"fake_lags", false},
-
+	{"fake_duck", false},
 	
 	{"aimbot_fov", 0},
 	{"aimbot_bones", (int)e_bones::head},

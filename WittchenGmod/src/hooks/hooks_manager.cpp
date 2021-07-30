@@ -338,6 +338,7 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	original(interfaces::client_mode, frame_time, cmd);
 	
 	if (settings::get_bool("fake_lags")) send_packets = !(globals::game_info::chocked_packets < settings::get_int("fake_lags_amount"));
+	//if (settings::get_float("fake_duck")) send_packets = 
 	
 	lua_futures::run_all_code();
 

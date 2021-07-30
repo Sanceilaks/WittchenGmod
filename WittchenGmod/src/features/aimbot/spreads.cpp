@@ -82,3 +82,34 @@ void spreads::swb_nospread(c_user_cmd& cmd) {
 
 	cmd.viewangles = ang;
 }
+
+void spreads::fas2_nospread(c_user_cmd& cmd) {
+	auto wep = get_local_player()->get_active_weapon();
+	if (!wep)
+		return;
+	
+	auto lua = interfaces::lua_shared->get_lua_interface((int)e_interface_type::client);
+	if (!lua)
+		return;
+	c_lua_auto_pop ap(lua);
+
+	float cone;
+
+	{
+		c_lua_auto_pop ap2(lua);
+		wep->push_entity();
+		lua->get_field(-1, "CurCone");
+		cone = lua->get_number();
+	}
+
+	if (cone == 0.f)
+		return;
+
+	math::lua::random_seed(get_local_player()->get_tick_base() * interfaces::global_vars->interval_per_tick);
+	float x = math::lua::rand(-cone, cone);
+	float y = math::lua::rand(-cone, cone);
+
+	auto ang = q_angle(-x, -y, 0) * 25.f;
+
+	if (ang.is_valid()) cmd.viewangles += ang;
+}
