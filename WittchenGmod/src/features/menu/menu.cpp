@@ -19,7 +19,7 @@ void menu::initialize_menu() {
 }
 
 void menu::draw_menu() {
-	if (is_menu_open || menu_alpha > 0.f)
+	if (menu_is_open())
 	{
 		if (!interfaces::surface->is_cursor_visible())
 			ImGui::GetIO().MouseDrawCursor = true;

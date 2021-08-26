@@ -48,7 +48,8 @@ double math::double_negative(double var)
 #undef max
 double math::lua::rand(double min, double max)
 {
-	/*auto glua = interfaces::lua_shared->get_interface((int)e_special::glob);
+	auto glua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+	if (!glua) return 0;
 	c_lua_auto_pop ap(glua);
 	
 	glua->push_special((int)e_special::glob); //1
@@ -58,18 +59,18 @@ double math::lua::rand(double min, double max)
 	glua->push_number(max); //4
 	glua->call(2, 1); //3
 	auto out = glua->get_number();
-	return out;*/
-	return 0;
+	return out;
 }
 
 void math::lua::random_seed(double seed)
 {
-	/*auto glua = interfaces::lua_shared->get_interface((int)e_special::glob);
+	auto glua = interfaces::lua_shared->get_lua_interface((int)e_special::glob);
+	if (!glua) return;
 	c_lua_auto_pop ap(glua);
 	
 	glua->push_special((int)e_special::glob); //1
 	glua->get_field(-1, "math"); //2
 	glua->get_field(-1, "randomseed"); //2
 	glua->push_number(seed); //3
-	glua->call(1, 0); //2*/
+	glua->call(1, 0); //2
 }

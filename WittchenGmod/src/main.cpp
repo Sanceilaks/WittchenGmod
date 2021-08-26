@@ -16,24 +16,15 @@ void entry_point() {
 
 	//input_system::add_bind(VK_MENU, "test_key", &globals::draw_box);
 	
-#ifdef _DEBUG
+#if defined(_DEBUG) or defined(WITTCHEN_BETA)
 	AllocConsole();
 	freopen("CONOUT$", "wb", stdout);
 	freopen("CONOUT$", "wb", stderr);
 	freopen("CONIN$", "rb", stdin);
 #endif
-
-	warning_fn warning = (warning_fn)GetProcAddress(GetModuleHandle("tier0.dll"), "Warning");
-	
-	if (interfaces::engine) {
-		warning(u8"ß ÃÅÉ\n");
-		interfaces::engine->execute_client_cmd("lua_run_cl table.Empty(_G)");
-	} else {
-		std::cout << "I`m" << std::endl;
-	}
 }
 
-BOOL WINAPI DllMain(HINSTANCE dll_instance, DWORD reason, LPVOID reversed)
+BOOL APIENTRY DllMain(HINSTANCE dll_instance, DWORD reason, LPVOID reversed)
 {
 	DisableThreadLibraryCalls(dll_instance);
 	if (reason == DLL_PROCESS_ATTACH) {

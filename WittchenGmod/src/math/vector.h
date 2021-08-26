@@ -1,7 +1,9 @@
 #pragma once
 #include <cfloat>
 #include <cmath>
+#include <string>
 
+#include <imgui/imgui.h>
 
 class c_vector
 {
@@ -23,6 +25,8 @@ public:
 
 	void normalize();
 	void clamp();
+
+	void invert();
 	
 	float length() const;
 	float length2d() const;
@@ -49,6 +53,8 @@ public:
 	c_vector& operator*=(const c_vector& left);
 	c_vector& operator/=(const c_vector& left);
 
+	explicit operator ImVec2() { return ImVec2{ x, y }; };
+
 	c_vector to_string_friendly() const
 	{
 		if (!is_valid())
@@ -69,6 +75,8 @@ public:
 		
 		return out;
 	}
+
+	operator std::string() const;
 };
 
 class __declspec(align(16)) c_vector_aligned : public c_vector {

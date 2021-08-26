@@ -2341,6 +2341,11 @@ void    ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsig
             data[i] = table[data[i]];
 }
 
+int ImGui::GenerateAnimationId()
+{
+    return (ImGui::GetCursorPosX() * ImGui::GetCursorPosY()) + ImGui::GetWindowPos().x + ImGui::GetWindowPos().y + (GetCursorPosX() + GetCursorPosY());
+}
+
 #ifdef IMGUI_ENABLE_STB_TRUETYPE
 // Temporary data for one source font (multiple source fonts can be merged into one destination ImFont)
 // (C++03 doesn't allow instancing ImVector<> with function-local types so we declare the type here.)

@@ -82,6 +82,10 @@ void c_vector::clamp()
 	this->z = 0.0f;
 }
 
+void c_vector::invert() {
+	*this *= -1;
+}
+
 float c_vector::length() const
 {
 	return sqrt(x * x + y * y + z * z);
@@ -122,8 +126,10 @@ float& c_vector::operator[](int idx)
 	return ((float*)this)[idx];
 }
 
-c_vector& c_vector::operator=(const c_vector& left)
-= default;
+c_vector& c_vector::operator=(const c_vector& left) {
+	x = left.x; y = left.y; z = left.z;
+	return *this;
+}
 
 bool c_vector::operator==(const c_vector& other) const
 {
@@ -181,4 +187,9 @@ c_vector& c_vector::operator/=(const c_vector& left)
 	y /= left.y;
 	z /= left.z;
 	return *this;
+}
+
+c_vector::operator std::string() const {
+	const auto sf = *this;
+	return std::string(std::to_string(sf.x) + "\t" + std::to_string(sf.y) + "\t" + std::to_string(sf.z));
 }

@@ -28,6 +28,16 @@ public:
 	[[nodiscard]] ImU32 get_u32() const;
 	[[nodiscard]] ImVec4 get_vec4() const;
 	[[nodiscard]] std::array<float, 4> get_clamped() const;
+
+	inline operator ImU32() const {
+        return get_u32();
+	}
+
+	inline operator ImVec4() const {
+        return get_vec4();
+	}
+
+	
 };
 
 inline c_color::c_color() = default;
@@ -168,4 +178,5 @@ namespace colors
 	inline const c_color red_color = c_color( 255, 0, 0, 255);
 	inline const c_color green_color = c_color( 0, 255, 0, 255);
 	inline const c_color blue_color = c_color( 0, 0, 255, 255);
+    inline const c_color white_color = c_color(255, 255, 255, 255);
 }

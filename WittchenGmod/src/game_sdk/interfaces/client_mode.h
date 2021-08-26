@@ -4,7 +4,7 @@
 class i_client_mode {
 public:
 	/*0*/	virtual void* destr() = 0;
-	/*1/	virtual void* InitViewport(void) = 0;
+	/*1*/	virtual void* InitViewport(void) = 0;
 	/*2*/	virtual void* init(void) = 0;
 	/*3*/	virtual void* v_gui_shutdown(void) = 0;
 	/*4*/	virtual void* shutdown(void) = 0;

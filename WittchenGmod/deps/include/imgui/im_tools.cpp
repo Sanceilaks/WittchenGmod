@@ -76,6 +76,17 @@ bool ImGui::ColoredButton(const char* text, const ImVec2& size, const CustomColo
 	return res;
 }
 
+bool ImGui::CenterButton(const char* label, const ImVec2& size_arg)
+{
+	auto label_size = CalcTextSize(label, 0, true);
+	auto style = GetStyle();
+
+	ImVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+
+	SetCursorPosX(GetWindowSize().x / 2.f - size.x / 2);
+	return Button(label, size_arg);
+}
+
 bool ImGui::TopBarButton(const char* label, const ImVec2& size, const CustomColor_t& color)
 {
 	auto res = InvisibleButton(label, size);

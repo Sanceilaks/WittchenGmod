@@ -27,19 +27,10 @@
     <ClCompile Include="src\interfaces.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\memoryutils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\utils\hackutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\hooks\hooks_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\include\fmt\format.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\include\fmt\os.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="deps\include\imgui\im_tools.cpp">
@@ -123,6 +114,36 @@
     <ClCompile Include="src\features\menu\themes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\features\lua_futures\lua_futures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\menu\windows\glua_loader_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\esp\esp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\settings\settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\menu\widgets\widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\game_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\aimbot\aimbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\aimbot\spreads.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\md5_check_sum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\memory_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\interfaces.h">
@@ -156,42 +177,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\hooks\hooks_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\chrono.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\compile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\format.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\format-inl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\locale.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\os.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\ostream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\posix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\printf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\include\fmt\ranges.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="deps\include\imgui\im_tools.h">
@@ -333,6 +318,99 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\features\menu\themes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render_system\fonts\nunito_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\menu\animations\fadeanimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render_system\fonts\wittchen_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\game_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\lua_futures\lua_futures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\lua_shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\menu\windows\glua_loader_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render_system\render_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\i_panel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\esp\esp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\settings\settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\settings\bind_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\menu\widgets\widgets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\entities\c_base_player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\debugoverlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\imaterialsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\aimbot\aimbot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\entities\c_base_weapon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\aimbot\spreads.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\convar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\md5_check_sum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\random_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\iprediction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fontawesomium.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render_system\fonts\fontasw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\ienginetrace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\misc\movedata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\globalvars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\gamemovement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\movehelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_sdk\interfaces\cinput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

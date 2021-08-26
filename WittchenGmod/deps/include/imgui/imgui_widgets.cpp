@@ -17,7 +17,7 @@ Index of this file:
 // [SECTION] Widgets: InputText, InputTextMultiline
 // [SECTION] Widgets: ColorEdit, ColorPicker, ColorButton, etc.
 // [SECTION] Widgets: TreeNode, CollapsingHeader, etc.
-// [SECTION] Widgets: Selectable
+// [SECTION] Widgets: TopbarSelectable
 // [SECTION] Widgets: ListBox
 // [SECTION] Widgets: PlotLines, PlotHistogram
 // [SECTION] Widgets: Value helpers
@@ -31,6 +31,8 @@ Index of this file:
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+
+#include <iostream>
 
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
@@ -688,8 +690,39 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags
     bool hovered, held;
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
+    //static float animations[100000000];
+    //static float animations2[100000000];
+	
+    //int _id = GenerateAnimationId();
+	
+    //if (hovered) {
+    //    animations[_id] = ImMin(animations[_id] + GetIO().DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 1.f);
+    //} else {
+    //    animations[_id] = ImMax(animations[_id] - GetIO().DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 0.f);
+    //}
+	
     // Render
-    const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+    ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+
+	//animation
+	/*if (hovered && !held) {
+        auto c = ImColor(GetStyleColorVec4(ImGuiCol_ButtonHovered));
+		auto c1 = ImColor(GetStyleColorVec4(ImGuiCol_ButtonActive));
+        c.Value.w = ImMin(animations[_id] + c.Value.w, c1.Value.w);
+		
+        col = c;
+        animations2[_id] = c.Value.w;
+	} else if (!hovered && !held && animations[_id] > 0.f) {
+        auto c = ImColor(GetStyleColorVec4(ImGuiCol_ButtonHovered));
+        auto c1 = ImColor(GetStyleColorVec4(ImGuiCol_ButtonActive));
+		auto jb = ImColor(GetStyleColorVec4(ImGuiCol_Button));
+		
+        jb.Value.w = ImMax(animations2[_id] - animations[_id], c.Value.w);
+
+        col = jb;
+        animations2[_id] = jb.Value.w;
+	}*/
+	
     RenderNavHighlight(bb, id);
     RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
 
@@ -1092,7 +1125,8 @@ bool ImGui::Checkbox(const char* label, bool* v)
 
     const ImRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
     RenderNavHighlight(total_bb, id);
-    RenderFrame(check_bb.Min, check_bb.Max, GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg), true, style.FrameRounding);
+    //RenderFrame(check_bb.Min, check_bb.Max, GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg), true, style.FrameRounding);
+    RenderFrame(check_bb.Min, check_bb.Max, GetColorU32(ImGuiCol_FrameBg), true, style.FrameRounding);
     ImU32 check_col = GetColorU32(ImGuiCol_CheckMark);
     bool mixed_value = (window->DC.ItemFlags & ImGuiItemFlags_MixedValue) != 0;
     if (mixed_value)
@@ -4945,7 +4979,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
 
     if (value_changed)
         MarkItemEdited(window->DC.LastItemId);
-
+	
     return value_changed;
 }
 
@@ -5559,7 +5593,7 @@ void ImGui::ColorPickerOptionsPopup(const float* ref_col, ImGuiColorEditFlags fl
             if (picker_type == 0) picker_flags |= ImGuiColorEditFlags_PickerHueBar;
             if (picker_type == 1) picker_flags |= ImGuiColorEditFlags_PickerHueWheel;
             ImVec2 backup_pos = GetCursorScreenPos();
-            if (Selectable("##selectable", false, 0, picker_size)) // By default, Selectable() is closing popup
+            if (Selectable("##selectable", false, 0, picker_size)) // By default, TopbarSelectable() is closing popup
                 g.ColorEditOptions = (g.ColorEditOptions & ~ImGuiColorEditFlags__PickerMask) | (picker_flags & ImGuiColorEditFlags__PickerMask);
             SetCursorScreenPos(backup_pos);
             ImVec4 previewing_ref_col;
@@ -6024,17 +6058,200 @@ bool ImGui::CollapsingHeader(const char* label, bool* p_visible, ImGuiTreeNodeFl
 }
 
 //-------------------------------------------------------------------------
-// [SECTION] Widgets: Selectable
+// [SECTION] Widgets: TopbarSelectable
 //-------------------------------------------------------------------------
-// - Selectable()
+// - TopbarSelectable()
 //-------------------------------------------------------------------------
 
 // Tip: pass a non-visible label (e.g. "##hello") then you can use the space to draw other text or image.
 // But you need to make sure the ID is unique, e.g. enclose calls in PushID/PopID or use ##unique_id.
 // With this scheme, ImGuiSelectableFlags_SpanAllColumns and ImGuiSelectableFlags_AllowItemOverlap are also frequently used flags.
-// FIXME: Selectable() with (size.x == 0.0f) and (SelectableTextAlign.x > 0.0f) followed by SameLine() is currently not supported.
-bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags flags, const ImVec2& size_arg)
+// FIXME: TopbarSelectable() with (size.x == 0.0f) and (SelectableTextAlign.x > 0.0f) followed by SameLine() is currently not supported.
+bool ImGui::TopbarSelectable(const char* label, bool selected, ImGuiSelectableFlags flags, const ImVec2& size_arg)
 {
+    ImGuiWindow* window = GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
+
+    // Submit label or explicit size to ItemSize(), whereas ItemAdd() will submit a larger/spanning rectangle.
+    ImGuiID id = window->GetID(label);
+    ImVec2 label_size = CalcTextSize(label, NULL, true);
+    ImVec2 size(size_arg.x != 0.0f ? size_arg.x : label_size.x, size_arg.y != 0.0f ? size_arg.y : label_size.y);
+    ImVec2 pos = window->DC.CursorPos;
+    pos.y += window->DC.CurrLineTextBaseOffset;
+    ItemSize(size, 0.0f);
+
+    // Fill horizontal space
+    // We don't support (size < 0.0f) in TopbarSelectable() because the ItemSpacing extension would make explicitly right-aligned sizes not visibly match other widgets.
+    const bool span_all_columns = (flags & ImGuiSelectableFlags_SpanAllColumns) != 0;
+    const float min_x = span_all_columns ? window->ParentWorkRect.Min.x : pos.x;
+    const float max_x = span_all_columns ? window->ParentWorkRect.Max.x : window->WorkRect.Max.x;
+    if (size_arg.x == 0.0f || (flags & ImGuiSelectableFlags_SpanAvailWidth))
+        size.x = ImMax(label_size.x, max_x - min_x);
+
+    // Text stays at the submission position, but bounding box may be extended on both sides
+    ImVec2 text_min = {(pos.x + size.x) - label_size.x - style.ItemInnerSpacing.x, pos.y};
+    ImVec2 text_max(min_x + size.x, pos.y + size.y);
+
+    // Selectables are meant to be tightly packed together with no click-gap, so we extend their box to cover spacing between selectable.
+    ImRect bb(min_x, pos.y, text_max.x, text_max.y);
+    if ((flags & ImGuiSelectableFlags_NoPadWithHalfSpacing) == 0)
+    {
+        const float spacing_x = span_all_columns ? 0.0f : style.ItemSpacing.x;
+        const float spacing_y = style.ItemSpacing.y;
+        const float spacing_L = IM_FLOOR(spacing_x * 0.50f);
+        const float spacing_U = IM_FLOOR(spacing_y * 0.50f);
+        bb.Min.x -= spacing_L;
+        bb.Min.y -= spacing_U;
+        bb.Max.x += (spacing_x - spacing_L);
+        bb.Max.y += (spacing_y - spacing_U);
+    }
+    //if (g.IO.KeyCtrl) { GetForegroundDrawList()->AddRect(bb.Min, bb.Max, IM_COL32(0, 255, 0, 255)); }
+
+    // Modify ClipRect for the ItemAdd(), faster than doing a PushColumnsBackground/PushTableBackground for every TopbarSelectable..
+    const float backup_clip_rect_min_x = window->ClipRect.Min.x;
+    const float backup_clip_rect_max_x = window->ClipRect.Max.x;
+    if (span_all_columns)
+    {
+        window->ClipRect.Min.x = window->ParentWorkRect.Min.x;
+        window->ClipRect.Max.x = window->ParentWorkRect.Max.x;
+    }
+
+    bool item_add;
+    if (flags & ImGuiSelectableFlags_Disabled)
+    {
+        ImGuiItemFlags backup_item_flags = window->DC.ItemFlags;
+        window->DC.ItemFlags |= ImGuiItemFlags_Disabled | ImGuiItemFlags_NoNavDefaultFocus;
+        item_add = ItemAdd(bb, id);
+        window->DC.ItemFlags = backup_item_flags;
+    }
+    else
+    {
+        item_add = ItemAdd(bb, id);
+    }
+
+    if (span_all_columns)
+    {
+        window->ClipRect.Min.x = backup_clip_rect_min_x;
+        window->ClipRect.Max.x = backup_clip_rect_max_x;
+    }
+
+    if (!item_add)
+        return false;
+
+    // FIXME: We can standardize the behavior of those two, we could also keep the fast path of override ClipRect + full push on render only,
+    // which would be advantageous since most selectable are not selected.
+    if (span_all_columns && window->DC.CurrentColumns)
+        PushColumnsBackground();
+    else if (span_all_columns && g.CurrentTable)
+        TablePushBackgroundChannel();
+
+    // We use NoHoldingActiveID on menus so user can click and _hold_ on a menu then drag to browse child entries
+    ImGuiButtonFlags button_flags = 0;
+    if (flags & ImGuiSelectableFlags_NoHoldingActiveID) { button_flags |= ImGuiButtonFlags_NoHoldingActiveId; }
+    if (flags & ImGuiSelectableFlags_SelectOnClick)     { button_flags |= ImGuiButtonFlags_PressedOnClick; }
+    if (flags & ImGuiSelectableFlags_SelectOnRelease)   { button_flags |= ImGuiButtonFlags_PressedOnRelease; }
+    if (flags & ImGuiSelectableFlags_Disabled)          { button_flags |= ImGuiButtonFlags_Disabled; }
+    if (flags & ImGuiSelectableFlags_AllowDoubleClick)  { button_flags |= ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnDoubleClick; }
+    if (flags & ImGuiSelectableFlags_AllowItemOverlap)  { button_flags |= ImGuiButtonFlags_AllowItemOverlap; }
+
+    if (flags & ImGuiSelectableFlags_Disabled)
+        selected = false;
+
+    const bool was_selected = selected;
+    bool hovered, held;
+    bool pressed = ButtonBehavior(bb, id, &hovered, &held, button_flags);
+
+    // Update NavId when clicking or when Hovering (this doesn't happen on most widgets), so navigation can be resumed with gamepad/keyboard
+    if (pressed || (hovered && (flags & ImGuiSelectableFlags_SetNavIdOnHover)))
+    {
+        if (!g.NavDisableMouseHover && g.NavWindow == window && g.NavLayer == window->DC.NavLayerCurrent)
+        {
+            SetNavID(id, window->DC.NavLayerCurrent, window->DC.NavFocusScopeIdCurrent, ImRect(bb.Min - window->Pos, bb.Max - window->Pos));
+            g.NavDisableHighlight = true;
+        }
+    }
+    if (pressed)
+        MarkItemEdited(id);
+
+    if (flags & ImGuiSelectableFlags_AllowItemOverlap)
+        SetItemAllowOverlap();
+
+    // In this branch, TopbarSelectable() cannot toggle the selection so this will never trigger.
+    if (selected != was_selected) //-V547
+        window->DC.LastItemStatusFlags |= ImGuiItemStatusFlags_ToggledSelection;
+
+    // Render
+    if (held && (flags & ImGuiSelectableFlags_DrawHoveredWhenHeld))
+        hovered = true;
+
+    {
+        static float jump_animations[10000000];
+    	static float hovered_animations[10000000];
+
+        auto _id = GenerateAnimationId();
+
+        ImColor background_color = GetColorU32(/*(held && hovered) ? ImGuiCol_HeaderActive : hovered ?*/ ImGuiCol_HeaderHovered /* : ImGuiCol_Header*/);
+        constexpr float hovered_animation_speed = 0.8f;
+        constexpr float jump_animation_speed = 10.f;
+
+        if (hovered || selected) {
+            hovered_animations[_id] = ImMin(hovered_animations[_id] + GetIO().DeltaTime * hovered_animation_speed, 0.8f);
+
+            auto offset = jump_animations[_id] - GetIO().DeltaTime * jump_animation_speed;
+            jump_animations[_id] = ImMax(text_min.y - offset, text_min.y - label_size.y / 6.f);
+        }
+        if (!hovered && !selected) {
+            hovered_animations[_id] = ImMax(hovered_animations[_id] - GetIO().DeltaTime * hovered_animation_speed, 0.f);
+
+            auto offset = jump_animations[_id] + GetIO().DeltaTime * jump_animation_speed;
+            jump_animations[_id] = ImMin(text_min.y - offset, text_min.y);
+        }
+
+        background_color.Value.w = hovered_animations[_id] * GetStyle().Alpha;
+
+        ImColor void_background_color = background_color;
+        void_background_color.Value.w = 0.f;
+
+        ImColor bg1, bg2;
+        bg1.SetHSV(0, 95, 100 - (((int)((GetIO().DeltaTime * 100.f) * (GetTime()))) % 50), background_color.Value.w);
+        bg2.SetHSV(0, 95, 100 - ((int)((GetIO().DeltaTime * 200.f) * (GetTime())) % 30), background_color.Value.w);
+    	
+        GetWindowDrawList()->AddRectFilledMultiColor(bb.Min, bb.Max, void_background_color, void_background_color, bg1, bg2);
+        text_min.y -= jump_animations[_id];
+    }
+
+    if (span_all_columns && window->DC.CurrentColumns)
+        PopColumnsBackground();
+    else if (span_all_columns && g.CurrentTable)
+        TablePopBackgroundChannel();
+
+    if (flags & ImGuiSelectableFlags_Disabled) PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]);
+    RenderTextClipped(text_min, text_max, label, NULL, &label_size, style.SelectableTextAlign, &bb);
+    if (flags & ImGuiSelectableFlags_Disabled) PopStyleColor();
+
+    // Automatically close popups
+    if (pressed && (window->Flags & ImGuiWindowFlags_Popup) && !(flags & ImGuiSelectableFlags_DontClosePopups) && !(window->DC.ItemFlags & ImGuiItemFlags_SelectableDontClosePopup))
+        CloseCurrentPopup();
+
+    IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags);
+    return pressed;
+}
+
+bool ImGui::Selectable(const char* label, bool* p_selected, ImGuiSelectableFlags flags, const ImVec2& size_arg)
+{
+    if (Selectable(label, *p_selected, flags, size_arg))
+    {
+        *p_selected = !*p_selected;
+        return true;
+    }
+    return false;
+}
+
+bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags flags, const ImVec2& size_arg){
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
         return false;
@@ -6118,11 +6335,11 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
     // We use NoHoldingActiveID on menus so user can click and _hold_ on a menu then drag to browse child entries
     ImGuiButtonFlags button_flags = 0;
     if (flags & ImGuiSelectableFlags_NoHoldingActiveID) { button_flags |= ImGuiButtonFlags_NoHoldingActiveId; }
-    if (flags & ImGuiSelectableFlags_SelectOnClick)     { button_flags |= ImGuiButtonFlags_PressedOnClick; }
-    if (flags & ImGuiSelectableFlags_SelectOnRelease)   { button_flags |= ImGuiButtonFlags_PressedOnRelease; }
-    if (flags & ImGuiSelectableFlags_Disabled)          { button_flags |= ImGuiButtonFlags_Disabled; }
-    if (flags & ImGuiSelectableFlags_AllowDoubleClick)  { button_flags |= ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnDoubleClick; }
-    if (flags & ImGuiSelectableFlags_AllowItemOverlap)  { button_flags |= ImGuiButtonFlags_AllowItemOverlap; }
+    if (flags & ImGuiSelectableFlags_SelectOnClick) { button_flags |= ImGuiButtonFlags_PressedOnClick; }
+    if (flags & ImGuiSelectableFlags_SelectOnRelease) { button_flags |= ImGuiButtonFlags_PressedOnRelease; }
+    if (flags & ImGuiSelectableFlags_Disabled) { button_flags |= ImGuiButtonFlags_Disabled; }
+    if (flags & ImGuiSelectableFlags_AllowDoubleClick) { button_flags |= ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnDoubleClick; }
+    if (flags & ImGuiSelectableFlags_AllowItemOverlap) { button_flags |= ImGuiButtonFlags_AllowItemOverlap; }
 
     if (flags & ImGuiSelectableFlags_Disabled)
         selected = false;
@@ -6155,7 +6372,7 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
         hovered = true;
     if (hovered || selected)
     {
-        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : hovered ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
+        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : hovered || selected ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
         RenderFrame(bb.Min, bb.Max, col, false, 0.0f);
         RenderNavHighlight(bb, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
     }
@@ -6175,16 +6392,6 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
 
     IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags);
     return pressed;
-}
-
-bool ImGui::Selectable(const char* label, bool* p_selected, ImGuiSelectableFlags flags, const ImVec2& size_arg)
-{
-    if (Selectable(label, *p_selected, flags, size_arg))
-    {
-        *p_selected = !*p_selected;
-        return true;
-    }
-    return false;
 }
 
 //-------------------------------------------------------------------------
@@ -6736,7 +6943,7 @@ bool ImGui::BeginMenu(const char* label, bool enabled)
     if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
     {
         // Menu inside an horizontal menu bar
-        // Selectable extend their highlight by half ItemSpacing in each direction.
+        // TopbarSelectable extend their highlight by half ItemSpacing in each direction.
         // For ChildMenu, the popup position will be overwritten by the call to FindBestWindowPosForPopup() in Begin()
         popup_pos = ImVec2(pos.x - 1.0f - IM_FLOOR(style.ItemSpacing.x * 0.5f), pos.y - style.FramePadding.y + window->MenuBarHeight());
         window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * 0.5f);
@@ -6744,7 +6951,7 @@ bool ImGui::BeginMenu(const char* label, bool enabled)
         float w = label_size.x;
         pressed = Selectable(label, menu_is_open, ImGuiSelectableFlags_NoHoldingActiveID | ImGuiSelectableFlags_SelectOnClick | ImGuiSelectableFlags_DontClosePopups | (!enabled ? ImGuiSelectableFlags_Disabled : 0), ImVec2(w, 0.0f));
         PopStyleVar();
-        window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
+        window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when TopbarSelectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
     }
     else
     {
@@ -6882,7 +7089,7 @@ bool ImGui::MenuItem(const char* label, const char* shortcut, bool selected, boo
     ImVec2 pos = window->DC.CursorPos;
     ImVec2 label_size = CalcTextSize(label, NULL, true);
 
-    // We've been using the equivalent of ImGuiSelectableFlags_SetNavIdOnHover on all Selectable() since early Nav system days (commit 43ee5d73),
+    // We've been using the equivalent of ImGuiSelectableFlags_SetNavIdOnHover on all TopbarSelectable() since early Nav system days (commit 43ee5d73),
     // but I am unsure whether this should be kept at all. For now moved it to be an opt-in feature used by menus only.
     ImGuiSelectableFlags flags = ImGuiSelectableFlags_SelectOnRelease | ImGuiSelectableFlags_SetNavIdOnHover | (enabled ? 0 : ImGuiSelectableFlags_Disabled);
     bool pressed;
@@ -6895,7 +7102,7 @@ bool ImGui::MenuItem(const char* label, const char* shortcut, bool selected, boo
         PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x * 2.0f, style.ItemSpacing.y));
         pressed = Selectable(label, false, flags, ImVec2(w, 0.0f));
         PopStyleVar();
-        window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
+        window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when TopbarSelectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
     }
     else
     {

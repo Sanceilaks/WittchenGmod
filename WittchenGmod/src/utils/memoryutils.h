@@ -14,7 +14,7 @@ namespace memory_utils
 		const auto temp = reinterpret_cast<interface_type>(GetProcAddress(GetModuleHandle(module_name.c_str()), "CreateInterface"));
 		return static_cast<T*>(temp(interface_name.c_str(), 0));
 	}
-	
+
 	template <typename T>
 	static constexpr auto relative_to_absolute(uintptr_t address) noexcept
 	{
@@ -29,7 +29,7 @@ namespace memory_utils
 		auto realAddress = address + instruction_size + relativeAddress;
 		return realAddress;
 	}
-	
+
 	template<typename T>
 	T* get_vmt_from_instruction(uintptr_t address)
 	{
@@ -49,8 +49,6 @@ namespace memory_utils
 		uintptr_t instructionSize = 7;
 		uintptr_t instruction = address + offset;
 
-		/*uintptr_t relativeAddress = *(DWORD*)(instruction + step);
-		uintptr_t realAddress = instruction + instructionSize + relativeAddress;*/
 		return *(T**)(relative_to_absolute(instruction, step, instructionSize));
 	}
 
@@ -61,10 +59,8 @@ namespace memory_utils
 		uintptr_t instructionSize = 7;
 		uintptr_t instruction = ((*(uintptr_t**)(address))[index] + offset);
 
-		//uintptr_t relativeAddress = *(DWORD*)(instruction + step);
-		//uintptr_t realAddress = instruction + instructionSize + relativeAddress;
 		return *(T**)(relative_to_absolute(instruction, step, instructionSize));
 	}
-	
+
 	std::uint8_t* pattern_scanner(const std::string& module_name, const std::string& signature) noexcept;
 }

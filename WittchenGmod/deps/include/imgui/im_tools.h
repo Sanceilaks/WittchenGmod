@@ -44,7 +44,8 @@ namespace ImGui
 	IMGUI_API bool IsVectorValid(const ImVec4& val);
 
 	IMGUI_API bool ColoredButton(const char* text, const ImVec2& size, const CustomColor_t& color);
-
+	IMGUI_API bool CenterButton(const char* label, const ImVec2& size_arg);
+	
 	IMGUI_API bool TopBarButton(const char* label, const ImVec2& size, const CustomColor_t& color);
 
 	IMGUI_API ImVec4 RGBAToClippedRGBA(const ImVec4& in);

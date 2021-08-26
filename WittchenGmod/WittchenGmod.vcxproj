@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Beta|Win32">
+      <Configuration>Beta</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Beta|x64">
+      <Configuration>Beta</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -39,6 +47,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Beta|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -46,6 +61,13 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Beta|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
@@ -63,10 +85,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Beta|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Beta|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -74,6 +102,9 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Beta|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -86,11 +117,31 @@
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\binary</OutDir>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Beta|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\binary</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)</IntDir>
+  </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgInstalledDir>
+    </VcpkgInstalledDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Beta|x64'" Label="Vcpkg">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgConfiguration>Release</VcpkgConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Beta|Win32'" Label="Vcpkg">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,6 +171,22 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Beta|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -129,6 +196,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(ProjectDir)deps\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,10 +226,35 @@
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Beta|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WITTCHEN_BETA;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)deps\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <Optimization>MaxSpeed</Optimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>false</OmitFramePointers>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="deps\include\file_tools.cpp" />
-    <ClCompile Include="deps\include\fmt\format.cc" />
-    <ClCompile Include="deps\include\fmt\os.cc" />
     <ClCompile Include="deps\include\imgui\imgui.cpp" />
     <ClCompile Include="deps\include\imgui\imgui_demo.cpp" />
     <ClCompile Include="deps\include\imgui\imgui_draw.cpp" />
@@ -181,9 +274,15 @@
     <ClCompile Include="deps\include\minpp\minhook\hook.c" />
     <ClCompile Include="deps\include\minpp\minhook\trampoline.c" />
     <ClCompile Include="deps\include\platform_folders.cpp" />
+    <ClCompile Include="src\features\aimbot\aimbot.cpp" />
+    <ClCompile Include="src\features\aimbot\spreads.cpp" />
+    <ClCompile Include="src\features\esp\esp.cpp" />
+    <ClCompile Include="src\features\lua_futures\lua_futures.cpp" />
     <ClCompile Include="src\features\menu\menu.cpp" />
     <ClCompile Include="src\features\menu\themes.cpp" />
+    <ClCompile Include="src\features\menu\widgets\widgets.cpp" />
     <ClCompile Include="src\features\menu\windows\background_window.cpp" />
+    <ClCompile Include="src\features\menu\windows\glua_loader_window.cpp" />
     <ClCompile Include="src\features\menu\windows\main_window.cpp" />
     <ClCompile Include="src\hooks\hooks_manager.cpp" />
     <ClCompile Include="src\interfaces.cpp" />
@@ -191,28 +290,20 @@
     <ClCompile Include="src\math\math.cpp" />
     <ClCompile Include="src\math\vector.cpp" />
     <ClCompile Include="src\render_system\render_system.cpp" />
+    <ClCompile Include="src\settings\settings.cpp" />
+    <ClCompile Include="src\utils\game_utils.cpp" />
     <ClCompile Include="src\utils\hackutils.cpp" />
     <ClCompile Include="src\utils\input_system.cpp" />
-    <ClCompile Include="src\utils\memoryutils.cpp" />
+    <ClCompile Include="src\utils\md5_check_sum.cpp" />
+    <ClCompile Include="src\utils\memory_utils.cpp" />
     <ClCompile Include="src\utils\netvars.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\bind_system.h" />
     <ClInclude Include="deps\include\color.h" />
     <ClInclude Include="deps\include\file_tools.h" />
-    <ClInclude Include="deps\include\fmt\chrono.h" />
-    <ClInclude Include="deps\include\fmt\color.h" />
-    <ClInclude Include="deps\include\fmt\compile.h" />
-    <ClInclude Include="deps\include\fmt\core.h" />
-    <ClInclude Include="deps\include\fmt\format-inl.h" />
-    <ClInclude Include="deps\include\fmt\format.h" />
-    <ClInclude Include="deps\include\fmt\locale.h" />
-    <ClInclude Include="deps\include\fmt\os.h" />
-    <ClInclude Include="deps\include\fmt\ostream.h" />
-    <ClInclude Include="deps\include\fmt\posix.h" />
-    <ClInclude Include="deps\include\fmt\printf.h" />
-    <ClInclude Include="deps\include\fmt\ranges.h" />
     <ClInclude Include="deps\include\fnv.h" />
+    <ClInclude Include="deps\include\fontawesomium.h" />
     <ClInclude Include="deps\include\imgui\imconfig.h" />
     <ClInclude Include="deps\include\imgui\imgui.h" />
     <ClInclude Include="deps\include\imgui\imgui_freetype.h" />
@@ -238,18 +329,40 @@
     <ClInclude Include="deps\include\minpp\minhook\minhook.h" />
     <ClInclude Include="deps\include\minpp\minhook\trampoline.h" />
     <ClInclude Include="deps\include\platform_folders.h" />
+    <ClInclude Include="src\features\aimbot\aimbot.h" />
+    <ClInclude Include="src\features\aimbot\spreads.h" />
+    <ClInclude Include="src\features\esp\esp.h" />
+    <ClInclude Include="src\features\lua_futures\lua_futures.h" />
+    <ClInclude Include="src\features\menu\animations\fadeanimation.h" />
     <ClInclude Include="src\features\menu\menu.h" />
     <ClInclude Include="src\features\menu\themes.h" />
+    <ClInclude Include="src\features\menu\widgets\widgets.h" />
     <ClInclude Include="src\features\menu\windows\background_window.h" />
+    <ClInclude Include="src\features\menu\windows\glua_loader_window.h" />
     <ClInclude Include="src\features\menu\windows\main_window.h" />
     <ClInclude Include="src\game_sdk\entities\c_base_entity.h" />
+    <ClInclude Include="src\game_sdk\entities\c_base_player.h" />
+    <ClInclude Include="src\game_sdk\entities\c_base_weapon.h" />
     <ClInclude Include="src\game_sdk\entities\i_client_entity.h" />
+    <ClInclude Include="src\game_sdk\interfaces\cinput.h" />
     <ClInclude Include="src\game_sdk\interfaces\client.h" />
     <ClInclude Include="src\game_sdk\interfaces\cliententitylist.h" />
     <ClInclude Include="src\game_sdk\interfaces\client_mode.h" />
+    <ClInclude Include="src\game_sdk\interfaces\convar.h" />
+    <ClInclude Include="src\game_sdk\interfaces\debugoverlay.h" />
     <ClInclude Include="src\game_sdk\interfaces\engine.h" />
+    <ClInclude Include="src\game_sdk\interfaces\gamemovement.h" />
+    <ClInclude Include="src\game_sdk\interfaces\globalvars.h" />
+    <ClInclude Include="src\game_sdk\interfaces\ienginetrace.h" />
+    <ClInclude Include="src\game_sdk\interfaces\imaterialsystem.h" />
+    <ClInclude Include="src\game_sdk\interfaces\iprediction.h" />
+    <ClInclude Include="src\game_sdk\interfaces\i_panel.h" />
+    <ClInclude Include="src\game_sdk\interfaces\lua_shared.h" />
+    <ClInclude Include="src\game_sdk\interfaces\movehelper.h" />
+    <ClInclude Include="src\game_sdk\interfaces\random_stream.h" />
     <ClInclude Include="src\game_sdk\interfaces\surface.h" />
     <ClInclude Include="src\game_sdk\misc\c_client_class.h" />
+    <ClInclude Include="src\game_sdk\misc\movedata.h" />
     <ClInclude Include="src\game_sdk\misc\recv_props.h" />
     <ClInclude Include="src\game_sdk\misc\usercmd.h" />
     <ClInclude Include="src\game_sdk\misc\viewsetup.h" />
@@ -262,9 +375,17 @@
     <ClInclude Include="src\protect\md5.hpp" />
     <ClInclude Include="src\protect\skCrypter.h" />
     <ClInclude Include="src\protect\xorstr.hpp" />
+    <ClInclude Include="src\render_system\fonts\fontasw.h" />
+    <ClInclude Include="src\render_system\fonts\nunito_font.h" />
+    <ClInclude Include="src\render_system\fonts\wittchen_font.h" />
+    <ClInclude Include="src\render_system\render_helpers.h" />
     <ClInclude Include="src\render_system\render_system.h" />
+    <ClInclude Include="src\settings\bind_system.h" />
+    <ClInclude Include="src\settings\settings.h" />
+    <ClInclude Include="src\utils\game_utils.h" />
     <ClInclude Include="src\utils\hackutils.h" />
     <ClInclude Include="src\utils\input_system.h" />
+    <ClInclude Include="src\utils\md5_check_sum.h" />
     <ClInclude Include="src\utils\memoryutils.h" />
     <ClInclude Include="src\utils\netvars.h" />
   </ItemGroup>

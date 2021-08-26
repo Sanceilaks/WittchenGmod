@@ -692,7 +692,7 @@ enum ImGuiItemFlags_
     ImGuiItemFlags_Disabled                 = 1 << 2,  // false    // [BETA] Disable interactions but doesn't affect visuals yet. See github.com/ocornut/imgui/issues/211
     ImGuiItemFlags_NoNav                    = 1 << 3,  // false
     ImGuiItemFlags_NoNavDefaultFocus        = 1 << 4,  // false
-    ImGuiItemFlags_SelectableDontClosePopup = 1 << 5,  // false    // MenuItem/Selectable() automatically closes current Popup window
+    ImGuiItemFlags_SelectableDontClosePopup = 1 << 5,  // false    // MenuItem/TopbarSelectable() automatically closes current Popup window
     ImGuiItemFlags_MixedValue               = 1 << 6,  // false    // [BETA] Represent a mixed/indeterminate value, generally multi-selection where values differ. Currently only supported by Checkbox() (later should support all sorts of widgets)
     ImGuiItemFlags_ReadOnly                 = 1 << 7,  // false    // [ALPHA] Allow hovering interactions but underlying value is not changed.
     ImGuiItemFlags_Default_                 = 0
@@ -705,7 +705,7 @@ enum ImGuiItemStatusFlags_
     ImGuiItemStatusFlags_HoveredRect        = 1 << 0,
     ImGuiItemStatusFlags_HasDisplayRect     = 1 << 1,   // LastItemDisplayRect is valid
     ImGuiItemStatusFlags_Edited             = 1 << 2,   // Value exposed by item was edited in the current frame (should match the bool return value of most widgets)
-    ImGuiItemStatusFlags_ToggledSelection   = 1 << 3,   // Set when Selectable(), TreeNode() reports toggling a selection. We can't report "Selected" because reporting the change allows us to handle clipping with less issues.
+    ImGuiItemStatusFlags_ToggledSelection   = 1 << 3,   // Set when TopbarSelectable(), TreeNode() reports toggling a selection. We can't report "Selected" because reporting the change allows us to handle clipping with less issues.
     ImGuiItemStatusFlags_ToggledOpen        = 1 << 4,   // Set when TreeNode() reports toggling their open state.
     ImGuiItemStatusFlags_HasDeactivated     = 1 << 5,   // Set if the widget/group is able to provide data for the ImGuiItemStatusFlags_Deactivated flag.
     ImGuiItemStatusFlags_Deactivated        = 1 << 6,   // Only valid if ImGuiItemStatusFlags_HasDeactivated is set.
@@ -2123,7 +2123,7 @@ struct ImGuiTable
     ImGuiTableColumnIdx         FreezeColumnsCount;         // Actual frozen columns count (== FreezeColumnsRequest, or == 0 when no scrolling offset)
     ImGuiTableColumnIdx         RowCellDataCurrent;         // Index of current RowCellData[] entry in current row
     ImGuiTableDrawChannelIdx    DummyDrawChannel;           // Redirect non-visible columns here.
-    ImGuiTableDrawChannelIdx    Bg2DrawChannelCurrent;      // For Selectable() and other widgets drawing across columns after the freezing line. Index within DrawSplitter.Channels[]
+    ImGuiTableDrawChannelIdx    Bg2DrawChannelCurrent;      // For TopbarSelectable() and other widgets drawing across columns after the freezing line. Index within DrawSplitter.Channels[]
     ImGuiTableDrawChannelIdx    Bg2DrawChannelUnfrozen;
     bool                        IsLayoutLocked;             // Set by TableUpdateLayout() which is called when beginning the first row.
     bool                        IsInsideRow;                // Set when inside TableBeginRow()/TableEndRow().
@@ -2288,7 +2288,7 @@ namespace ImGui
     IMGUI_API void          PushMultiItemsWidths(int components, float width_full);
     IMGUI_API void          PushItemFlag(ImGuiItemFlags option, bool enabled);
     IMGUI_API void          PopItemFlag();
-    IMGUI_API bool          IsItemToggledSelection();                                   // Was the last item selection toggled? (after Selectable(), TreeNode() etc. We only returns toggle _event_ in order to handle clipping correctly)
+    IMGUI_API bool          IsItemToggledSelection();                                   // Was the last item selection toggled? (after TopbarSelectable(), TreeNode() etc. We only returns toggle _event_ in order to handle clipping correctly)
     IMGUI_API ImVec2        GetContentRegionMaxAbs();
     IMGUI_API void          ShrinkWidths(ImGuiShrinkWidthItem* items, int count, float width_excess);
 
@@ -2560,6 +2560,13 @@ IMGUI_API void      ImFontAtlasBuildRender32bppRectFromString(ImFontAtlas* atlas
 IMGUI_API void      ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_multiply_factor);
 IMGUI_API void      ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride);
 
+//-----------------------------------------------------------------------------
+// [SECTION] Animation API
+//-----------------------------------------------------------------------------
+namespace ImGui
+{
+    IMGUI_API int GenerateAnimationId();
+}
 //-----------------------------------------------------------------------------
 // [SECTION] Test Engine specific hooks (imgui_test_engine)
 //-----------------------------------------------------------------------------
