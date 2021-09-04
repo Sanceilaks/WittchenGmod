@@ -314,11 +314,12 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	}
 	
 	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game()) return original(self, frame_time, cmd);
+
+	bool& send_packets = *send_packets_ptr;
+	send_packets = (globals::game_info::chocked_packets > 21) ? true : send_packets;
 	
 	auto lp = get_local_player();
 	if (!lp || !lp->is_alive()) return original(self, frame_time, cmd);
-
-	bool& send_packets = *send_packets_ptr;
 	
 	if (settings::get_bool("bhop") && !(lp->get_flags() & (1 << 0))) {
 		bhop();
@@ -346,7 +347,8 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	
 	lua_futures::run_all_code();
 
-	send_packets = (cmd->buttons & IN_ATTACK) || (globals::game_info::chocked_packets > 21) ? true : send_packets;
+	send_packets = (cmd->buttons & IN_ATTACK) ? true : send_packets;
+	send_packets = (globals::game_info::chocked_packets > 21) ? true : send_packets;
 	globals::game_info::chocked_packets = !send_packets ? globals::game_info::chocked_packets + 1 : 0;
 	
 	return false;
