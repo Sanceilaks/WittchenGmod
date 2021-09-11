@@ -18,6 +18,19 @@
 #include "game_sdk/interfaces/movehelper.h"
 #include "game_sdk/interfaces/cinput.h"
 
+class c_view_render;
+
+class c_garrys_mod {
+public:
+	virtual void decon() = 0;
+	virtual int64_t md5_string(int64_t a2, const char* a3, const char* a4, char* Str) = 0;
+	virtual void play_sound(const char* path) = 0;
+	virtual const char* get_map_name() = 0;
+	virtual void run_console_command(const char* text) = 0;
+	virtual void staff1() = 0;
+	virtual void staff2() = 0;
+};
+
 namespace interfaces {
 	inline c_engine_client* engine;
 	inline c_client_entity_list* entity_list;
@@ -36,7 +49,9 @@ namespace interfaces {
 	inline c_global_vars* global_vars;
 	inline i_game_movement* game_movement;
 	inline i_move_helper* move_helper;
-	inline CInput* input;
-	
+	inline CInput* input; //eeeeeeeeeeeeeee paste time
+	inline c_garrys_mod* gmod;
+	inline c_view_render* _view;
+
 	void init_interfaces();
 }
