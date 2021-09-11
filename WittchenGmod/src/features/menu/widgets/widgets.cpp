@@ -40,8 +40,7 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	
 	if (!bind_system::bool_binds[bind_id].empty() && bind_system::bool_binds[bind_id][0].type != (int)bind_system::bind_type::none)
 		bc.x = animations[id];
-	
-	
+
 	PushStyleColor(ImGuiCol_Border, bc);
 	PushStyleColor(ImGuiCol_BorderShadow, bcs);
 	PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.f);
@@ -49,8 +48,6 @@ bool ImGui::WittchenCheckbox(const std::string& name, bool* var) {
 	PopStyleVar();
 	PopStyleColor(2);
 
-	
-	
 	if (IsItemHovered()) {
 		animations[id] = ImMin(animations[id] + io.DeltaTime * ELEMENT_FADE_ANIMATION_SPEED, 1.f);
 	}
@@ -292,7 +289,6 @@ void Wittchen::DrawEspEditor() {
 	
 	BeginGroup();
 	{
-
 		InputInt("POS", &rp);
 		
 		if (Button("Add health")) {
@@ -303,7 +299,6 @@ void Wittchen::DrawEspEditor() {
 			g_style_editor.temp_box.text_storage.strings.insert({ esp::c_esp_box::generate_id(), esp::esp_text_t{ "%name", 0, 16.f, colors::white_color, true, rp } });
 		}
 
-		
 		if (Button("Open preview")) draw_preview = !draw_preview;
 
 		if (draw_preview) {
@@ -339,8 +334,7 @@ void Wittchen::DrawEspEditor() {
 				Combo("Box type##ESPBOXTYPE", &g_style_editor.temp_box.type, types, 3);
 				if (g_style_editor.temp_box.type == (int)esp::box_type::border)
 					ColorsEdit4("Border color##ESPBOXCOLOR", g_style_editor.temp_box.border_color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview);
-					
-				
+
 				EndPopup();
 			}
 			
@@ -356,9 +350,7 @@ void Wittchen::DrawEspEditor() {
 			temp_box.min = center_pos;
 			temp_box.max = { center_pos.x + box_size.x, center_pos.y + box_size.y };
 
-
 			{
-
 				switch ((esp::box_type)temp_box.type) {
 				case esp::box_type::filled:
 					GetWindowDrawList()->AddRect(temp_box.min, temp_box.max, temp_box.color.get_u32(), temp_box.rounding);
@@ -368,10 +360,9 @@ void Wittchen::DrawEspEditor() {
 					GetWindowDrawList()->AddRect({ temp_box.min.x + 1.f, temp_box.min.y + 1.f }, { temp_box.max.x - 1.f, temp_box.max.y - 1.f }, temp_box.border_color, temp_box.rounding);
 					GetWindowDrawList()->AddRect(temp_box.min, temp_box.max, temp_box.color.get_u32(), temp_box.rounding);
 					break;
-				case esp::box_type::corner: {
+				case esp::box_type::corner:
 					imgui_render::corner_box(GetWindowDrawList(), temp_box.min, temp_box.max, temp_box.color);
 					break;
-				}
 				}
 			}
 			

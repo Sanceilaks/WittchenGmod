@@ -148,12 +148,26 @@ struct view_render_hook {
 	static void __fastcall hook(chl_client* self, vrect_t* rect);
 };
 
+struct render_view_hook {
+	static inline constexpr uint32_t idx = 6;
+
+	using fn = bool(__fastcall*)(void*, c_view_setup&, int, int);
+	static inline fn original = nullptr;
+	static bool __fastcall hook(void* view_render, c_view_setup& setup, int clear_flags, int what_to_draw);
+};
+
 struct read_pixels_hook {
 	static inline constexpr uint32_t idx = 11;
 	
 	using fn = void(__fastcall*)(void*, int, int, int, int, unsigned char*, image_format);
 	static inline fn original = NULL;
 	static void __fastcall hook(i_mat_render_context* self, int x, int y, int width, int height, unsigned char* data, image_format dstFormat);
+};
+
+struct frame_stage_notify_hook {
+	using fn = void(__fastcall*)(void*, int);
+	static inline fn original;
+	static void __fastcall hook(chl_client* self, int frame_stage);
 };
 
 struct wndproc_hook
@@ -184,12 +198,15 @@ void hooks_manager::init() {
 	CREATE_HOOK(interfaces::prediction, run_command_hook::idx, run_command_hook::hook, run_command_hook::original);
 	CREATE_HOOK(interfaces::engine, get_aspect_ration_hook::idx, get_aspect_ration_hook::hook, get_aspect_ration_hook::original);
 	CREATE_HOOK(interfaces::mat_render_context, read_pixels_hook::idx, read_pixels_hook::hook, read_pixels_hook::original);
-	
+	CREATE_HOOK(interfaces::_view, render_view_hook::idx, render_view_hook::hook, render_view_hook::original);
+
+
 	create_hook((void*)memory_utils::pattern_scanner("client.dll", "40 55 53 57 48 8D 6C 24 ? 48 81 EC ? ? ? ? 48 8B DA"), override_view_hook::hook, (void**)(&override_view_hook::original));
 	create_hook((void*)cl_move, cl_move_hook::hook, (void**)(&cl_move_hook::original));
 	create_hook((void*)memory_utils::pattern_scanner("client.dll", "40 53 48 83 EC 20 E8 ? ? ? ? 48 8B 0D ? ? ? ?"), get_viewmodel_fov::hook, (void**)(&get_viewmodel_fov::original));
 	create_hook((void*)memory_utils::pattern_scanner("client.dll", "40 57 48 83 EC 20 83 7A 08 00"), view_render_hook::hook, (void**)(&view_render_hook::original));
-	
+	create_hook((void*)memory_utils::pattern_scanner("client.dll", "48 83 EC 28 89 15 ? ? ? ?"), frame_stage_notify_hook::hook, (void**)(&frame_stage_notify_hook::original));
+
 	if (const auto run_string_ex_fn_ptr = reinterpret_cast<run_string_ex::fn>(memory_utils::pattern_scanner(
 		"lua_shared.dll", "40 55 53 56 57 41 54 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 49 8B F1")); run_string_ex_fn_ptr)
 		create_hook(run_string_ex_fn_ptr, run_string_ex::hook, reinterpret_cast<void**>(&run_string_ex::original));
@@ -244,6 +261,28 @@ long reset_hook::hook(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* present_p
 
 	return ret;
 }
+
+class send_packets_helper {
+	bool* sp;
+	bool tmp;
+public:
+	send_packets_helper(bool* sp) : sp(sp), tmp(*sp) {}
+	~send_packets_helper() {
+		*sp = tmp;
+		if (globals::game_info::chocked_packets > 21) *sp = true;
+		if (*sp) globals::game_info::chocked_packets = 0;
+		else globals::game_info::chocked_packets++;
+	}
+
+	send_packets_helper& operator=(bool v) {
+		tmp = v;
+		return *this;
+	}
+
+	operator bool() const {
+		return tmp;
+	}
+};
 
 bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* cmd) {
 	auto fix_movement = [&](c_user_cmd& old_cmd) {
@@ -312,13 +351,13 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 		send_packets_ptr = reinterpret_cast<bool*>(cl_move + 0x62);
 		VirtualProtect(send_packets_ptr, sizeof(bool), PAGE_EXECUTE_READWRITE, &sp_protection);
 	}
-	
+
+	send_packets_helper send_packets(send_packets_ptr);
+
 	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game()) return original(self, frame_time, cmd);
 	
 	auto lp = get_local_player();
 	if (!lp || !lp->is_alive()) return original(self, frame_time, cmd);
-
-	bool& send_packets = *send_packets_ptr;
 	
 	if (settings::get_bool("bhop") && !(lp->get_flags() & (1 << 0))) {
 		bhop();
@@ -346,8 +385,7 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	
 	lua_futures::run_all_code();
 
-	send_packets = (cmd->buttons & IN_ATTACK) || (globals::game_info::chocked_packets > 21) ? true : send_packets;
-	globals::game_info::chocked_packets = !send_packets ? globals::game_info::chocked_packets + 1 : 0;
+	send_packets = (cmd->buttons & IN_ATTACK) ? true : send_packets;
 	
 	return false;
 }
@@ -494,8 +532,12 @@ void view_render_hook::hook(chl_client* self, vrect_t* rect) {
 	original(self, rect);
 }
 
+bool render_view_hook::hook(void* view_render, c_view_setup& setup, int clear_flags, int what_to_draw) {
+	return original(view_render, setup, clear_flags, what_to_draw);
+}
+
 void read_pixels_hook::hook(i_mat_render_context* self, int x, int y, int width, int height, unsigned char* data,
-	image_format dstFormat) {
+                            image_format dstFormat) {
 	static uintptr_t render_capture = 0;
 	if (!render_capture) render_capture = (uintptr_t)memory_utils::pattern_scanner("client.dll", "40 55 41 57 48 8D 6C 24 ?");
 	
@@ -507,6 +549,10 @@ void read_pixels_hook::hook(i_mat_render_context* self, int x, int y, int width,
 	}
 
 	return original(self, x, y, width, height, data, dstFormat);
+}
+
+void frame_stage_notify_hook::hook(chl_client* self, int frame_stage) {
+	return original(self, frame_stage);
 }
 
 LRESULT STDMETHODCALLTYPE wndproc_hook::hooked_wndproc(HWND window, UINT message_type, WPARAM w_param, LPARAM l_param)
