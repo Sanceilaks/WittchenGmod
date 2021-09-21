@@ -31,6 +31,11 @@ public:
 	virtual void staff2() = 0;
 };
 
+class c_full_file_system {
+public:
+
+};
+
 namespace interfaces {
 	inline c_engine_client* engine;
 	inline c_client_entity_list* entity_list;
@@ -52,6 +57,7 @@ namespace interfaces {
 	inline CInput* input; //eeeeeeeeeeeeeee paste time
 	inline c_garrys_mod* gmod;
 	inline c_view_render* _view;
+	//inline c_full_file_system* file_system;
 
 	void init_interfaces();
 }
