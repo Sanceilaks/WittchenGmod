@@ -32,4 +32,6 @@ void interfaces::init_interfaces() {
 	_view = memory_utils::get_vmt_from_instruction<c_view_render>((uintptr_t)memory_utils::pattern_scanner("client.dll", "48 8B 0D ? ? ? ? 48 8B 01 FF 50 18 48 8B 0D ? ? ? ? E8 ? ? ? ?"));
 
 	random_stream = memory_utils::get_vmt_from_instruction<c_uniform_random_stream>((uintptr_t)GetProcAddress(GetModuleHandleA("vstdlib.dll"), "RandomSeed"), 0x2);
+
+	//file_system = memory_utils::get_vmt_from_instruction<c_full_file_system>((uintptr_t)memory_utils::pattern_scanner("client.dll", "E8 ? ? ? ? 48 8B BC 24 ? ? ? ? 84 C0") + 0xB2);
 }

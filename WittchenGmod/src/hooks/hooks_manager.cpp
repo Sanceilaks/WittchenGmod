@@ -267,7 +267,8 @@ class send_packets_helper {
 	bool tmp;
 public:
 	send_packets_helper(bool* sp) : sp(sp), tmp(*sp) {}
-	~send_packets_helper() {
+
+	void apply_packets() {
 		*sp = tmp;
 		if (globals::game_info::chocked_packets > 21) *sp = true;
 		if (*sp) globals::game_info::chocked_packets = 0;
@@ -355,7 +356,11 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	send_packets_helper send_packets(send_packets_ptr);
 
 	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game()) return original(self, frame_time, cmd);
-	
+
+	if (GetAsyncKeyState(VK_MENU)) {
+		cmd->tick_count = INT_MAX;
+	}
+
 	auto lp = get_local_player();
 	if (!lp || !lp->is_alive()) return original(self, frame_time, cmd);
 	
@@ -386,7 +391,9 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 	lua_futures::run_all_code();
 
 	send_packets = (cmd->buttons & IN_ATTACK) ? true : send_packets;
-	
+
+	send_packets.apply_packets();
+
 	return false;
 }
 
