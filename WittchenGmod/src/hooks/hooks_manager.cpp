@@ -355,14 +355,16 @@ bool create_move_hook::hook(i_client_mode* self, float frame_time, c_user_cmd* c
 
 	send_packets_helper send_packets(send_packets_ptr);
 
-	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game()) return original(self, frame_time, cmd);
-
-	if (GetAsyncKeyState(VK_MENU)) {
-		cmd->tick_count = INT_MAX;
+	if (!cmd || !cmd->command_number || !interfaces::engine->is_in_game()) {
+		send_packets.apply_packets();
+		return original(self, frame_time, cmd);
 	}
 
 	auto lp = get_local_player();
-	if (!lp || !lp->is_alive()) return original(self, frame_time, cmd);
+	if (!lp || !lp->is_alive()) {
+		send_packets.apply_packets();
+		return original(self, frame_time, cmd);
+	}
 	
 	if (settings::get_bool("bhop") && !(lp->get_flags() & (1 << 0))) {
 		bhop();
