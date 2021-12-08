@@ -1,4 +1,4 @@
-# WittchenGmod aka LemiGmodv2
+# WittchenGmod aka LemiGmodv2 aka VoidHack
 
 Free and open-source gmod hack
 
